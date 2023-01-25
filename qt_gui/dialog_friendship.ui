@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DialogFriendship</class>
+ <widget class="QDialog" name="DialogFriendship">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>653</width>
+    <height>771</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Freund hinzufügen</string>
+  </property>
+  <widget class="QTextBrowser" name="textBrowser_ownkey">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>60</y>
+     <width>630</width>
+     <height>191</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>FreeMono</family>
+     <pointsize>11</pointsize>
+     <kerning>false</kerning>
+    </font>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_own_key">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>40</y>
+     <width>361</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Eigener Schlüssel (an Freund senden)</string>
+   </property>
+  </widget>
+  <widget class="QTextEdit" name="textEdit_friendskey">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>500</y>
+     <width>630</width>
+     <height>191</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>FreeMono</family>
+     <pointsize>11</pointsize>
+    </font>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_enter_friends_key">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>480</y>
+     <width>381</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Schlüssel vom Freund (unten im Textfeld einfügen)</string>
+   </property>
+  </widget>
+  <widget class="Line" name="line">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>320</y>
+     <width>631</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lineEdit_friends_name">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>390</y>
+     <width>301</width>
+     <height>23</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lineEdit_friends_comment">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>440</y>
+     <width>631</width>
+     <height>23</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>370</y>
+     <width>151</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Name des Freundes</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_4">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>420</y>
+     <width>351</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Kommentar (für weitere Infos zum Freund)</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_friendhip_date_info">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>551</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Freund seit ... Läuft ab am ...</string>
+   </property>
+  </widget>
+  <widget class="QSpinBox" name="spinBox_friendship_years">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>260</y>
+     <width>35</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="minimum">
+    <number>1</number>
+   </property>
+   <property name="maximum">
+    <number>5</number>
+   </property>
+   <property name="value">
+    <number>5</number>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_help_text">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>690</y>
+     <width>631</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>label_help_text</string>
+   </property>
+   <property name="wordWrap">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_copy_ownkey_to_clipboard">
+   <property name="geometry">
+    <rect>
+     <x>190</x>
+     <y>290</y>
+     <width>261</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Schlüssel in Zwischenablage kopieren</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_own_key_expiration">
+   <property name="geometry">
+    <rect>
+     <x>396</x>
+     <y>40</y>
+     <width>241</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>label_own_key_expiration</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_friend_key_expiration">
+   <property name="geometry">
+    <rect>
+     <x>390</x>
+     <y>480</y>
+     <width>241</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>label_friend_key_expiration</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_6">
+   <property name="geometry">
+    <rect>
+     <x>330</x>
+     <y>370</y>
+     <width>151</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Email des Freundes</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lineEdit_friends_email">
+   <property name="geometry">
+    <rect>
+     <x>330</x>
+     <y>390</y>
+     <width>301</width>
+     <height>23</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_extend_friendship">
+   <property name="geometry">
+    <rect>
+     <x>190</x>
+     <y>340</y>
+     <width>261</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Freundschaft verlängern</string>
+   </property>
+  </widget>
+  <widget class="QWidget" name="layoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>740</y>
+     <width>631</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout_3">
+    <item>
+     <widget class="QPushButton" name="pushButton_add_renew_friendship">
+      <property name="text">
+       <string>Hinzufügen</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="pushButton_close">
+      <property name="text">
+       <string>Schließen</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="pushButton_cancel_friendship">
+      <property name="text">
+       <string>Freundschaft beenden</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QLabel" name="label_years_of_validity">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>260</y>
+     <width>561</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Jahre Gültigkeit des Schlüssel. (maximale Freundschaftsdauer festlegen).</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+   </property>
+   <property name="wordWrap">
+    <bool>true</bool>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

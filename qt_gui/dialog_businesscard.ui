@@ -1,0 +1,979 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DialogBuisinessCard</class>
+ <widget class="QDialog" name="DialogBuisinessCard">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>674</width>
+    <height>829</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Visitenkarte</string>
+  </property>
+  <widget class="QSpinBox" name="HOPS_name_spinBox">
+   <property name="geometry">
+    <rect>
+     <x>290</x>
+     <y>154</y>
+     <width>35</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="minimum">
+    <number>1</number>
+   </property>
+   <property name="maximum">
+    <number>5</number>
+   </property>
+  </widget>
+  <widget class="QTextEdit" name="skills_offers_textEdit">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>512</y>
+     <width>581</width>
+     <height>111</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QGraphicsView" name="image_graphicsView">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>100</y>
+     <width>100</width>
+     <height>131</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_3">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>442</y>
+     <width>131</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Interessen / Hobbys</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_5">
+   <property name="geometry">
+    <rect>
+     <x>342</x>
+     <y>211</y>
+     <width>30</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Land</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="country_lineEdit">
+   <property name="geometry">
+    <rect>
+     <x>416</x>
+     <y>211</y>
+     <width>191</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_6">
+   <property name="geometry">
+    <rect>
+     <x>342</x>
+     <y>153</y>
+     <width>23</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>PLZ</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="zip_code_lineEdit">
+   <property name="geometry">
+    <rect>
+     <x>416</x>
+     <y>153</y>
+     <width>191</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="inputMethodHints">
+    <set>Qt::ImhDigitsOnly</set>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="clearButtonEnabled">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_7">
+   <property name="geometry">
+    <rect>
+     <x>342</x>
+     <y>182</y>
+     <width>20</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Ort</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="city_lineEdit">
+   <property name="geometry">
+    <rect>
+     <x>416</x>
+     <y>182</y>
+     <width>191</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_8">
+   <property name="geometry">
+    <rect>
+     <x>342</x>
+     <y>124</y>
+     <width>40</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Straße</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="street_lineEdit">
+   <property name="geometry">
+    <rect>
+     <x>416</x>
+     <y>124</y>
+     <width>191</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QSpinBox" name="HOPS_family_name_spinBox">
+   <property name="geometry">
+    <rect>
+     <x>290</x>
+     <y>204</y>
+     <width>35</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="minimum">
+    <number>1</number>
+   </property>
+   <property name="maximum">
+    <number>5</number>
+   </property>
+  </widget>
+  <widget class="QSpinBox" name="HOPS_street_spinBox">
+   <property name="geometry">
+    <rect>
+     <x>620</x>
+     <y>124</y>
+     <width>35</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="minimum">
+    <number>1</number>
+   </property>
+   <property name="maximum">
+    <number>5</number>
+   </property>
+  </widget>
+  <widget class="QSpinBox" name="HOPS_city_spinBox">
+   <property name="geometry">
+    <rect>
+     <x>620</x>
+     <y>184</y>
+     <width>35</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="minimum">
+    <number>1</number>
+   </property>
+   <property name="maximum">
+    <number>5</number>
+   </property>
+  </widget>
+  <widget class="QSpinBox" name="HOPS_country_spinBox">
+   <property name="geometry">
+    <rect>
+     <x>620</x>
+     <y>214</y>
+     <width>35</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="minimum">
+    <number>1</number>
+   </property>
+   <property name="maximum">
+    <number>5</number>
+   </property>
+  </widget>
+  <widget class="QSpinBox" name="HOPS_zip_code_spinBox">
+   <property name="geometry">
+    <rect>
+     <x>620</x>
+     <y>154</y>
+     <width>35</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="minimum">
+    <number>1</number>
+   </property>
+   <property name="maximum">
+    <number>5</number>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_14">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>492</y>
+     <width>211</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Generelle Fähigkeiten / Angebote</string>
+   </property>
+  </widget>
+  <widget class="QTextEdit" name="requests_textEdit">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>650</y>
+     <width>581</width>
+     <height>61</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_15">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>630</y>
+     <width>211</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Generelle Gesuche</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_titel">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>10</y>
+     <width>131</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>Visitenkarte</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="interests_hobbies_lineEdit">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>462</y>
+     <width>581</width>
+     <height>23</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="Line" name="line">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>80</y>
+     <width>621</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+  </widget>
+  <widget class="QSpinBox" name="HOPS_image_spinBox">
+   <property name="geometry">
+    <rect>
+     <x>140</x>
+     <y>100</y>
+     <width>35</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="minimum">
+    <number>1</number>
+   </property>
+   <property name="maximum">
+    <number>5</number>
+   </property>
+  </widget>
+  <widget class="QSpinBox" name="HOPS_phone_spinBox">
+   <property name="geometry">
+    <rect>
+     <x>310</x>
+     <y>350</y>
+     <width>35</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="minimum">
+    <number>1</number>
+   </property>
+   <property name="maximum">
+    <number>5</number>
+   </property>
+  </widget>
+  <widget class="QSpinBox" name="HOPS_company_profession_spinBox">
+   <property name="geometry">
+    <rect>
+     <x>310</x>
+     <y>300</y>
+     <width>35</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="minimum">
+    <number>1</number>
+   </property>
+   <property name="maximum">
+    <number>5</number>
+   </property>
+  </widget>
+  <widget class="QSpinBox" name="HOPS_email_spinBox">
+   <property name="geometry">
+    <rect>
+     <x>620</x>
+     <y>350</y>
+     <width>35</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="minimum">
+    <number>1</number>
+   </property>
+   <property name="maximum">
+    <number>5</number>
+   </property>
+  </widget>
+  <widget class="QSpinBox" name="HOPS_interests_hobbies_spinBox">
+   <property name="geometry">
+    <rect>
+     <x>620</x>
+     <y>462</y>
+     <width>35</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="minimum">
+    <number>1</number>
+   </property>
+   <property name="maximum">
+    <number>5</number>
+   </property>
+  </widget>
+  <widget class="QSpinBox" name="HOPS_skills_offers_spinBox">
+   <property name="geometry">
+    <rect>
+     <x>620</x>
+     <y>512</y>
+     <width>35</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="minimum">
+    <number>1</number>
+   </property>
+   <property name="maximum">
+    <number>5</number>
+   </property>
+  </widget>
+  <widget class="QSpinBox" name="HOPS_website_spinBox">
+   <property name="geometry">
+    <rect>
+     <x>620</x>
+     <y>300</y>
+     <width>35</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="minimum">
+    <number>1</number>
+   </property>
+   <property name="maximum">
+    <number>5</number>
+   </property>
+  </widget>
+  <widget class="QSpinBox" name="HOPS_requests_spinBox">
+   <property name="geometry">
+    <rect>
+     <x>620</x>
+     <y>650</y>
+     <width>35</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="minimum">
+    <number>1</number>
+   </property>
+   <property name="maximum">
+    <number>5</number>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_9">
+   <property name="geometry">
+    <rect>
+     <x>340</x>
+     <y>244</y>
+     <width>81</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Koordinaten</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="coordinates_lineEdit">
+   <property name="geometry">
+    <rect>
+     <x>420</x>
+     <y>244</y>
+     <width>101</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QSpinBox" name="HOPS_coordinates_spinBox">
+   <property name="geometry">
+    <rect>
+     <x>620</x>
+     <y>244</y>
+     <width>35</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="minimum">
+    <number>1</number>
+   </property>
+   <property name="maximum">
+    <number>5</number>
+   </property>
+  </widget>
+  <widget class="QSpinBox" name="HOPS_radius_of_activity_spinBox">
+   <property name="geometry">
+    <rect>
+     <x>290</x>
+     <y>244</y>
+     <width>35</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="minimum">
+    <number>1</number>
+   </property>
+   <property name="maximum">
+    <number>5</number>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_16">
+   <property name="geometry">
+    <rect>
+     <x>38</x>
+     <y>247</y>
+     <width>81</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Aktionsradius</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="radius_of_activity_lineEdit">
+   <property name="geometry">
+    <rect>
+     <x>140</x>
+     <y>244</y>
+     <width>141</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="save_pushButton">
+   <property name="geometry">
+    <rect>
+     <x>200</x>
+     <y>780</y>
+     <width>111</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Speichern</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="valid_until_label">
+   <property name="geometry">
+    <rect>
+     <x>220</x>
+     <y>60</y>
+     <width>301</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Gültig bis </string>
+   </property>
+  </widget>
+  <widget class="QWidget" name="layoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>140</x>
+     <y>134</y>
+     <width>141</width>
+     <height>96</height>
+    </rect>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QLabel" name="label">
+      <property name="text">
+       <string>Rufname</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="name_lineEdit"/>
+    </item>
+    <item>
+     <widget class="QLabel" name="label_4">
+      <property name="text">
+       <string>Familienname</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="family_name_lineEdit"/>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="layoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>390</x>
+     <y>280</y>
+     <width>220</width>
+     <height>96</height>
+    </rect>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout_3">
+    <item>
+     <widget class="QLabel" name="label_10">
+      <property name="text">
+       <string>Internetseite</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="website_lineEdit">
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="label_13">
+      <property name="text">
+       <string>E-Mail</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="email_lineEdit">
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="layoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>33</x>
+     <y>282</y>
+     <width>271</width>
+     <height>96</height>
+    </rect>
+   </property>
+   <layout class="QFormLayout" name="formLayout">
+    <item row="0" column="0">
+     <widget class="QLabel" name="label_12">
+      <property name="text">
+       <string>Unternehmen / Beruf</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <widget class="QLabel" name="label_11">
+      <property name="text">
+       <string>Telefon / Handy</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0" colspan="2">
+     <widget class="QLineEdit" name="company_profession_lineEdit">
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0" colspan="2">
+     <widget class="QLineEdit" name="phone_lineEdit">
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QLabel" name="label_18">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>720</y>
+     <width>131</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Stichwörter / Tags</string>
+   </property>
+  </widget>
+  <widget class="QSpinBox" name="HOPS_tags_spinBox">
+   <property name="geometry">
+    <rect>
+     <x>620</x>
+     <y>740</y>
+     <width>35</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="minimum">
+    <number>1</number>
+   </property>
+   <property name="maximum">
+    <number>5</number>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="tags_lineEdit">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>740</y>
+     <width>581</width>
+     <height>23</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="close_pushButton">
+   <property name="geometry">
+    <rect>
+     <x>330</x>
+     <y>780</y>
+     <width>111</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Schließen</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_range">
+   <property name="geometry">
+    <rect>
+     <x>540</x>
+     <y>10</y>
+     <width>101</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>Reichweite</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="increase_hops_pushButton">
+   <property name="geometry">
+    <rect>
+     <x>560</x>
+     <y>30</y>
+     <width>21</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>11</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>+</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="decrease_hops_pushButton">
+   <property name="geometry">
+    <rect>
+     <x>590</x>
+     <y>30</y>
+     <width>21</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>15</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>-</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="determine_coordinates_pushButton">
+   <property name="geometry">
+    <rect>
+     <x>530</x>
+     <y>244</y>
+     <width>80</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Ermitteln</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="status_label">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>810</y>
+     <width>581</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>status_label</string>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="checkBox_extend_hops">
+   <property name="geometry">
+    <rect>
+     <x>540</x>
+     <y>60</y>
+     <width>91</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>erweitert</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="adopt_validity_pushButton">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>60</y>
+     <width>181</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Gültigkeit ändern</string>
+   </property>
+  </widget>
+  <widget class="QWidget" name="layoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>220</x>
+     <y>20</y>
+     <width>151</width>
+     <height>26</height>
+    </rect>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <widget class="QLabel" name="month_valid_label">
+      <property name="text">
+       <string>Monate gültig:</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QSpinBox" name="month_valid_spinBox">
+      <property name="minimum">
+       <number>1</number>
+      </property>
+      <property name="maximum">
+       <number>36</number>
+      </property>
+      <property name="value">
+       <number>36</number>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QSpinBox" name="HOPS_other_contact_spinBox">
+   <property name="geometry">
+    <rect>
+     <x>620</x>
+     <y>413</y>
+     <width>35</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="minimum">
+    <number>1</number>
+   </property>
+   <property name="maximum">
+    <number>5</number>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="other_contact_lineEdit">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>413</y>
+     <width>581</width>
+     <height>23</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_17">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>393</y>
+     <width>251</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Sonstige Kontaktmöglichkeiten</string>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="checkBox_add_to_mailling_list">
+   <property name="geometry">
+    <rect>
+     <x>390</x>
+     <y>380</y>
+     <width>221</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>in Mailverteiler aufnehmen</string>
+   </property>
+  </widget>
+ </widget>
+ <tabstops>
+  <tabstop>name_lineEdit</tabstop>
+  <tabstop>family_name_lineEdit</tabstop>
+  <tabstop>street_lineEdit</tabstop>
+  <tabstop>zip_code_lineEdit</tabstop>
+  <tabstop>city_lineEdit</tabstop>
+  <tabstop>country_lineEdit</tabstop>
+  <tabstop>coordinates_lineEdit</tabstop>
+  <tabstop>radius_of_activity_lineEdit</tabstop>
+  <tabstop>company_profession_lineEdit</tabstop>
+  <tabstop>phone_lineEdit</tabstop>
+  <tabstop>website_lineEdit</tabstop>
+  <tabstop>email_lineEdit</tabstop>
+  <tabstop>checkBox_add_to_mailling_list</tabstop>
+  <tabstop>other_contact_lineEdit</tabstop>
+  <tabstop>interests_hobbies_lineEdit</tabstop>
+  <tabstop>skills_offers_textEdit</tabstop>
+  <tabstop>requests_textEdit</tabstop>
+  <tabstop>tags_lineEdit</tabstop>
+  <tabstop>HOPS_image_spinBox</tabstop>
+  <tabstop>HOPS_name_spinBox</tabstop>
+  <tabstop>HOPS_family_name_spinBox</tabstop>
+  <tabstop>HOPS_street_spinBox</tabstop>
+  <tabstop>HOPS_zip_code_spinBox</tabstop>
+  <tabstop>HOPS_city_spinBox</tabstop>
+  <tabstop>HOPS_country_spinBox</tabstop>
+  <tabstop>HOPS_coordinates_spinBox</tabstop>
+  <tabstop>HOPS_radius_of_activity_spinBox</tabstop>
+  <tabstop>HOPS_company_profession_spinBox</tabstop>
+  <tabstop>HOPS_phone_spinBox</tabstop>
+  <tabstop>HOPS_website_spinBox</tabstop>
+  <tabstop>HOPS_email_spinBox</tabstop>
+  <tabstop>HOPS_interests_hobbies_spinBox</tabstop>
+  <tabstop>HOPS_skills_offers_spinBox</tabstop>
+  <tabstop>HOPS_requests_spinBox</tabstop>
+  <tabstop>HOPS_tags_spinBox</tabstop>
+  <tabstop>save_pushButton</tabstop>
+  <tabstop>close_pushButton</tabstop>
+  <tabstop>image_graphicsView</tabstop>
+  <tabstop>month_valid_spinBox</tabstop>
+  <tabstop>increase_hops_pushButton</tabstop>
+  <tabstop>decrease_hops_pushButton</tabstop>
+  <tabstop>determine_coordinates_pushButton</tabstop>
+  <tabstop>checkBox_extend_hops</tabstop>
+  <tabstop>adopt_validity_pushButton</tabstop>
+  <tabstop>HOPS_other_contact_spinBox</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>

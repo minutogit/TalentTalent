@@ -1,0 +1,1 @@
+from meta_info.meta_info import __version__, __title__

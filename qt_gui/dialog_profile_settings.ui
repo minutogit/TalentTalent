@@ -1,0 +1,434 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DialogProfileSettings</class>
+ <widget class="QDialog" name="DialogProfileSettings">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>620</width>
+    <height>431</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Profileinstellungen</string>
+  </property>
+  <widget class="QLabel" name="label_3">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>335</y>
+     <width>131</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Interessen / Hobbys</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_5">
+   <property name="geometry">
+    <rect>
+     <x>312</x>
+     <y>160</y>
+     <width>30</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Land</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="country_lineEdit">
+   <property name="geometry">
+    <rect>
+     <x>396</x>
+     <y>160</y>
+     <width>201</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_6">
+   <property name="geometry">
+    <rect>
+     <x>312</x>
+     <y>102</y>
+     <width>23</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>PLZ</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="zip_code_lineEdit">
+   <property name="geometry">
+    <rect>
+     <x>396</x>
+     <y>102</y>
+     <width>201</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="inputMethodHints">
+    <set>Qt::ImhDigitsOnly</set>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="clearButtonEnabled">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_7">
+   <property name="geometry">
+    <rect>
+     <x>312</x>
+     <y>131</y>
+     <width>20</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Ort</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="city_lineEdit">
+   <property name="geometry">
+    <rect>
+     <x>396</x>
+     <y>131</y>
+     <width>201</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_8">
+   <property name="geometry">
+    <rect>
+     <x>312</x>
+     <y>73</y>
+     <width>40</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Straße</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="street_lineEdit">
+   <property name="geometry">
+    <rect>
+     <x>396</x>
+     <y>73</y>
+     <width>201</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="interests_hobbies_lineEdit">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>355</y>
+     <width>581</width>
+     <height>23</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_9">
+   <property name="geometry">
+    <rect>
+     <x>310</x>
+     <y>193</y>
+     <width>81</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Koordinaten*</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="coordinates_lineEdit">
+   <property name="geometry">
+    <rect>
+     <x>410</x>
+     <y>193</y>
+     <width>101</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_16">
+   <property name="geometry">
+    <rect>
+     <x>28</x>
+     <y>196</y>
+     <width>81</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Aktionsradius</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="radius_of_activity_lineEdit">
+   <property name="geometry">
+    <rect>
+     <x>130</x>
+     <y>193</y>
+     <width>141</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QWidget" name="layoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>73</y>
+     <width>251</width>
+     <height>96</height>
+    </rect>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QLabel" name="label">
+      <property name="text">
+       <string>Rufname</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="name_lineEdit"/>
+    </item>
+    <item>
+     <widget class="QLabel" name="label_4">
+      <property name="text">
+       <string>Familienname</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="family_name_lineEdit"/>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="layoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>329</x>
+     <y>233</y>
+     <width>271</width>
+     <height>96</height>
+    </rect>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout_3">
+    <item>
+     <widget class="QLabel" name="label_10">
+      <property name="text">
+       <string>Internetseite</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="website_lineEdit">
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="label_13">
+      <property name="text">
+       <string>E-Mail*</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="email_lineEdit">
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="layoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>23</x>
+     <y>235</y>
+     <width>271</width>
+     <height>96</height>
+    </rect>
+   </property>
+   <layout class="QFormLayout" name="formLayout">
+    <item row="0" column="0">
+     <widget class="QLabel" name="label_12">
+      <property name="text">
+       <string>Unternehmen / Beruf</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <widget class="QLabel" name="label_11">
+      <property name="text">
+       <string>Telefon / Handy</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0" colspan="2">
+     <widget class="QLineEdit" name="company_profession_lineEdit">
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0" colspan="2">
+     <widget class="QLineEdit" name="phone_lineEdit">
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QPushButton" name="determine_coordinates_pushButton">
+   <property name="geometry">
+    <rect>
+     <x>520</x>
+     <y>193</y>
+     <width>80</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Ermitteln</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="status_label">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>413</y>
+     <width>461</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>status_label</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_2">
+   <property name="geometry">
+    <rect>
+     <x>510</x>
+     <y>413</y>
+     <width>101</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>*Wichtig</string>
+   </property>
+  </widget>
+  <widget class="QWidget" name="layoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>190</x>
+     <y>383</y>
+     <width>271</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <widget class="QPushButton" name="save_pushButton">
+      <property name="text">
+       <string>Speichern</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="close_pushButton">
+      <property name="text">
+       <string>Schließen</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QLineEdit" name="profile_name_lineEdit">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>30</y>
+     <width>251</width>
+     <height>23</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="Line" name="line">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>50</y>
+     <width>581</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_14">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>10</y>
+     <width>101</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Profil Name:</string>
+   </property>
+  </widget>
+ </widget>
+ <tabstops>
+  <tabstop>name_lineEdit</tabstop>
+  <tabstop>family_name_lineEdit</tabstop>
+  <tabstop>street_lineEdit</tabstop>
+  <tabstop>zip_code_lineEdit</tabstop>
+  <tabstop>city_lineEdit</tabstop>
+  <tabstop>country_lineEdit</tabstop>
+  <tabstop>coordinates_lineEdit</tabstop>
+  <tabstop>radius_of_activity_lineEdit</tabstop>
+  <tabstop>company_profession_lineEdit</tabstop>
+  <tabstop>phone_lineEdit</tabstop>
+  <tabstop>website_lineEdit</tabstop>
+  <tabstop>email_lineEdit</tabstop>
+  <tabstop>interests_hobbies_lineEdit</tabstop>
+  <tabstop>save_pushButton</tabstop>
+  <tabstop>close_pushButton</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>
