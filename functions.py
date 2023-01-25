@@ -1322,8 +1322,6 @@ class local_card_db:
             fp.close()
             os.remove(self.decrypted_db_filename)  # remove temp decrypted db
         self.close()
-    # end of local_card_db class
-
 
 def is_english_seed_word(word) -> bool:
     """check if a single word is an valid seed word"""

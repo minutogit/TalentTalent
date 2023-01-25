@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'main_window.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.4.1
+## Created by: Qt User Interface Compiler version 6.4.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -67,6 +67,8 @@ class Ui_MainWindow(object):
         self.actionHTML_Export.setObjectName(u"actionHTML_Export")
         self.actionEMail_to_friends = QAction(MainWindow)
         self.actionEMail_to_friends.setObjectName(u"actionEMail_to_friends")
+        self.action_mailinglist = QAction(MainWindow)
+        self.action_mailinglist.setObjectName(u"action_mailinglist")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.centralwidget.setEnabled(True)
@@ -167,11 +169,11 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menuExtended.menuAction())
         self.menuStart.addAction(self.actionAdd_BusinessCard)
         self.menuStart.addAction(self.actionExit)
-        self.menuStart.addAction(self.actiontest)
         self.menuExtended.addAction(self.action_generate_database_with_password)
         self.menuExtended.addAction(self.action_import_database_with_password)
         self.menuExtended.addAction(self.actionCleanDatabase)
         self.menuExtended.addAction(self.actionHTML_Export)
+        self.menuExtended.addAction(self.action_mailinglist)
         self.menuFriends.addAction(self.actionFriendshipList)
         self.menuFriends.addAction(self.actionAddFriendship)
         self.menuFriends.addAction(self.action_generate_database_for_friends)
@@ -213,6 +215,7 @@ class Ui_MainWindow(object):
         self.actionShowSeedWords.setText(QCoreApplication.translate("MainWindow", u"Schl\u00fcsselw\u00f6rter anzeigen", None))
         self.actionHTML_Export.setText(QCoreApplication.translate("MainWindow", u"HTML-Export", None))
         self.actionEMail_to_friends.setText(QCoreApplication.translate("MainWindow", u"E-Mail an Freunde", None))
+        self.action_mailinglist.setText(QCoreApplication.translate("MainWindow", u"E-Mail an Mailverteiler", None))
         self.comboBox_column_selection.setItemText(0, QCoreApplication.translate("MainWindow", u"Spalten", None))
 
 #if QT_CONFIG(tooltip)

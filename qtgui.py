@@ -245,6 +245,35 @@ class Dialog_Display_Content(QMainWindow, Ui_DialogDisplayContent):
         self.textBrowser.setHtml(htmlcode)
         self.show()
 
+    def email_to_mailing_list(self) -> None:
+        """
+        Shows a windows to easily send an e-mail to all cards where user wants to have an e-mail with the local installed email-app. For example to send
+        the latest entries of the database to friends.
+        :return:
+        """
+        self.reset_gui()
+        self.pushButton_edit.hide()
+        self.pushButton_delete_hide.hide()
+        self.checkBox_show_Details.hide()
+        self.setWindowTitle("E-Mail an Abonnenten vom E-Mail-Verteiler")
+
+
+        all_mail_adresses = "%2C".join(localdb.sql_list("SELECT DISTINCT mailing_list FROM local_card_info WHERE mailing_list != ''"))
+        my_mail_address = str(conf.PROFILE_SET_EMAIL)
+        mail_subject = "Rundmail"
+
+        # brief description
+        htmlcode = """<p>Klicke auf den Link um dein E-Mail Programm zu &ouml;ffnen, um eine Mail an alle 
+        Interessenten vom E-Mail-Verteiler zu senden..</p> """
+
+        # mail link
+        htmlcode += (f"""<p style="text-align: center;"><a href="mailto:{my_mail_address}?bcc={all_mail_adresses}""" +
+                    f"""&subject={mail_subject}"><strong>E-Mail an Interessenten vom Mail-Verteiler senden</strong></a></p>""")
+
+        self.textBrowser.setHtml(htmlcode)
+        self.show()
+
+
     def show_friend(self, pubkey_id, window_is_open=False):
         if not window_is_open:
             self.init_and_show()
@@ -1028,10 +1057,10 @@ class Dialog_Business_Card(QMainWindow, Ui_DialogBuisinessCard):
         mailinglist_mail = localdb.sql_list("SELECT mailing_list FROM local_card_info WHERE card_id = ?;", (card_id,))[0]
         dprint(mailinglist_mail)
         if functions.isValidEmail(mailinglist_mail):
-            dprint("is in mailinglist")
+            #dprint("is in mailinglist")
             self.checkBox_add_to_mailling_list.setChecked(True)
         else:
-            dprint("not in mailinglist")
+            #dprint("not in mailinglist")
             self.checkBox_add_to_mailling_list.setChecked(False)
 
             #self.checkBox_add_to_mailling_list.set
@@ -1609,6 +1638,7 @@ class Frm_Mainwin(QMainWindow, Ui_MainWindow):
         self.lineEdit_filter.textChanged.connect(self.update_table_view)
         self.comboBox_filter.currentIndexChanged.connect(self.update_table_view)
         self.tableView.doubleClicked.connect(self.table_click)
+        self.action_mailinglist.triggered.connect(dialog_display_content.email_to_mailing_list)
 
         self.comboBox_column_selection.currentIndexChanged.connect(self.column_selected)
 

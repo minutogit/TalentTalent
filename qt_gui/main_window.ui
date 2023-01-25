@@ -154,7 +154,6 @@
     </property>
     <addaction name="actionAdd_BusinessCard"/>
     <addaction name="actionExit"/>
-    <addaction name="actiontest"/>
    </widget>
    <widget class="QMenu" name="menuExtended">
     <property name="title">
@@ -164,6 +163,7 @@
     <addaction name="action_import_database_with_password"/>
     <addaction name="actionCleanDatabase"/>
     <addaction name="actionHTML_Export"/>
+    <addaction name="action_mailinglist"/>
    </widget>
    <widget class="QMenu" name="menuFriends">
     <property name="title">
@@ -292,6 +292,11 @@
   <action name="actionEMail_to_friends">
    <property name="text">
     <string>E-Mail an Freunde</string>
+   </property>
+  </action>
+  <action name="action_mailinglist">
+   <property name="text">
+    <string>E-Mail an Mailverteiler</string>
    </property>
   </action>
  </widget>

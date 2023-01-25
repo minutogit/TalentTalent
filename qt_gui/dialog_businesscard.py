@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'dialog_businesscard.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.4.1
+## Created by: Qt User Interface Compiler version 6.4.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -349,7 +349,9 @@ class Ui_DialogBuisinessCard(object):
         QWidget.setTabOrder(self.company_profession_lineEdit, self.phone_lineEdit)
         QWidget.setTabOrder(self.phone_lineEdit, self.website_lineEdit)
         QWidget.setTabOrder(self.website_lineEdit, self.email_lineEdit)
-        QWidget.setTabOrder(self.email_lineEdit, self.interests_hobbies_lineEdit)
+        QWidget.setTabOrder(self.email_lineEdit, self.checkBox_add_to_mailling_list)
+        QWidget.setTabOrder(self.checkBox_add_to_mailling_list, self.other_contact_lineEdit)
+        QWidget.setTabOrder(self.other_contact_lineEdit, self.interests_hobbies_lineEdit)
         QWidget.setTabOrder(self.interests_hobbies_lineEdit, self.skills_offers_textEdit)
         QWidget.setTabOrder(self.skills_offers_textEdit, self.requests_textEdit)
         QWidget.setTabOrder(self.requests_textEdit, self.tags_lineEdit)
@@ -374,6 +376,12 @@ class Ui_DialogBuisinessCard(object):
         QWidget.setTabOrder(self.save_pushButton, self.close_pushButton)
         QWidget.setTabOrder(self.close_pushButton, self.image_graphicsView)
         QWidget.setTabOrder(self.image_graphicsView, self.month_valid_spinBox)
+        QWidget.setTabOrder(self.month_valid_spinBox, self.increase_hops_pushButton)
+        QWidget.setTabOrder(self.increase_hops_pushButton, self.decrease_hops_pushButton)
+        QWidget.setTabOrder(self.decrease_hops_pushButton, self.determine_coordinates_pushButton)
+        QWidget.setTabOrder(self.determine_coordinates_pushButton, self.checkBox_extend_hops)
+        QWidget.setTabOrder(self.checkBox_extend_hops, self.adopt_validity_pushButton)
+        QWidget.setTabOrder(self.adopt_validity_pushButton, self.HOPS_other_contact_spinBox)
 
         self.retranslateUi(DialogBuisinessCard)
 
