@@ -17,9 +17,6 @@ from functions import dprint
 # opencv-python  - remove
 
 class profiles_management():
-    # todo läd eine liste von rsa ID, digitale ID aus public Key
-    # todo generiert ID bei Bedarf
-    # eine digitale ID = ein Profil
     def __init__(self):
         self.user_pw = ""
         self.user_pw_salt = ""
@@ -62,8 +59,6 @@ class CryptoClass:
         rsa_seed_words = ""  # seed words to derive rsa key, temporary used to generate rsa_key_pair
         rsa_key_pair = None  # rsa keypair derived from private key
 
-        # fixme after first start without restart rsa_key_pairs_id ist not set, error when import after creation of profile
-        # reproduce bug - create new profile and instantly try to import new cards
         rsa_key_pair_id = None  # rsa keypair id (derived from public key, same as profile id)
         profile_exist = False  # store if profile file exists
         profile_is_initialized = False  # set to True when when Profile correct initialized with user-password

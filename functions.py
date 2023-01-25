@@ -464,12 +464,14 @@ class local_card_db:
         :return: sql-commands for the update of the datacards
         """
 
-        # todo not important - adjust datacard that lists is not needed (some functions like special hash have to be adjusted)
+
+        # newsalts = ""
+        # for salt in datacard['dc_dynamic_head']['salts']:
+        #     newsalts += f"{str(salt)},"
+        # datacard['dc_dynamic_head']['salts'] = newsalts[:-1]
+
         # convert salts back from list to comma separated string
-        newsalts = ""
-        for salt in datacard['dc_dynamic_head']['salts']:
-            newsalts += f"{str(salt)},"
-        datacard['dc_dynamic_head']['salts'] = newsalts[:-1]
+        datacard['dc_dynamic_head']['salts'] = ','.join(str(salt) for salt in datacard['dc_dynamic_head']['salts'])
 
         commands = []
         for tablename in datacard.keys():
@@ -859,7 +861,6 @@ class local_card_db:
         :return: True when cleaing was susccessful, False when system time was wrong or could checked
         """
         print("clean database")
-        # todo  - fehlerhafte cards welche in der zukunft edited wurden (falsche system zeit und andere mögliche fehler)
 
         # this time check routine will stop (return) and gui will ask user if system time is correct,
         # to reduce possibility of mass delete cards from database when system time is to much in the future

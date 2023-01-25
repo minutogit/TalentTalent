@@ -167,7 +167,7 @@ def generate_html_table(input_dict, type = "", filter_empty = True, extra_table_
         even_row = False
 
     for key, value in input_dict.items():
-        dprint(f"keyval='{key}'=''{value}")
+        #dprint(f"keyval='{key}'=''{value}")
         if filter_empty and value == "":  # remove empty values from table
             continue
         val = str(value).replace("&", "&amp;")

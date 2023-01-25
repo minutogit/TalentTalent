@@ -1219,11 +1219,11 @@ class Dialog_Business_Card(QMainWindow, Ui_DialogBuisinessCard):
         # insert / remove mail to mailing list table
         email_address = self.email_lineEdit.text().strip()
         if self.checkBox_add_to_mailling_list.isChecked() and functions.isValidEmail(email_address):
-            dprint("add to mailinglist", email_address)
+            #dprint("add to mailinglist", email_address)
             localdb.sql(f"UPDATE local_card_info SET mailing_list = ? WHERE card_id = ?;"
                         ,(email_address, card_id))
         if not self.checkBox_add_to_mailling_list.isChecked():
-            dprint("remove from mailinglist", email_address)
+            #dprint("remove from mailinglist", email_address)
             localdb.sql(f"UPDATE local_card_info SET mailing_list = '' WHERE card_id = ?;", (card_id,))
             if functions.isValidEmail(email_address): # maybe also other cards contains the same e-mail, also remove
                 localdb.sql(f"UPDATE local_card_info SET mailing_list = '' WHERE mailing_list = ?;", (email_address,))
