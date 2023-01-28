@@ -30,6 +30,21 @@ def dprint(*args):
     _, filename = os.path.split(frame[1])
     print (f"{filename}:{frame[2]}", *args)
 
+def parse_mail_text(text: str) -> dict:
+    """
+    parse the mail text from the webform for import
+    """
+    content_elements = re.findall(r"<[a-z_]+>", text) # find all content_elements
+    elements = [i for n, i in enumerate(content_elements) if i not in content_elements[:n]] # remove duplicates an keep order
+    content_dict = {}
+    for el in elements:
+        occur =[m.start() for m in re.finditer(el, text)]
+        if len(occur) != 2: # element must occur 2 times, else there is an error
+            continue
+        elementtext = text[(occur[0] + len(el)):occur[1]].replace('/>','>') # in php > is escape by /
+        content_dict[el[1:-1]] = elementtext
+    return content_dict
+
 def adapt_dist(string, length = 6):
     """takes the dist and adds whitespace and unit. needed for sorting in gui table that uknown distance is at the end"""
     if len(string) == 0:

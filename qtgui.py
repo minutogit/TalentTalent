@@ -263,8 +263,8 @@ class Dialog_Display_Content(QMainWindow, Ui_DialogDisplayContent):
         mail_subject = "Rundmail"
 
         # brief description
-        htmlcode = """<p>Klicke auf den Link um dein E-Mail Programm zu &ouml;ffnen, um eine Mail an alle 
-        Interessenten vom E-Mail-Verteiler zu senden..</p> """
+        htmlcode = """<p>Klicke auf den Link, um eine Mail an alle 
+        Interessenten vom E-Mail-Verteiler zu senden.</p> """
 
         # mail link
         htmlcode += (f"""<p style="text-align: center;"><a href="mailto:{my_mail_address}?bcc={all_mail_adresses}""" +

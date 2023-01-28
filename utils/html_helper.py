@@ -345,7 +345,6 @@ def data_card_to_html(data_card_dict, show_details, type="", filter = False, ful
         htmlcode += '<hr width=”100%”\n>'
         htmlcode += generate_html_table(card_details, type='card_details', extra_colums=True)
 
-    #print(htmlcode)
     if full_html:
         htmlcode += "</body>\n</html>\n" #insert end of html
     return htmlcode
