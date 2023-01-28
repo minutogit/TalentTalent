@@ -3,6 +3,7 @@ import re
 from datetime import datetime, timedelta
 import logging, os
 from PySide6.QtCore import QTimer, QSortFilterProxyModel, QTranslator
+from PySide6.QtGui import QTextOption
 from PySide6.QtWidgets import QApplication, QMainWindow, \
     QMessageBox, QFileDialog
 from PySide6 import QtSql, QtGui   #Qt.CaseInsensitive  # , Qt
@@ -21,6 +22,7 @@ from qt_gui.dialog_restore_profile import Ui_DialogRestoreProfile
 from qt_gui.dialog_profile_create_selection import Ui_Dialog_Profile_Create_Selection
 from qt_gui.dialog_display_content import Ui_DialogDisplayContent
 from qt_gui.dialog_profile_settings import Ui_DialogProfileSettings
+from qt_gui.dialog_mail_import import Ui_DialogMailImport
 
 from functions import dprint
 from meta_info import __version__, __title__
@@ -74,6 +76,21 @@ def get_coordinates(self, searched_location):
         show_message_box("Fehler",
                          f"Koordinaten für: {searched_location}\n konnten nicht ermittelt werden.\n\nInternet verfügbar? Openstreetmaps offline?")
         return ""
+
+class Dialog_Mail_Import(QMainWindow,Ui_DialogMailImport):
+    def __init__(self):
+        super().__init__()
+        self.setupUi(self)
+        self.textEdit_mail_text.setWordWrapMode(QTextOption.WordWrap)
+        self.pushButton_import.clicked.connect(self.import_mail_text)
+
+    def import_mail_text(self):
+        data_dict = functions.parse_mail_text(self.textEdit_mail_text.toPlainText())
+        #print(data_dict)
+        # todo catch when empty ect.
+        dialog_business_card.open_mail_import(data_dict)
+        self.close()
+
 
 class Dialog_Profile_Settings(QMainWindow, Ui_DialogProfileSettings):
     def __init__(self):
@@ -1067,6 +1084,54 @@ class Dialog_Business_Card(QMainWindow, Ui_DialogBuisinessCard):
 
 
         self.show()
+        
+    def open_mail_import(self, card_data, opened_from_content_display = False):
+        # print(self.checkBox_extend_hops.isChecked())
+        dprint("mail-import")
+        self.set_defaults_businesscard_window()
+        self.opened_from_content_display = opened_from_content_display # need to reload content display on close
+        #self.current_card_id = card_id
+        self.setWindowTitle(f"Visitenkarte  ID: {self.current_card_id[:8]}")
+        #local_creator_id = crypt.Profile.rsa_key_pair_id
+
+        self.adopt_validity_pushButton.show()
+        self.month_valid_spinBox.hide()
+        self.month_valid_label.hide()
+        self.valid_until_label.show()
+        self.adopt_validity_pushButton.setText("Gültigkeit ändern")
+
+        dprint(card_data)
+        #valid_until = datetime.strptime(valid_until, "%Y-%m-%d %H:%M:%S")
+
+        #self.valid_until_label.setText(f"""Gültig bis {valid_until.strftime("%d.%m.%Y")}""")
+
+
+        self.name_lineEdit.setText(card_data['name'])
+        dprint("hier1")
+        self.family_name_lineEdit.setText(card_data['family_name'])
+        self.radius_of_activity_lineEdit.setText(card_data['radius_of_activity'])
+        self.street_lineEdit.setText(card_data['street'])
+        self.zip_code_lineEdit.setText(card_data['zip_code'])
+        self.city_lineEdit.setText(card_data['city'])
+        self.country_lineEdit.setText(card_data['country'])
+        #self.coordinates_lineEdit.setText(card_data['coordinates'])
+        self.other_contact_lineEdit.setText(card_data['other_contact'])
+        dprint("hier2")
+        self.company_profession_lineEdit.setText(card_data['company_profession'])
+        self.phone_lineEdit.setText(card_data['phone'])
+        self.website_lineEdit.setText(card_data['website'])
+        self.email_lineEdit.setText(card_data['email'])
+        self.interests_hobbies_lineEdit.setText(card_data['interests_hobbies'])
+        self.skills_offers_textEdit.setText(card_data['skills_offers'])
+        dprint("hier3")
+        self.requests_textEdit.setText(card_data['requests'])
+        self.tags_lineEdit.setText(card_data['tags'])
+        
+
+        self.label_range.setText(f"Reichweite: {max(self.hop_list())}")  # update view of max hops
+        self.checkBox_add_to_mailling_list.setChecked(True)
+        dprint("show")
+        self.show()
 
     def save_business_card(self):
         self.reload_table_view = True  # to reload the list of cards when the window is closed
@@ -1639,6 +1704,7 @@ class Frm_Mainwin(QMainWindow, Ui_MainWindow):
         self.comboBox_filter.currentIndexChanged.connect(self.update_table_view)
         self.tableView.doubleClicked.connect(self.table_click)
         self.action_mailinglist.triggered.connect(dialog_display_content.email_to_mailing_list)
+        self.action_mail_import.triggered.connect(dialog_mail_import.show)
 
         self.comboBox_column_selection.currentIndexChanged.connect(self.column_selected)
 
@@ -2246,6 +2312,7 @@ translator = QTranslator()
 translator.load("talent_de.qm", "translations")
 app.installTranslator(translator)
 
+dialog_mail_import = Dialog_Mail_Import()
 dialog_generate_profile = Dialog_Generate_Profile()
 dialog_restore_profile = Dialog_Restore_Profile()
 dialog_new_password = Dialog_New_Password()

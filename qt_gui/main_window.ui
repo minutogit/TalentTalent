@@ -164,6 +164,7 @@
     <addaction name="actionCleanDatabase"/>
     <addaction name="actionHTML_Export"/>
     <addaction name="action_mailinglist"/>
+    <addaction name="action_mail_import"/>
    </widget>
    <widget class="QMenu" name="menuFriends">
     <property name="title">
@@ -297,6 +298,11 @@
   <action name="action_mailinglist">
    <property name="text">
     <string>E-Mail an Mailverteiler</string>
+   </property>
+  </action>
+  <action name="action_mail_import">
+   <property name="text">
+    <string>Visitenkarte E-Mail Import</string>
    </property>
   </action>
  </widget>

@@ -35,7 +35,7 @@ def parse_mail_text(text: str) -> dict:
     parse the mail text from the webform for import
     """
     content_elements = re.findall(r"<[a-z_]+>", text) # find all content_elements
-    elements = [i for n, i in enumerate(content_elements) if i not in content_elements[:n]] # remove duplicates an keep order
+    elements = [i for n, i in enumerate(content_elements) if i not in content_elements[:n]] # remove duplicates & keep order
     content_dict = {}
     for el in elements:
         occur =[m.start() for m in re.finditer(el, text)]
