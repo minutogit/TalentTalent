@@ -81,11 +81,17 @@ class Dialog_Mail_Import(QMainWindow,Ui_DialogMailImport):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
-        self.textEdit_mail_text.setWordWrapMode(QTextOption.WordWrap)
         self.pushButton_import.clicked.connect(self.import_mail_text)
+
+    def init_and_show(self):
+        self.textEdit_mail_text.setText("")
+        self.show()
 
     def import_mail_text(self):
         data_dict = functions.parse_mail_text(self.textEdit_mail_text.toPlainText())
+        if not isinstance(data_dict, dict):
+            show_message_box("Import fehlgeschlagen", f"Import nicht erfolgreich. Mailtext vollständig eingefügt?\n{data_dict}")
+            return
         #print(data_dict)
         # todo catch when empty ect.
         dialog_business_card.open_mail_import(data_dict)
@@ -1090,24 +1096,10 @@ class Dialog_Business_Card(QMainWindow, Ui_DialogBuisinessCard):
         dprint("mail-import")
         self.set_defaults_businesscard_window()
         self.opened_from_content_display = opened_from_content_display # need to reload content display on close
-        #self.current_card_id = card_id
         self.setWindowTitle(f"Visitenkarte  ID: {self.current_card_id[:8]}")
-        #local_creator_id = crypt.Profile.rsa_key_pair_id
-
-        self.adopt_validity_pushButton.show()
-        self.month_valid_spinBox.hide()
-        self.month_valid_label.hide()
-        self.valid_until_label.show()
-        self.adopt_validity_pushButton.setText("Gültigkeit ändern")
-
-        dprint(card_data)
-        #valid_until = datetime.strptime(valid_until, "%Y-%m-%d %H:%M:%S")
-
-        #self.valid_until_label.setText(f"""Gültig bis {valid_until.strftime("%d.%m.%Y")}""")
-
+        #dprint(card_data)
 
         self.name_lineEdit.setText(card_data['name'])
-        dprint("hier1")
         self.family_name_lineEdit.setText(card_data['family_name'])
         self.radius_of_activity_lineEdit.setText(card_data['radius_of_activity'])
         self.street_lineEdit.setText(card_data['street'])
@@ -1116,21 +1108,18 @@ class Dialog_Business_Card(QMainWindow, Ui_DialogBuisinessCard):
         self.country_lineEdit.setText(card_data['country'])
         #self.coordinates_lineEdit.setText(card_data['coordinates'])
         self.other_contact_lineEdit.setText(card_data['other_contact'])
-        dprint("hier2")
         self.company_profession_lineEdit.setText(card_data['company_profession'])
         self.phone_lineEdit.setText(card_data['phone'])
         self.website_lineEdit.setText(card_data['website'])
         self.email_lineEdit.setText(card_data['email'])
         self.interests_hobbies_lineEdit.setText(card_data['interests_hobbies'])
         self.skills_offers_textEdit.setText(card_data['skills_offers'])
-        dprint("hier3")
         self.requests_textEdit.setText(card_data['requests'])
         self.tags_lineEdit.setText(card_data['tags'])
         
 
         self.label_range.setText(f"Reichweite: {max(self.hop_list())}")  # update view of max hops
         self.checkBox_add_to_mailling_list.setChecked(True)
-        dprint("show")
         self.show()
 
     def save_business_card(self):
@@ -1704,7 +1693,7 @@ class Frm_Mainwin(QMainWindow, Ui_MainWindow):
         self.comboBox_filter.currentIndexChanged.connect(self.update_table_view)
         self.tableView.doubleClicked.connect(self.table_click)
         self.action_mailinglist.triggered.connect(dialog_display_content.email_to_mailing_list)
-        self.action_mail_import.triggered.connect(dialog_mail_import.show)
+        self.action_mail_import.triggered.connect(dialog_mail_import.init_and_show)
 
         self.comboBox_column_selection.currentIndexChanged.connect(self.column_selected)
 

@@ -34,9 +34,22 @@ def parse_mail_text(text: str) -> dict:
     """
     parse the mail text from the webform for import
     """
+    occur = [m.start() for m in re.finditer('<card_type>', text)]
+    if len(occur) != 2:  # element must occur 2 times, else there is an error
+        return "<card_type> nicht gefunden"# card type not found
+    card_type = text[(occur[0] + len('<card_type>')):occur[1]].replace('/>', '>')  # in php > is escape by /
+    #dprint("card_type=", card_type)
+    if not card_type == 'business_card':
+        return f"Unbekannter card_type: {card_type}" # if not business_card exit
+
+    content_dict = {'card_type': '', 'name': '', 'family_name': '', 'street': '', 'zip_code': '', 'city': '',
+                    'country': '', 'radius_of_activity': '', 'company_profession': '', 'phone': '', 'website': '',
+                    'email': '', 'other_contact': '', 'interests_hobbies': '', 'skills_offers': '', 'requests': '',
+                    'tags': ''}
+
     content_elements = re.findall(r"<[a-z_]+>", text) # find all content_elements
     elements = [i for n, i in enumerate(content_elements) if i not in content_elements[:n]] # remove duplicates & keep order
-    content_dict = {}
+
     for el in elements:
         occur =[m.start() for m in re.finditer(el, text)]
         if len(occur) != 2: # element must occur 2 times, else there is an error
