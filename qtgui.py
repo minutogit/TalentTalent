@@ -129,7 +129,7 @@ class Dialog_Profile_Settings(QMainWindow, Ui_DialogProfileSettings):
         self.show()
         
     def save_settings(self):
-        dprint(f"'{str(conf.PROFILE_SET_COORDINATES)}' - '{self.coordinates_lineEdit.text()}'")
+        #dprint(f"'{str(conf.PROFILE_SET_COORDINATES)}' - '{self.coordinates_lineEdit.text()}'")
         new_local_coordinate = (conf.PROFILE_SET_COORDINATES != self.coordinates_lineEdit.text())
 
         conf.PROFILE_SET_PROFILE_NAME = self.profile_name_lineEdit.text()
@@ -1076,17 +1076,14 @@ class Dialog_Business_Card(QMainWindow, Ui_DialogBuisinessCard):
         self.label_range.setText(f"Reichweite: {max(self.hop_list())}")  # update view of max hops
 
         mailinglist_mail = localdb.sql_list("SELECT mailing_list FROM local_card_info WHERE card_id = ?;", (card_id,))[0]
-        dprint(mailinglist_mail)
+        #dprint(mailinglist_mail)
         if functions.isValidEmail(mailinglist_mail):
             #dprint("is in mailinglist")
             self.checkBox_add_to_mailling_list.setChecked(True)
         else:
             #dprint("not in mailinglist")
             self.checkBox_add_to_mailling_list.setChecked(False)
-
             #self.checkBox_add_to_mailling_list.set
-
-
         self.show()
         
     def open_mail_import(self, card_data, opened_from_content_display = False):

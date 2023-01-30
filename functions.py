@@ -1280,7 +1280,7 @@ class local_card_db:
                 continue # pubkeys has no coordinates
             [coordinate] = self.sql(f"""SELECT coordinates FROM {type} WHERE card_id = '{card_id}'""")[0]
             distance = geo_distance(f"{coordinate};{local_coordinate}")
-            dprint(card_id, type, coordinate, distance, adapt_dist(distance))
+            #dprint(card_id, type, coordinate, distance, adapt_dist(distance))
             self.sql(f"""UPDATE local_card_info SET distance = ? WHERE card_id = ?; """, (adapt_dist(distance), card_id))
 
     def close(self):

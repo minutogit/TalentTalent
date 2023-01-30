@@ -2,7 +2,7 @@
 # expression
 import html, re
 from functions import format_date_string, geo_distance, dprint
-import html2text
+#import html2text
 
 
 def complete_url(url):
@@ -80,10 +80,13 @@ html_export_head = """<!DOCTYPE html>
         <style>
         th, td {
           padding: 2px;
-        }
-        table, th, td {
           border: 1px solid black;
+          border-radius: 8px;
+        }
+        table{
+           border: 1px solid black;
            border-radius: 8px;
+           width: 100%;
         }
         </style>\n 
     </head>
@@ -240,19 +243,19 @@ def generate_html_export_table(input_dict, type = "", filter_empty = True):
 
 
     #calculate width of first column depending on contents len of both columns (use the space more efficiently)
-    textonly = html2text.HTML2Text()
-    textonly.ignore_links = True
-    len_left_text = len(textonly.handle(column_left))
-    len_right_text = len(textonly.handle(column_right))
+    #textonly = html2text.HTML2Text()
+    #textonly.ignore_links = True
+    #len_left_text = len(textonly.handle(column_left))
+    #len_right_text = len(textonly.handle(column_right))
     #widht shoud be min 20% and max 50%
-    first_col_width = max(min(int(round((len_left_text * 100) / (len_left_text + len_right_text), 0)), 50), 20)
+    #first_col_width = max(min(int(round((len_left_text * 100) / (len_left_text + len_right_text), 0)), 50), 20)
 
     #dprint(len_left_text, len_right_text, first_col_widh)
 
 
-    htmlcode += '<table style="width:100%">\n'
+    htmlcode += '<table>\n'
     htmlcode += '<tr>\n'
-    htmlcode += f'  <td style="width:{first_col_width}%">{column_left}</td>\n'
+    htmlcode += f'  <td>{column_left}</td>\n'
     htmlcode += f'  <td>{column_right}</td>\n'
     htmlcode += '</tr>\n'
     htmlcode += '</table>\n'
