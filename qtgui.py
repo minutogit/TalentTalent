@@ -92,8 +92,6 @@ class Dialog_Mail_Import(QMainWindow,Ui_DialogMailImport):
         if not isinstance(data_dict, dict):
             show_message_box("Import fehlgeschlagen", f"Import nicht erfolgreich. Mailtext vollständig eingefügt?\n{data_dict}")
             return
-        #print(data_dict)
-        # todo catch when empty ect.
         dialog_business_card.open_mail_import(data_dict)
         self.close()
 
@@ -2298,7 +2296,8 @@ app = QApplication()
 
 # prepared translation possibility
 translator = QTranslator()
-translator.load("talent_de.qm", "translations")
+# language file needs to be added in pyinstaller (or spec file for pyinstaller)
+translator.load("talent_de.qm", functions.resource_path("translations"))
 app.installTranslator(translator)
 
 dialog_mail_import = Dialog_Mail_Import()

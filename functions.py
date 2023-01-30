@@ -3,6 +3,7 @@ import ast
 import calendar
 import inspect
 import random
+import sys
 import zlib
 from math import sqrt
 import binascii
@@ -64,6 +65,17 @@ def adapt_dist(string, length = 6):
         return " ?"
     spaces = ' ' * (length - len(string))
     return spaces + string + ' km'
+
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
 
 def get_coordinates(location):
     """ Determines the coordinates for a searched location with the help of openstreetmaps

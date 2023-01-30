@@ -337,7 +337,7 @@ def data_card_to_html(data_card_dict, show_details, type="", filter = False, ful
 
     #try to group keys to on key with more content
     content_dict = group_dict_keys(content_dict, grouping)
-    dprint(content_dict)
+    #dprint(content_dict)
     #generate table
 
     htmlcode += generate_html_table(content_dict, type=type, extra_table_keys=extra_table_keys,filter_empty=filter_empty)
