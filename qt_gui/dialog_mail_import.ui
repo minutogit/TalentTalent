@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DialogMailImport</class>
+ <widget class="QWidget" name="DialogMailImport">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>630</width>
+    <height>408</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>E-Mail Import</string>
+  </property>
+  <widget class="QWidget" name="">
+   <property name="geometry">
+    <rect>
+     <x>9</x>
+     <y>9</y>
+     <width>611</width>
+     <height>391</height>
+    </rect>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QLabel" name="label_description">
+      <property name="text">
+       <string>E-Mail Text vom Webformular zum sammeln Einträgen hier einfügen und importieren.</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QTextEdit" name="textEdit_mail_text">
+      <property name="lineWrapColumnOrWidth">
+       <number>0</number>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="pushButton_import">
+      <property name="text">
+       <string>Importieren</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
