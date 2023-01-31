@@ -23,6 +23,7 @@ from qt_gui.dialog_profile_create_selection import Ui_Dialog_Profile_Create_Sele
 from qt_gui.dialog_display_content import Ui_DialogDisplayContent
 from qt_gui.dialog_profile_settings import Ui_DialogProfileSettings
 from qt_gui.dialog_mail_import import Ui_DialogMailImport
+from qt_gui.dialog_html_export import Ui_DialogHtmlExport
 
 from functions import dprint
 from meta_info import __version__, __title__
@@ -76,6 +77,81 @@ def get_coordinates(self, searched_location):
         show_message_box("Fehler",
                          f"Koordinaten für: {searched_location}\n konnten nicht ermittelt werden.\n\nInternet verfügbar? Openstreetmaps offline?")
         return ""
+
+class Dialog_HTML_Export(QMainWindow, Ui_DialogHtmlExport):
+    def __init__(self):
+        super().__init__()
+        self.setupUi(self)
+        self.set_own_location()
+        self.pushButton_html_export.clicked.connect(self.html_export)
+        self.pushButton_set_own_location.clicked.connect(self.set_own_location)
+        self.determine_coordinates_pushButton.clicked.connect(self.get_coordinates)
+        # todo filter columns and filter max distance
+
+    def init_and_show(self):
+        self.show()
+
+    def get_coordinates(self):
+        coordinates = get_coordinates(self, f"{self.street_lineEdit.text()} {self.zip_code_lineEdit.text()} {self.city_lineEdit.text()} {self.country_lineEdit.text()}")
+        if coordinates != "":
+            self.coordinates_lineEdit.setText(str(coordinates))
+
+    def set_own_location(self):
+        """sets own location from profile settings as place from where the distances of the export is calculated"""
+        self.street_lineEdit.setText(conf.PROFILE_SET_STREET)
+        self.zip_code_lineEdit.setText(conf.PROFILE_SET_ZIP_CODE)
+        self.city_lineEdit.setText(conf.PROFILE_SET_CITY)
+        self.country_lineEdit.setText(conf.PROFILE_SET_COUNTRY)
+        self.coordinates_lineEdit.setText(conf.PROFILE_SET_COORDINATES)
+
+
+    def html_export(self):
+        """export all cards to html for printing to paper"""
+        export_filename = str(QFileDialog.getSaveFileName(self, 'HTML speichern',
+                                                          os.path.join(os.getcwd(), conf.EXPORT_FOLDER,
+                                                                       f"Angebote.html"),
+                                                          filter="*.html")[0])
+        if export_filename == "": # if no file selected return
+            return
+        if not export_filename.endswith('.html'):
+            export_filename = export_filename.split(".")[0] + ".html"
+
+        current_time = str(datetime.now().replace(microsecond=0))
+        current_date = str(datetime.now().strftime('%d.%m.%Y'))
+
+        # get all needed cards
+        card_ids = localdb.sql_list(f"""SELECT card_id FROM dc_head WHERE 
+                deleted = False AND type != 'publickeys'  AND valid_until > '{current_time}' """)
+        all_cards = [localdb.convert_db_to_dict(card_id, add_hops_info=False) for card_id in card_ids]
+
+        #prepare data for sorting with distance (distance between 2 coordinates)
+        for data_card in all_cards:
+            data_card['data']['coordinates'] += f";{self.coordinates_lineEdit.text()}"
+
+        # remove hidden datacards
+        hidden_cards = localdb.sql_list("SELECT card_id FROM local_card_info WHERE hidden = True;")
+        all_cards = [data_card for data_card in all_cards if not (data_card['dc_head']['card_id'] in hidden_cards)]
+
+        # sort list - short distance first
+        if functions.isValidCoordinate(conf.PROFILE_SET_COORDINATES):
+            all_cards = sorted(all_cards, key=lambda k: functions.geo_distance(k['data']['coordinates'], False))
+
+        html = html_export_head
+        number_of_entrys = len(all_cards)
+        infohead = {'number_of_entrys': number_of_entrys, 'zip_code': self.zip_code_lineEdit.text(),
+                    'city': self.city_lineEdit.text(), 'coordinates': self.coordinates_lineEdit.text(),
+                    'current_date': current_date}
+
+        html += utils.generate_html_export_infohead(infohead)
+        for data_card in all_cards:
+            opened_type = data_card['dc_head']['type']
+            html += data_card_html_export(data_card, type=opened_type, filter=True,
+                                     filter_empty=True, grouping="business_card")
+
+        html += "</body>\n</html>\n" #insert end of html
+        html_file = open(export_filename, "w")
+        html_file.write(html)
+        html_file.close()
 
 class Dialog_Mail_Import(QMainWindow,Ui_DialogMailImport):
     def __init__(self):
@@ -1679,7 +1755,7 @@ class Frm_Mainwin(QMainWindow, Ui_MainWindow):
         self.action_import_database_with_password.triggered.connect(self.import_database_with_password)
         self.action_generate_database_for_friends.triggered.connect(self.export_database)
         self.action_generate_database_with_password.triggered.connect(self.export_database_with_password)
-        self.actionHTML_Export.triggered.connect(self.html_export)
+        self.actionHTML_Export.triggered.connect(dialog_html_export.init_and_show)
 
         # other actions
         self.actionCleanDatabase.triggered.connect(self.clean_database)
@@ -1748,53 +1824,7 @@ class Frm_Mainwin(QMainWindow, Ui_MainWindow):
         self.log_out()
         self.close()
 
-    def html_export(self):
-        """export all cards to html for printing to paper"""
-        export_filename = str(QFileDialog.getSaveFileName(self, 'HTML speichern',
-                                                          os.path.join(os.getcwd(), conf.EXPORT_FOLDER,
-                                                                       f"Angebote.html"),
-                                                          filter="*.html")[0])
-        if export_filename == "": # if no file selected return
-            return
-        if not export_filename.endswith('.html'):
-            export_filename = export_filename.split(".")[0] + ".html"
 
-        current_time = str(datetime.now().replace(microsecond=0))
-        current_date = str(datetime.now().strftime('%d.%m.%Y'))
-
-        # get all needed cards
-        card_ids = localdb.sql_list(f"""SELECT card_id FROM dc_head WHERE 
-                deleted = False AND type != 'publickeys'  AND valid_until > '{current_time}' """)
-        all_cards = [localdb.convert_db_to_dict(card_id, add_hops_info=False) for card_id in card_ids]
-
-        #prepare data for sorting with distance (distance between 2 coordinates)
-        for data_card in all_cards:
-            data_card['data']['coordinates'] += f";{conf.PROFILE_SET_COORDINATES}"
-
-        # remove hidden datacards
-        hidden_cards = localdb.sql_list("SELECT card_id FROM local_card_info WHERE hidden = True;")
-        all_cards = [data_card for data_card in all_cards if not (data_card['dc_head']['card_id'] in hidden_cards)]
-
-        # sort list - short distance first
-        if functions.isValidCoordinate(conf.PROFILE_SET_COORDINATES):
-            all_cards = sorted(all_cards, key=lambda k: functions.geo_distance(k['data']['coordinates'], False))
-
-        html = html_export_head
-        number_of_entrys = len(all_cards)
-        infohead = {'number_of_entrys': number_of_entrys, 'zip_code': conf.PROFILE_SET_ZIP_CODE,
-                    'city': conf.PROFILE_SET_CITY, 'coordinates': conf.PROFILE_SET_COORDINATES,
-                    'current_date': current_date}
-
-        html += utils.generate_html_export_infohead(infohead)
-        for data_card in all_cards:
-            opened_type = data_card['dc_head']['type']
-            html += data_card_html_export(data_card, type=opened_type, filter=True,
-                                     filter_empty=True, grouping="business_card")
-
-        html += "</body>\n</html>\n" #insert end of html
-        html_file = open(export_filename, "w")
-        html_file.write(html)
-        html_file.close()
 
 
     def clean_database(self):
@@ -2297,6 +2327,7 @@ translator = QTranslator()
 translator.load("talent_de.qm", functions.resource_path("translations"))
 app.installTranslator(translator)
 
+dialog_html_export = Dialog_HTML_Export()
 dialog_mail_import = Dialog_Mail_Import()
 dialog_generate_profile = Dialog_Generate_Profile()
 dialog_restore_profile = Dialog_Restore_Profile()
