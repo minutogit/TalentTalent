@@ -28,7 +28,7 @@ from qt_gui.dialog_html_export import Ui_DialogHtmlExport
 from functions import dprint
 from meta_info import __version__, __title__
 import functions, cryptfunctions
-from utils import data_card_to_html, friend_data_to_html, html_export_head, data_card_html_export
+from utils import data_card_to_html, friend_data_to_html, html_export_head, data_card_html_export, key_to_text
 import utils
 
 
@@ -82,14 +82,65 @@ class Dialog_HTML_Export(QMainWindow, Ui_DialogHtmlExport):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+        self.init_column_selction_entries()
         self.set_own_location()
         self.pushButton_html_export.clicked.connect(self.html_export)
         self.pushButton_set_own_location.clicked.connect(self.set_own_location)
         self.determine_coordinates_pushButton.clicked.connect(self.get_coordinates)
+
+        self.comboBox_column_selection.currentIndexChanged.connect(self.column_selected)
         # todo filter columns and filter max distance
 
     def init_and_show(self):
         self.show()
+    def init_column_selction_entries(self) -> None:
+        """
+        Adds all colmuns to to the column-selcetion-combobox
+        :return:
+        """
+        self.all_columns = ["name", "family_name", "street", "zip_code", "city", "country", "company_profession", "coordinates",  "phone", "email", "website", "radius_of_activity",
+                       "other_contact", "interests_hobbies", "requests", "skills_offers", "tags"]
+
+        # keys which should be writen to text in the export
+        keys_in_text = []
+
+        all_columns_text = [key_to_text(el, 'business_card').upper() for el in self.all_columns]
+
+        for col in all_columns_text:
+            self.comboBox_column_selection.addItem(col)
+
+        if conf.HTML_EXPORT_COLUMN_SELECTION == []:
+            conf.HTML_EXPORT_COLUMN_SELECTION = [1 for el in self.all_columns] # 1 means actvive column, 0 unactive
+            conf.write()
+
+        for index in range(len(conf.HTML_EXPORT_COLUMN_SELECTION)):
+            if conf.HTML_EXPORT_COLUMN_SELECTION[index] == 0:
+                itemtext = self.comboBox_column_selection.itemText(index + 1)
+                itemtext = "___" + itemtext.lower() + "___"  # mark as inactive (to hide this column)
+                self.comboBox_column_selection.setItemText(index + 1, itemtext)
+
+
+    def column_selected(self) -> None:
+        """
+        activates / deactivates the columns for showing in table view. deactivated are uses lower chars and
+        start with "___" and ends with "___"
+        :return:
+        """
+        selected_index = self.comboBox_column_selection.currentIndex()
+        if selected_index == 0: # ignore first column, is only description of the combobox
+            return
+
+
+        itemtext = self.comboBox_column_selection.itemText(selected_index)
+        if itemtext.startswith("_"):
+            itemtext = itemtext.upper()[3:-3] # mark as acitve
+            conf.HTML_EXPORT_COLUMN_SELECTION[selected_index - 1] = 1
+        else:
+            itemtext = "___" + itemtext.lower() + "___" # mark as inactive (to hide this column)
+            conf.HTML_EXPORT_COLUMN_SELECTION[selected_index - 1] = 0
+        self.comboBox_column_selection.setItemText(selected_index, itemtext)
+        self.comboBox_column_selection.setCurrentIndex(0)
+        self.comboBox_column_selection.showPopup() # reopen after click, to more quickly activate / deactivate other col
 
     def get_coordinates(self):
         coordinates = get_coordinates(self, f"{self.street_lineEdit.text()} {self.zip_code_lineEdit.text()} {self.city_lineEdit.text()} {self.country_lineEdit.text()}")
@@ -111,6 +162,15 @@ class Dialog_HTML_Export(QMainWindow, Ui_DialogHtmlExport):
                                                           os.path.join(os.getcwd(), conf.EXPORT_FOLDER,
                                                                        f"Angebote.html"),
                                                           filter="*.html")[0])
+        # filter out unselected
+        filter_out = []
+        for selected_index in range(len(self.all_columns)):
+            itemtext = self.comboBox_column_selection.itemText(selected_index + 1)
+            if itemtext.startswith("_"):
+                filter_out.append(self.all_columns[selected_index])
+
+        #dprint(filter_out)
+
         if export_filename == "": # if no file selected return
             return
         if not export_filename.endswith('.html'):
@@ -146,7 +206,7 @@ class Dialog_HTML_Export(QMainWindow, Ui_DialogHtmlExport):
         for data_card in all_cards:
             opened_type = data_card['dc_head']['type']
             html += data_card_html_export(data_card, type=opened_type, filter=True,
-                                     filter_empty=True, grouping="business_card")
+                                     filter_empty=True, grouping="business_card", own_filter_list=filter_out)
 
         html += "</body>\n</html>\n" #insert end of html
         html_file = open(export_filename, "w")

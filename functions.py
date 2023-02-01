@@ -389,7 +389,7 @@ class config():
 
 
         self.GUI_COLUMN_SELECTION = ast.literal_eval(str(self.data['gui']['column_selection'])) # interpret string as python-list
-        self.S2_UNUSED2 = self.data['gui']['s2sett2']
+        self.HTML_EXPORT_COLUMN_SELECTION = self.data['gui']['html_export_column_selection'] = ast.literal_eval(str(self.data['gui']['html_export_column_selection'])) # interpret string as python-list
 
     def write(self, filename='config.json'):
         configfilename = os.path.join(os.getcwd(), self.PROGRAMM_FOLDER, filename)
@@ -409,7 +409,7 @@ class config():
         self.data['profile_settings']['interests_hobbies'] = self.PROFILE_SET_INTERESTS_HOBBIES
 
         self.data['gui']['column_selection'] = str(self.GUI_COLUMN_SELECTION)
-        self.data['gui']['s2sett2'] = self.S2_UNUSED2
+        self.data['gui']['html_export_column_selection'] = str(self.HTML_EXPORT_COLUMN_SELECTION)
 
         save_in_json(configfilename, self.data)
 
@@ -423,7 +423,7 @@ class config():
                                           'city': '', 'country': '', 'company_profession': '', 'email': '',
                                           'radius_of_activity': '', 'coordinates': '', 'phone': '', 'website': '',
                                           'interests_hobbies': ''},
-                     'gui': {'column_selection': [], 's2sett2': "-"}
+                     'gui': {'column_selection': [], 'html_export_column_selection': []}
                      }
 
     # zum abfragen ob config gespeichert werden muss

@@ -229,7 +229,9 @@ def generate_html_export_table(input_dict, type = "", filter_empty = True):
         #print(f"keyval='{key}'=''{value}")
         if filter_empty and value == "":  # remove empty values from table
             continue
-        val = str(value).replace("&", "&amp;")
+        #dprint(type, key, value)
+        val = adapt_text_value(key, value, type)
+        val = str(val).replace("&", "&amp;")
         val = html.escape(val).replace('\n', '<br />\n')  # zeilenumbrüche umwandeln
         val = make_html_links_for_export(key, val)
         #dprint(key, val)
@@ -240,18 +242,6 @@ def generate_html_export_table(input_dict, type = "", filter_empty = True):
                 column_right += f"<b>{key_to_text(str(key), type)}: </b>" + val + " "
             else:
                 column_right += val + " "
-
-
-    #calculate width of first column depending on contents len of both columns (use the space more efficiently)
-    #textonly = html2text.HTML2Text()
-    #textonly.ignore_links = True
-    #len_left_text = len(textonly.handle(column_left))
-    #len_right_text = len(textonly.handle(column_right))
-    #widht shoud be min 20% and max 50%
-    #first_col_width = max(min(int(round((len_left_text * 100) / (len_left_text + len_right_text), 0)), 50), 20)
-
-    #dprint(len_left_text, len_right_text, first_col_widh)
-
 
     htmlcode += '<table>\n'
     htmlcode += '<tr>\n'
@@ -371,7 +361,7 @@ def data_card_html_export(data_card_dict, type="", filter = False, filter_empty 
         card_details.pop(el)
 
 
-
+    #dprint(content_dict)
     #remove own unwanted keys
     if own_filter_list != []:
         for el in own_filter_list:
@@ -426,6 +416,10 @@ def adapt_text_value(key, value, type) -> str:
             return format_date_string(value) # nice date format
 
 
+    if type == "business_card":
+        if key == "radius_of_activity":
+            return f"(Aktionsradius: {value}km)"
+
     return value # change nothing when unknown type
 
 
@@ -437,7 +431,7 @@ def key_to_text(key, type) -> str:
     """
     key_text = {}
     if type == "business_card":
-        key_text = {"name": "Rufname", "family_name": "Familienname", "card_id": "Anzeigen-ID",
+        key_text = {"full_name": "Name", "name": "Rufname", "family_name": "Familienname", "card_id": "Anzeigen-ID",
                 "image": "Bild", "radius_of_activity": "Aktionsradius", "street": "Straße",
                 "zip_code": "PLZ", "city": "Ort", "country": "Land", "website": "Internetseite",
                 "coordinates": "Koordinaten", "company_profession": "Unternehmen / Beruf", "phone": "Telefon",
