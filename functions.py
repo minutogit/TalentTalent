@@ -634,9 +634,7 @@ class local_card_db:
         output = cursor.fetchall()[0]
         cursor.close()
 
-
         card_type_content = {}
-
         hops_info = {}
         for i in range(len(columns)):
             if (str(columns[i]).find("DELETED_") > -1 or str(columns[i]).find("HOPS_") > -1):
@@ -651,7 +649,6 @@ class local_card_db:
         if add_hops_info:
             # add hops info to content
             for element in card_type_content:
-                # print(element)
                 card_type_content[element].append(hops_info[("HOPS_" + str(element))])
                 card_type_content[element].append(hops_info[("DELETED_" + str(element))])
 
@@ -667,11 +664,9 @@ class local_card_db:
 
         dc_dynamic_head = {}
         for i in range(len(columns)):
-            # print(f"{columns[i]}={output[i]}")
             dc_dynamic_head[columns[i]] = output[i]
 
         dc_dynamic_head['salts'] = str(dc_dynamic_head['salts']).split(',')
-
 
         # hop counter needs to increased when the data is exported for friends
         if increase_hop:
@@ -683,7 +678,6 @@ class local_card_db:
 
                 # salt festlegen der genutzt wird.
                 for sal in dc_dynamic_head['salts']:
-                    # print('sal: ',sal)
                     if sal != "-":
                         salt = sal
                         break
@@ -699,18 +693,15 @@ class local_card_db:
                             card_type_content[data_element][0] = "" # delete content
                             card_type_content[data_element][2] = short_SHA256(temp_string) # write hash to deleted val
 
-
                 # salt löschen mit den inhalt gesaltet wurde (damit kurzer ihhalt nicht per Brutforce
                 if delete_salt:
                     dc_dynamic_head['salts'] = ["-" if i == salt else i for i in dc_dynamic_head['salts']]
-
 
         data_card = {}
         data_card['dc_head'] = dc_head
         data_card[
             'dc_dynamic_head'] = dc_dynamic_head  # parts that are not hashed (are changed by friends / neigbors and which are not static)
         data_card['data'] = card_type_content
-
         return data_card
 
     def datacard_exist(self, card_id):
@@ -1067,7 +1058,6 @@ class local_card_db:
                                 image              TEXT,
                                 name               TEXT,
                                 family_name        TEXT,
-                                radius_of_activity TEXT,
                                 street             TEXT,
                                 zip_code           INTEGER,
                                 city               TEXT,
@@ -1078,6 +1068,7 @@ class local_card_db:
                                 website            TEXT,
                                 email              TEXT,
                                 other_contact      TEXT,
+                                radius_of_activity TEXT,
                                 interests_hobbies  TEXT,
                                 skills_offers      TEXT,
                                 requests           TEXT,

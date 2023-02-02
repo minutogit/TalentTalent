@@ -87,12 +87,16 @@ class Dialog_HTML_Export(QMainWindow, Ui_DialogHtmlExport):
         self.pushButton_html_export.clicked.connect(self.html_export)
         self.pushButton_set_own_location.clicked.connect(self.set_own_location)
         self.determine_coordinates_pushButton.clicked.connect(self.get_coordinates)
+        self.lineEdit_max_distance.setInputMask("00000;")
+        self.lineEdit_max_distance.setText("0")
+        self.lineEdit_max_distance.setMaxLength(5)
 
         self.comboBox_column_selection.currentIndexChanged.connect(self.column_selected)
         # todo filter columns and filter max distance
 
     def init_and_show(self):
         self.show()
+
     def init_column_selction_entries(self) -> None:
         """
         Adds all colmuns to to the column-selcetion-combobox
@@ -169,8 +173,6 @@ class Dialog_HTML_Export(QMainWindow, Ui_DialogHtmlExport):
             if itemtext.startswith("_"):
                 filter_out.append(self.all_columns[selected_index])
 
-        #dprint(filter_out)
-
         if export_filename == "": # if no file selected return
             return
         if not export_filename.endswith('.html'):
@@ -179,9 +181,17 @@ class Dialog_HTML_Export(QMainWindow, Ui_DialogHtmlExport):
         current_time = str(datetime.now().replace(microsecond=0))
         current_date = str(datetime.now().strftime('%d.%m.%Y'))
 
+        #extra-filter types to export (own or not own)
+        selected_index = self.comboBox_filter.currentIndex()
+        extra_where_filter = ""
+        if selected_index == 1: # only own cards
+            extra_where_filter = f" and creator = '{crypt.Profile.profile_id}'"
+        elif selected_index == 2: # not own cards
+            extra_where_filter = f" and creator != '{crypt.Profile.profile_id}'"
+
         # get all needed cards
         card_ids = localdb.sql_list(f"""SELECT card_id FROM dc_head WHERE 
-                deleted = False AND type != 'publickeys'  AND valid_until > '{current_time}' """)
+                deleted = False AND type != 'publickeys'  AND valid_until > '{current_time}'{extra_where_filter};""")
         all_cards = [localdb.convert_db_to_dict(card_id, add_hops_info=False) for card_id in card_ids]
 
         #prepare data for sorting with distance (distance between 2 coordinates)
@@ -195,6 +205,11 @@ class Dialog_HTML_Export(QMainWindow, Ui_DialogHtmlExport):
         # sort list - short distance first
         if functions.isValidCoordinate(conf.PROFILE_SET_COORDINATES):
             all_cards = sorted(all_cards, key=lambda k: functions.geo_distance(k['data']['coordinates'], False))
+
+        # filter max distance
+        if int(self.lineEdit_max_distance.text()) != 0:
+            all_cards = [card for card in all_cards if functions.geo_distance(card['data']['coordinates'], False)
+                         < (int(self.lineEdit_max_distance.text()) + 1)]
 
         html = html_export_head
         number_of_entrys = len(all_cards)

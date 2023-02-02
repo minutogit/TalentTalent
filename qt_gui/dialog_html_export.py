@@ -140,8 +140,6 @@ class Ui_DialogHtmlExport(object):
         self.comboBox_filter.addItem("")
         self.comboBox_filter.addItem("")
         self.comboBox_filter.addItem("")
-        self.comboBox_filter.addItem("")
-        self.comboBox_filter.addItem("")
         self.comboBox_filter.setObjectName(u"comboBox_filter")
         sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(10)
@@ -169,7 +167,7 @@ class Ui_DialogHtmlExport(object):
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self.label_3 = QLabel(self.widget)
         self.label_3.setObjectName(u"label_3")
-        self.label_3.setMinimumSize(QSize(150, 0))
+        self.label_3.setMinimumSize(QSize(200, 0))
         self.label_3.setWordWrap(True)
 
         self.horizontalLayout_2.addWidget(self.label_3)
@@ -213,8 +211,6 @@ class Ui_DialogHtmlExport(object):
         self.comboBox_filter.setItemText(0, QCoreApplication.translate("DialogHtmlExport", u"Alle G\u00fcltigen", None))
         self.comboBox_filter.setItemText(1, QCoreApplication.translate("DialogHtmlExport", u"Nur Eigene", None))
         self.comboBox_filter.setItemText(2, QCoreApplication.translate("DialogHtmlExport", u"Nicht Eigene", None))
-        self.comboBox_filter.setItemText(3, QCoreApplication.translate("DialogHtmlExport", u"Eigene (abgelaufen)", None))
-        self.comboBox_filter.setItemText(4, QCoreApplication.translate("DialogHtmlExport", u"Ausgeblendete", None))
 
         self.label.setText(QCoreApplication.translate("DialogHtmlExport", u"zu exportierende Eintragsinhalte", None))
         self.comboBox_column_selection.setItemText(0, QCoreApplication.translate("DialogHtmlExport", u"Spalten", None))
@@ -222,6 +218,7 @@ class Ui_DialogHtmlExport(object):
 #if QT_CONFIG(tooltip)
         self.comboBox_column_selection.setToolTip(QCoreApplication.translate("DialogHtmlExport", u"test", None))
 #endif // QT_CONFIG(tooltip)
-        self.label_3.setText(QCoreApplication.translate("DialogHtmlExport", u"max. Entfernung (km) vom Standort", None))
+        self.label_3.setText(QCoreApplication.translate("DialogHtmlExport", u"max. Entfernung (km) vom Standort (0 = unbegrenzt)", None))
+        self.lineEdit_max_distance.setInputMask(QCoreApplication.translate("DialogHtmlExport", u"00000", None))
     # retranslateUi
 
