@@ -17,7 +17,8 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QComboBox, QDialog, QFormLayout,
     QFrame, QHBoxLayout, QLabel, QLineEdit,
-    QPushButton, QSizePolicy, QVBoxLayout, QWidget)
+    QPushButton, QSizePolicy, QSpacerItem, QVBoxLayout,
+    QWidget)
 
 class Ui_DialogHtmlExport(object):
     def setupUi(self, DialogHtmlExport):
@@ -27,87 +28,6 @@ class Ui_DialogHtmlExport(object):
         self.pushButton_html_export = QPushButton(DialogHtmlExport)
         self.pushButton_html_export.setObjectName(u"pushButton_html_export")
         self.pushButton_html_export.setGeometry(QRect(200, 280, 211, 23))
-        self.layoutWidget = QWidget(DialogHtmlExport)
-        self.layoutWidget.setObjectName(u"layoutWidget")
-        self.layoutWidget.setGeometry(QRect(340, 25, 300, 191))
-        self.formLayout = QFormLayout(self.layoutWidget)
-        self.formLayout.setObjectName(u"formLayout")
-        self.formLayout.setContentsMargins(0, 0, 0, 0)
-        self.label_4 = QLabel(self.layoutWidget)
-        self.label_4.setObjectName(u"label_4")
-        font = QFont()
-        font.setBold(True)
-        self.label_4.setFont(font)
-
-        self.formLayout.setWidget(0, QFormLayout.SpanningRole, self.label_4)
-
-        self.label_8 = QLabel(self.layoutWidget)
-        self.label_8.setObjectName(u"label_8")
-
-        self.formLayout.setWidget(2, QFormLayout.LabelRole, self.label_8)
-
-        self.street_lineEdit = QLineEdit(self.layoutWidget)
-        self.street_lineEdit.setObjectName(u"street_lineEdit")
-
-        self.formLayout.setWidget(2, QFormLayout.FieldRole, self.street_lineEdit)
-
-        self.label_6 = QLabel(self.layoutWidget)
-        self.label_6.setObjectName(u"label_6")
-
-        self.formLayout.setWidget(3, QFormLayout.LabelRole, self.label_6)
-
-        self.zip_code_lineEdit = QLineEdit(self.layoutWidget)
-        self.zip_code_lineEdit.setObjectName(u"zip_code_lineEdit")
-        self.zip_code_lineEdit.setInputMethodHints(Qt.ImhDigitsOnly)
-        self.zip_code_lineEdit.setClearButtonEnabled(False)
-
-        self.formLayout.setWidget(3, QFormLayout.FieldRole, self.zip_code_lineEdit)
-
-        self.label_7 = QLabel(self.layoutWidget)
-        self.label_7.setObjectName(u"label_7")
-
-        self.formLayout.setWidget(4, QFormLayout.LabelRole, self.label_7)
-
-        self.city_lineEdit = QLineEdit(self.layoutWidget)
-        self.city_lineEdit.setObjectName(u"city_lineEdit")
-
-        self.formLayout.setWidget(4, QFormLayout.FieldRole, self.city_lineEdit)
-
-        self.label_5 = QLabel(self.layoutWidget)
-        self.label_5.setObjectName(u"label_5")
-
-        self.formLayout.setWidget(5, QFormLayout.LabelRole, self.label_5)
-
-        self.country_lineEdit = QLineEdit(self.layoutWidget)
-        self.country_lineEdit.setObjectName(u"country_lineEdit")
-
-        self.formLayout.setWidget(5, QFormLayout.FieldRole, self.country_lineEdit)
-
-        self.horizontalLayout = QHBoxLayout()
-        self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.label_9 = QLabel(self.layoutWidget)
-        self.label_9.setObjectName(u"label_9")
-
-        self.horizontalLayout.addWidget(self.label_9)
-
-        self.coordinates_lineEdit = QLineEdit(self.layoutWidget)
-        self.coordinates_lineEdit.setObjectName(u"coordinates_lineEdit")
-
-        self.horizontalLayout.addWidget(self.coordinates_lineEdit)
-
-        self.determine_coordinates_pushButton = QPushButton(self.layoutWidget)
-        self.determine_coordinates_pushButton.setObjectName(u"determine_coordinates_pushButton")
-
-        self.horizontalLayout.addWidget(self.determine_coordinates_pushButton)
-
-
-        self.formLayout.setLayout(6, QFormLayout.SpanningRole, self.horizontalLayout)
-
-        self.label_10 = QLabel(self.layoutWidget)
-        self.label_10.setObjectName(u"label_10")
-
-        self.formLayout.setWidget(1, QFormLayout.SpanningRole, self.label_10)
-
         self.line = QFrame(DialogHtmlExport)
         self.line.setObjectName(u"line")
         self.line.setGeometry(QRect(20, 250, 621, 20))
@@ -118,21 +38,22 @@ class Ui_DialogHtmlExport(object):
         self.pushButton_set_own_location.setGeometry(QRect(369, 220, 231, 23))
         self.widget = QWidget(DialogHtmlExport)
         self.widget.setObjectName(u"widget")
-        self.widget.setGeometry(QRect(20, 20, 285, 191))
+        self.widget.setGeometry(QRect(11, 20, 311, 191))
         self.verticalLayout = QVBoxLayout(self.widget)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.label_11 = QLabel(self.widget)
         self.label_11.setObjectName(u"label_11")
-        font1 = QFont()
-        font1.setFamilies([u"Sans Serif"])
-        font1.setBold(True)
-        self.label_11.setFont(font1)
+        font = QFont()
+        font.setFamilies([u"Sans Serif"])
+        font.setBold(True)
+        self.label_11.setFont(font)
 
         self.verticalLayout.addWidget(self.label_11)
 
         self.label_2 = QLabel(self.widget)
         self.label_2.setObjectName(u"label_2")
+        self.label_2.setAlignment(Qt.AlignBottom|Qt.AlignLeading|Qt.AlignLeft)
 
         self.verticalLayout.addWidget(self.label_2)
 
@@ -152,6 +73,7 @@ class Ui_DialogHtmlExport(object):
 
         self.label = QLabel(self.widget)
         self.label.setObjectName(u"label")
+        self.label.setAlignment(Qt.AlignBottom|Qt.AlignLeading|Qt.AlignLeft)
 
         self.verticalLayout.addWidget(self.label)
 
@@ -162,6 +84,10 @@ class Ui_DialogHtmlExport(object):
         self.comboBox_column_selection.setSizePolicy(sizePolicy)
 
         self.verticalLayout.addWidget(self.comboBox_column_selection)
+
+        self.verticalSpacer = QSpacerItem(20, 17, QSizePolicy.Minimum, QSizePolicy.Expanding)
+
+        self.verticalLayout.addItem(self.verticalSpacer)
 
         self.horizontalLayout_2 = QHBoxLayout()
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
@@ -180,6 +106,87 @@ class Ui_DialogHtmlExport(object):
 
         self.verticalLayout.addLayout(self.horizontalLayout_2)
 
+        self.widget1 = QWidget(DialogHtmlExport)
+        self.widget1.setObjectName(u"widget1")
+        self.widget1.setGeometry(QRect(341, 20, 300, 191))
+        self.formLayout = QFormLayout(self.widget1)
+        self.formLayout.setObjectName(u"formLayout")
+        self.formLayout.setContentsMargins(0, 0, 0, 0)
+        self.label_4 = QLabel(self.widget1)
+        self.label_4.setObjectName(u"label_4")
+        font1 = QFont()
+        font1.setBold(True)
+        self.label_4.setFont(font1)
+
+        self.formLayout.setWidget(0, QFormLayout.SpanningRole, self.label_4)
+
+        self.label_10 = QLabel(self.widget1)
+        self.label_10.setObjectName(u"label_10")
+
+        self.formLayout.setWidget(1, QFormLayout.SpanningRole, self.label_10)
+
+        self.label_8 = QLabel(self.widget1)
+        self.label_8.setObjectName(u"label_8")
+
+        self.formLayout.setWidget(2, QFormLayout.LabelRole, self.label_8)
+
+        self.street_lineEdit = QLineEdit(self.widget1)
+        self.street_lineEdit.setObjectName(u"street_lineEdit")
+
+        self.formLayout.setWidget(2, QFormLayout.FieldRole, self.street_lineEdit)
+
+        self.label_6 = QLabel(self.widget1)
+        self.label_6.setObjectName(u"label_6")
+
+        self.formLayout.setWidget(3, QFormLayout.LabelRole, self.label_6)
+
+        self.zip_code_lineEdit = QLineEdit(self.widget1)
+        self.zip_code_lineEdit.setObjectName(u"zip_code_lineEdit")
+        self.zip_code_lineEdit.setInputMethodHints(Qt.ImhDigitsOnly)
+        self.zip_code_lineEdit.setClearButtonEnabled(False)
+
+        self.formLayout.setWidget(3, QFormLayout.FieldRole, self.zip_code_lineEdit)
+
+        self.label_7 = QLabel(self.widget1)
+        self.label_7.setObjectName(u"label_7")
+
+        self.formLayout.setWidget(4, QFormLayout.LabelRole, self.label_7)
+
+        self.city_lineEdit = QLineEdit(self.widget1)
+        self.city_lineEdit.setObjectName(u"city_lineEdit")
+
+        self.formLayout.setWidget(4, QFormLayout.FieldRole, self.city_lineEdit)
+
+        self.label_5 = QLabel(self.widget1)
+        self.label_5.setObjectName(u"label_5")
+
+        self.formLayout.setWidget(5, QFormLayout.LabelRole, self.label_5)
+
+        self.country_lineEdit = QLineEdit(self.widget1)
+        self.country_lineEdit.setObjectName(u"country_lineEdit")
+
+        self.formLayout.setWidget(5, QFormLayout.FieldRole, self.country_lineEdit)
+
+        self.horizontalLayout = QHBoxLayout()
+        self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.label_9 = QLabel(self.widget1)
+        self.label_9.setObjectName(u"label_9")
+
+        self.horizontalLayout.addWidget(self.label_9)
+
+        self.coordinates_lineEdit = QLineEdit(self.widget1)
+        self.coordinates_lineEdit.setObjectName(u"coordinates_lineEdit")
+
+        self.horizontalLayout.addWidget(self.coordinates_lineEdit)
+
+        self.determine_coordinates_pushButton = QPushButton(self.widget1)
+        self.determine_coordinates_pushButton.setObjectName(u"determine_coordinates_pushButton")
+
+        self.horizontalLayout.addWidget(self.determine_coordinates_pushButton)
+
+
+        self.formLayout.setLayout(6, QFormLayout.SpanningRole, self.horizontalLayout)
+
 
         self.retranslateUi(DialogHtmlExport)
 
@@ -189,19 +196,6 @@ class Ui_DialogHtmlExport(object):
     def retranslateUi(self, DialogHtmlExport):
         DialogHtmlExport.setWindowTitle(QCoreApplication.translate("DialogHtmlExport", u"HTML Export", None))
         self.pushButton_html_export.setText(QCoreApplication.translate("DialogHtmlExport", u"Exportieren", None))
-        self.label_4.setText(QCoreApplication.translate("DialogHtmlExport", u"Standort (f\u00fcr Entfernungsangaben)", None))
-        self.label_8.setText(QCoreApplication.translate("DialogHtmlExport", u"Stra\u00dfe", None))
-        self.street_lineEdit.setText("")
-        self.label_6.setText(QCoreApplication.translate("DialogHtmlExport", u"PLZ", None))
-        self.zip_code_lineEdit.setText("")
-        self.label_7.setText(QCoreApplication.translate("DialogHtmlExport", u"Ort", None))
-        self.city_lineEdit.setText("")
-        self.label_5.setText(QCoreApplication.translate("DialogHtmlExport", u"Land", None))
-        self.country_lineEdit.setText("")
-        self.label_9.setText(QCoreApplication.translate("DialogHtmlExport", u"Koordinaten*", None))
-        self.coordinates_lineEdit.setText("")
-        self.determine_coordinates_pushButton.setText(QCoreApplication.translate("DialogHtmlExport", u"Ermitteln", None))
-        self.label_10.setText(QCoreApplication.translate("DialogHtmlExport", u"Korrekte Koordinaten sind entscheidend", None))
 #if QT_CONFIG(tooltip)
         self.pushButton_set_own_location.setToolTip(QCoreApplication.translate("DialogHtmlExport", u"Eigener Standort aus Profil-Einstellungen", None))
 #endif // QT_CONFIG(tooltip)
@@ -220,5 +214,18 @@ class Ui_DialogHtmlExport(object):
 #endif // QT_CONFIG(tooltip)
         self.label_3.setText(QCoreApplication.translate("DialogHtmlExport", u"max. Entfernung (km) vom Standort (0 = unbegrenzt)", None))
         self.lineEdit_max_distance.setInputMask(QCoreApplication.translate("DialogHtmlExport", u"00000", None))
+        self.label_4.setText(QCoreApplication.translate("DialogHtmlExport", u"Standort (f\u00fcr Entfernungsangaben)", None))
+        self.label_10.setText(QCoreApplication.translate("DialogHtmlExport", u"Korrekte Koordinaten sind entscheidend", None))
+        self.label_8.setText(QCoreApplication.translate("DialogHtmlExport", u"Stra\u00dfe", None))
+        self.street_lineEdit.setText("")
+        self.label_6.setText(QCoreApplication.translate("DialogHtmlExport", u"PLZ", None))
+        self.zip_code_lineEdit.setText("")
+        self.label_7.setText(QCoreApplication.translate("DialogHtmlExport", u"Ort", None))
+        self.city_lineEdit.setText("")
+        self.label_5.setText(QCoreApplication.translate("DialogHtmlExport", u"Land", None))
+        self.country_lineEdit.setText("")
+        self.label_9.setText(QCoreApplication.translate("DialogHtmlExport", u"Koordinaten*", None))
+        self.coordinates_lineEdit.setText("")
+        self.determine_coordinates_pushButton.setText(QCoreApplication.translate("DialogHtmlExport", u"Ermitteln", None))
     # retranslateUi
 
