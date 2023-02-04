@@ -2071,6 +2071,9 @@ class Frm_Mainwin(QMainWindow, Ui_MainWindow):
             enable(self.menuExtended)
             enable(self.actionAdd_BusinessCard)
             enable(self.pushButton_add_businesscard)
+            enable(self.comboBox_column_selection)
+            enable(self.comboBox_filter)
+            enable(self.lineEdit_filter)
             self.setWindowTitle(f"""{window_title}  -  Profil: {profile_name} (ID: {short_profile_id})""")
 
         if profile_exists and not profile_initialized:
@@ -2088,6 +2091,9 @@ class Frm_Mainwin(QMainWindow, Ui_MainWindow):
             disable(self.menuExtended)
             disable(self.actionAdd_BusinessCard)
             disable(self.pushButton_add_businesscard)
+            disable(self.comboBox_column_selection)
+            disable(self.comboBox_filter)
+            disable(self.lineEdit_filter)
             self.setWindowTitle(f"{window_title}  -  Profil nicht geladen")
             self.label_statistics.setText("")
 
@@ -2106,6 +2112,9 @@ class Frm_Mainwin(QMainWindow, Ui_MainWindow):
             disable(self.menuExtended)
             disable(self.actionAdd_BusinessCard)
             disable(self.pushButton_add_businesscard)
+            disable(self.comboBox_column_selection)
+            disable(self.comboBox_filter)
+            disable(self.lineEdit_filter)
             self.setWindowTitle(f"{window_title} - (Kein Profil gefunden)")
             self.label_statistics.setText("")
 
@@ -2388,10 +2397,6 @@ class Frm_Mainwin(QMainWindow, Ui_MainWindow):
         dialog_profile_create_selection.show()
         # dialog_new_password.show()
 
-    def print_click(self):
-        print("click")
-        self.business_card.select()
-        self.statusbar.showMessage("click")
 
 
 app = QApplication()

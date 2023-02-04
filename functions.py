@@ -469,7 +469,7 @@ class local_card_db:
     def __init__(self, file, folder):
         # self.filename = file
         self.use_encrypted_db = False # todo feature to encrpyt the database
-        self.encrypted_db_filename = os.path.join(os.getcwd(), folder, "crypt" + file)
+        self.encrypted_db_filename = os.path.join(os.getcwd(), folder, "crypted_" + file)
         self.decrypted_db_filename = os.path.join(os.getcwd(), folder, file)
         self.db_filename = self.decrypted_db_filename
         if self.use_encrypted_db:
