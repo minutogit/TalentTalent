@@ -64,6 +64,8 @@ class CryptoClass:
         profile_is_initialized = False  # set to True when when Profile correct initialized with user-password
         aes_encrypted_private_key = None  # load at startup
         aes_encrypted_seed_words = None
+        database_key = None  # key when db encryption is enabled (derived from seed words)
+        aes_encrypted_database_key = None
 
     def close_profile(self):
         """used to close the profile on logout - resets all profile values"""
@@ -82,6 +84,8 @@ class CryptoClass:
         self.Profile.profile_is_initialized = False  # set to True when when Profile correct initialized with user-password
         self.Profile.aes_encrypted_private_key = None  # load at startup
         self.Profile.aes_encrypted_seed_words = None
+        self.Profile.aes_encrypted_database_key = None
+        self.Profile.database_key = None # key when db encryption is enabled (derived from seed words)
 
     def seed_is_identic_with_profile_seed(self):
         """used to check if the same seed words are used, when the user forgots the password and want to set a new one"""
@@ -111,16 +115,15 @@ class CryptoClass:
             rsa_keypair = self.generate_rsa_key(
                 self.Profile.rsa_seed_words)  # derive rsa key from the first seed words
             self.Profile.private_key = rsa_keypair.exportKey("PEM")
+            self.Profile.database_key = self.hash_string( self.Profile.rsa_seed_words, "staticsalt").encode("utf-8")
+
         if set_new_password:
             self.Profile.private_key = None
             # get private key from old aes-key
-            #for encrypted_private_key in self.Profile.aes_encrypted_private_key:
             private_key = self.aes_decrypt(self.Profile.aes_encrypted_private_key, self.Profile.old_aes_key)  # .decode("utf-8")
-            # self.Profile.rsa_key_pair.append(RSA.importKey(private_key))
             self.Profile.private_key = private_key
 
 
-        # print(f"anzahl profile: {len(self.Profile.rsa_key_pair)}")
         if self.Profile.rsa_key_pair == None:  # some variables need to be initialized after first profile generation
             private_key = self.Profile.private_key
             self.Profile.rsa_key_pair = RSA.importKey(private_key)
@@ -130,23 +133,22 @@ class CryptoClass:
                 self.rsapubkey_to_rsapukeystring(self.Profile.rsa_key_pair.public_key()))
 
 
-        # aes_encrypted_rsa_key_word_seeds = []
         self.Profile.aes_encrypted_private_key = None
-        #for private_key in self.Profile.private_key:
-            # print("write new aes encr private key")
+
         self.Profile.aes_encrypted_private_key = self.aes_encrypt(self.Profile.private_key, self.Profile.aes_key)
 
-        #dprint(self.Profile.aes_encrypted_seed_words)
-        #dprint(self.Profile.rsa_seed_words)
         self.Profile.aes_encrypted_seed_words = self.aes_encrypt(self.Profile.rsa_seed_words.encode("utf-8"),
                                                                  self.Profile.aes_key)
-        #dprint(self.Profile.aes_encrypted_seed_words)
+
+
+        self.Profile.aes_encrypted_database_key = self.aes_encrypt(self.Profile.database_key, self.Profile.aes_key)
 
         profile_dict = {'user_pw_hash': self.Profile.user_pw_hash, 'user_pw_salt': self.Profile.user_pw_salt,
                         'aes_encrypted_seed_words': self.Profile.aes_encrypted_seed_words,
                         'profile_id': self.Profile.profile_id,
                         'aes_key_salt': self.Profile.aes_key_salt,
-                        'aes_encrypted_private_key': self.Profile.aes_encrypted_private_key}
+                        'aes_encrypted_private_key': self.Profile.aes_encrypted_private_key,
+                        'aes_encrypted_database_key': self.Profile.aes_encrypted_database_key}
 
         functions.save_var_to_file(profile_dict, filename)
         self.Profile.profile_exist = True
@@ -158,16 +160,13 @@ class CryptoClass:
         :return:
         """
         profile_dict = functions.load_var_from_file(filename)
-        # ic(profile_dict)
         self.Profile.user_pw_hash = profile_dict['user_pw_hash']
         self.Profile.user_pw_salt = profile_dict['user_pw_salt']
         self.Profile.aes_key_salt = profile_dict['aes_key_salt']
         self.Profile.aes_encrypted_seed_words = profile_dict['aes_encrypted_seed_words']
         self.Profile.profile_id = profile_dict['profile_id']
-
-
         self.Profile.aes_encrypted_private_key = profile_dict['aes_encrypted_private_key']
-
+        self.Profile.aes_encrypted_database_key = profile_dict['aes_encrypted_database_key']
 
 
     def init_profile(self, user_password):
@@ -187,11 +186,8 @@ class CryptoClass:
         self.Profile.pubkey_string = self.rsapubkey_to_rsapukeystring(self.Profile.rsa_key_pair.public_key())
         self.Profile.profile_id = self.get_publickey_id(
             self.rsapubkey_to_rsapukeystring(self.Profile.rsa_key_pair.public_key()))
+        self.Profile.database_key = self.aes_decrypt(self.Profile.aes_encrypted_database_key, self.Profile.aes_key)
 
-        # decrypt profile name
-        #self.Profile.rsa_seed_words = self.aes_decrypt(self.Profile.aes_encrypted_seed_words,
-        #                                               self.Profile.aes_key).decode("utf-8")
-        #dprint("initprofile", self.Profile.aes_encrypted_seed_words)
         return True
 
     def rsapubkey_to_rsapukeystring(self, rsapubkey):

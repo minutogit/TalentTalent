@@ -546,7 +546,8 @@ class Dialog_Restore_Profile(QMainWindow, Ui_DialogRestoreProfile):
             conf.PROFILE_SET_PROFILE_NAME = str(self.lineEdit_profile_name.text())
             conf.write()
             dialog_new_password.init_and_show()
-            frm_main_window.set_gui_depending_profile_status()
+            #frm_main_window.set_gui_depending_profile_status()
+            #frm_main_window.update_table_view() # if old database file exists after restore -> show content in gui table
         else:  # password is forgotten -> restore only password of existing profile
             if crypt.seed_is_identic_with_profile_seed():
                 dialog_new_password.change_password = True
@@ -1655,7 +1656,7 @@ class Dialog_Enter_Password(QMainWindow, Ui_DialogEnterPassword):
             crypt.init_profile(entered_password)
             frm_main_window.statusbar.showMessage("Passwort korrekt. Profil erfolgreich geladen.", timeout=10000)
 
-            localdb.password = crypt.Profile.aes_key
+            localdb.password = crypt.Profile.database_key
             localdb.init_password(conf.ENCRYPT_LOCAL_DATABASE)
 
             #add own pubkey to db, necessary when only db-file was deleted and not profile
@@ -1751,7 +1752,7 @@ class Dialog_New_Password(QMainWindow, Ui_DialogNewPassword):
         profile_filename = os.path.join(os.getcwd(), conf.PROGRAMM_FOLDER, "profile.dat")
         crypt.save_profile(profile_filename, new_password)
         crypt.init_profile(new_password)  # instantly init Pofile that all profile variables are set
-        localdb.password = crypt.Profile.aes_key
+        localdb.password = crypt.Profile.database_key
         localdb.init_password(conf.ENCRYPT_LOCAL_DATABASE)  # db neu anlegen bzw. initialisieren
 
         rsa_keypair = crypt.Profile.rsa_key_pair
@@ -1760,6 +1761,7 @@ class Dialog_New_Password(QMainWindow, Ui_DialogNewPassword):
                                                 crypt.Profile.rsa_key_pair.public_key()), rsa_keypair)
         dialog_new_password.close()
         frm_main_window.set_gui_depending_profile_status()
+        frm_main_window.update_table_view()
         show_message_box("Passwort geändert", "Passwort erfolgreich geändert!")
 
     def closeEvent(self, event):

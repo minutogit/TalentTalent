@@ -340,7 +340,7 @@ class config():
         self.IMPORT_FAILED_SUBFOLDER = os.path.join(self.IMPORT_FOLDER, 'import_fehlgeschlagen')  # failed import-files
 
 
-        self.ENCRYPT_LOCAL_DATABASE = False  # Set if local DB should be stored encryped
+        self.ENCRYPT_LOCAL_DATABASE = True  # Set if local DB should be stored encryped
 
 
         if not os.path.exists(os.path.join(os.getcwd(), self.PROGRAMM_FOLDER)):
@@ -1295,29 +1295,32 @@ class local_card_db:
         b = f.decrypt(safe)
         return b
 
-    def open_cdb(self, encrypted_database=False):
-        if not encrypted_database:
-            # if encrypted db-file exist, decrypte it and delete it (usually on change from encrypted to unenrypted usage)
-            if os.path.isfile(self.encrypted_db_filename):
+    def open_cdb(self, encrypt_db_file=False):
+        if not encrypt_db_file:
+            # if encrypted db-file exist
+            if os.path.isfile(self.encrypted_db_filename) and not os.path.isfile(self.decrypted_db_filename):
                 f = gzip.open(self.encrypted_db_filename)
                 safe = f.read()
                 f.close()
                 content = self.decryption(safe, self.password)
                 content = content.decode('utf-8')
-                os.remove(self.decrypted_db_filename)  # delete unencrypted db
                 con = sqlite3.connect(self.decrypted_db_filename)
                 con.executescript(content)
                 os.remove(self.encrypted_db_filename)  # delete encrypted db
                 return con
 
+        if os.path.isfile(self.decrypted_db_filename):
             con = sqlite3.connect(self.decrypted_db_filename)
             return con
-        else:
+
+        if encrypt_db_file:
             # if decrypted db-file exist, just open it it and delete it (usually on change from encrypted to unenrypted usage)
             if os.path.isfile(self.decrypted_db_filename):
-                # ic("unverschlüsstelte datei existiert")
                 con = sqlite3.connect(self.decrypted_db_filename)
-                os.remove(self.encrypted_db_filename)  # delete msy be old encrypted db
+                # delete old encrypted file if exists (because in unencrypted file the content will be up to date when
+                # app will not be closed properly
+                if os.path.isfile(self.encrypted_db_filename):
+                    os.remove(self.encrypted_db_filename)
 
                 # save to decrypted DB
                 fp = gzip.open(self.encrypted_db_filename, 'wb')
@@ -1329,15 +1332,22 @@ class local_card_db:
                 fp.close()
                 return con
 
-            f = gzip.open(self.encrypted_db_filename)
-            safe = f.read()
-            f.close()
-            content = self.decryption(safe, self.password)
-            content = content.decode('utf-8')
-            con = sqlite3.connect(':memory:')
-            # con = sqlite3.connect(self.decrypted_db_filename)
-            con.executescript(content)
+            # encrypted file exists
+            if os.path.isfile(self.encrypted_db_filename):
+                f = gzip.open(self.encrypted_db_filename)
+                safe = f.read()
+                f.close()
+                content = self.decryption(safe, self.password)
+                content = content.decode('utf-8')
+                con = sqlite3.connect(self.decrypted_db_filename) # decrypted filename is temp file name while open
+                # con = sqlite3.connect(self.decrypted_db_filename)
+                con.executescript(content)
+                return con
+
+            # no db file exists
+            con = sqlite3.connect(self.decrypted_db_filename)
             return con
+
 
     def save_and_close_database(self, encrypt_db):
         # fixme check when decrypted if it works correctly!
