@@ -1240,7 +1240,7 @@ class Dialog_Business_Card(QMainWindow, Ui_DialogBuisinessCard):
         
     def open_mail_import(self, card_data, opened_from_content_display = False):
         # print(self.checkBox_extend_hops.isChecked())
-        dprint("mail-import")
+        #dprint("mail-import")
         self.set_defaults_businesscard_window()
         self.opened_from_content_display = opened_from_content_display # need to reload content display on close
         self.setWindowTitle(f"Visitenkarte  ID: {self.current_card_id[:8]}")
@@ -2428,9 +2428,8 @@ dialog_display_content = Dialog_Display_Content()
 dialog_profile_settings = Dialog_Profile_Settings()
 
 db = QtSql.QSqlDatabase.addDatabase("QSQLITE")
-db.setDatabaseName(localdb.db_filename)
-# todo funktioniert noch nicht mit memory db
-# db.setDatabaseName(':memory:')
+db.setDatabaseName(localdb.db_file)
+
 
 frm_main_window = Frm_Mainwin()
 frm_main_window.show()

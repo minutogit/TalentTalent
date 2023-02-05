@@ -31,6 +31,14 @@ def dprint(*args):
     _, filename = os.path.split(frame[1])
     print (f"{filename}:{frame[2]}", *args)
 
+def shred_file(file):
+    """overwirtes a file with random pattern and deletes it"""
+    file_size = os.path.getsize(file)
+    with open(file, "wb") as f:
+        random_data = bytearray([random.randint(0, 255) for i in range(file_size)]) # Generate random data
+        f.write(random_data) # overwrite file
+    os.remove(file) # delete file
+
 def parse_mail_text(text: str) -> dict:
     """
     parse the mail text from the webform for import
@@ -468,12 +476,9 @@ def rand_hex(length):
 class local_card_db:
     def __init__(self, file, folder):
         # self.filename = file
-        self.use_encrypted_db = False # todo feature to encrpyt the database
-        self.encrypted_db_filename = os.path.join(os.getcwd(), folder, "crypted_" + file)
-        self.decrypted_db_filename = os.path.join(os.getcwd(), folder, file)
-        self.db_filename = self.decrypted_db_filename
-        if self.use_encrypted_db:
-            self.db_filename = self.encrypted_db_filename
+        self.encrypted_db_file = os.path.join(os.getcwd(), folder, "crypted_" + file)
+        self.db_file = os.path.join(os.getcwd(), folder, file)
+        #self.db_filename = self.decrypted_db_filename
         self.password = ''
 
 
@@ -1296,34 +1301,24 @@ class local_card_db:
         return b
 
     def open_cdb(self, encrypt_db_file=False):
-        if not encrypt_db_file:
-            # if encrypted db-file exist
-            if os.path.isfile(self.encrypted_db_filename) and not os.path.isfile(self.decrypted_db_filename):
-                f = gzip.open(self.encrypted_db_filename)
-                safe = f.read()
-                f.close()
-                content = self.decryption(safe, self.password)
-                content = content.decode('utf-8')
-                con = sqlite3.connect(self.decrypted_db_filename)
-                con.executescript(content)
-                os.remove(self.encrypted_db_filename)  # delete encrypted db
-                return con
 
-        if os.path.isfile(self.decrypted_db_filename):
-            con = sqlite3.connect(self.decrypted_db_filename)
+        # no db file (cleartext and encrypted) -> create new emmpty db
+        if not os.path.isfile(self.db_file) and not os.path.isfile(self.encrypted_db_file):
+            con = sqlite3.connect(self.db_file)
             return con
 
         if encrypt_db_file:
-            # if decrypted db-file exist, just open it it and delete it (usually on change from encrypted to unenrypted usage)
-            if os.path.isfile(self.decrypted_db_filename):
-                con = sqlite3.connect(self.decrypted_db_filename)
+            # if db-file exist, just open it it and delete old decrypted
+            # (usually on change from cleartext-db to encrypted-db usage or when app not closed properly)
+            if os.path.isfile(self.db_file):
+                con = sqlite3.connect(self.db_file)
                 # delete old encrypted file if exists (because in unencrypted file the content will be up to date when
                 # app will not be closed properly
-                if os.path.isfile(self.encrypted_db_filename):
-                    os.remove(self.encrypted_db_filename)
+                if os.path.isfile(self.encrypted_db_file):
+                    os.remove(self.encrypted_db_file)
 
                 # save to decrypted DB
-                fp = gzip.open(self.encrypted_db_filename, 'wb')
+                fp = gzip.open(self.encrypted_db_file, 'wb')
                 b = b''
                 for line in con.iterdump():
                     b += bytes('%s\n', 'utf8') % bytes(line, 'utf8')
@@ -1333,33 +1328,47 @@ class local_card_db:
                 return con
 
             # encrypted file exists
-            if os.path.isfile(self.encrypted_db_filename):
-                f = gzip.open(self.encrypted_db_filename)
+            elif os.path.isfile(self.encrypted_db_file):
+                f = gzip.open(self.encrypted_db_file)
                 safe = f.read()
                 f.close()
                 content = self.decryption(safe, self.password)
                 content = content.decode('utf-8')
-                con = sqlite3.connect(self.decrypted_db_filename) # decrypted filename is temp file name while open
+                con = sqlite3.connect(self.db_file)  # decrypted filename is temp file name while open
                 # con = sqlite3.connect(self.decrypted_db_filename)
                 con.executescript(content)
                 return con
 
-            # no db file exists
-            con = sqlite3.connect(self.decrypted_db_filename)
-            return con
+        elif not encrypt_db_file:
+            if os.path.isfile(self.db_file):
+                con = sqlite3.connect(self.db_file)
+                if os.path.isfile(self.encrypted_db_file):
+                    os.remove(self.encrypted_db_file)
+                return con
 
+            # if encrypted db-file exist
+            elif os.path.isfile(self.encrypted_db_file):
+                f = gzip.open(self.encrypted_db_file)
+                safe = f.read()
+                f.close()
+                content = self.decryption(safe, self.password)
+                content = content.decode('utf-8')
+                con = sqlite3.connect(self.db_file)
+                con.executescript(content)
+                os.remove(self.encrypted_db_file)  # delete encrypted db
+                return con
 
     def save_and_close_database(self, encrypt_db):
-        # fixme check when decrypted if it works correctly!
         if encrypt_db:
-            fp = gzip.open(self.encrypted_db_filename, 'wb')
+            fp = gzip.open(self.encrypted_db_file, 'wb')
             b = b''
             for line in self.conn.iterdump():
                 b += bytes('%s\n', 'utf8') % bytes(line, 'utf8')
             b = self.encryption(b, self.password)
             fp.write(b)
             fp.close()
-            os.remove(self.decrypted_db_filename)  # remove temp decrypted db
+            shred_file(self.db_file)  # overwrite and delete temp cleartext db
+
         self.close()
 
 def is_english_seed_word(word) -> bool:
