@@ -181,7 +181,7 @@ class Dialog_HTML_Export(QMainWindow, Ui_DialogHtmlExport):
         current_time = str(datetime.now().replace(microsecond=0))
         current_date = str(datetime.now().strftime('%d.%m.%Y'))
 
-        #extra-filter types to export (own or not own)
+        # extra-filter types to export (own or not own)
         selected_index = self.comboBox_filter.currentIndex()
         extra_where_filter = ""
         if selected_index == 1: # only own cards
@@ -2168,21 +2168,25 @@ class Frm_Mainwin(QMainWindow, Ui_MainWindow):
         cards_creators = localdb.sql("""SELECT dc_head.creator FROM (dc_dynamic_head INNER JOIN 
         dc_head ON dc_head.card_id = dc_dynamic_head.card_id) WHERE dc_head.deleted = False and dc_head.maxhop > 
         dc_dynamic_head.hops and dc_head.type != 'publickeys'""")
-
-        needed_publickey_ids = []
-        for creator in cards_creators:
-            needed_publickey_ids.append(creator[0])
+        needed_publickey_ids = [creator[0] for creator in cards_creators]
+        # needed_publickey_ids = []
+        # for creator in cards_creators:
+        #     needed_publickey_ids.append(creator[0])
 
         # read all cards from db and store it in dict-format (format for export to frieds etc)
-        temp_allcards = []
-        for id in card_ids:
-            temp_allcards.append(localdb.convert_db_to_dict(id, True))  #
+        temp_allcards = [localdb.convert_db_to_dict(id, True) for id in card_ids]
+
+        # temp_allcards = []
+        # for id in card_ids:
+        #     temp_allcards.append(localdb.convert_db_to_dict(id, True))  #
 
         # filter out not need pubkeys (friends does not need them to verify signature)
-        allcards = []
-        for card in temp_allcards:
-            if not (card['dc_head']['type'] == "publickeys" and card['dc_head']['creator'] not in needed_publickey_ids):
-                allcards.append(card)
+        allcards = [card for card in temp_allcards if not (card['dc_head']['type'] == "publickeys" and card['dc_head']['creator'] not in needed_publickey_ids)]
+
+        # allcards = []
+        # for card in temp_allcards:
+        #     if not (card['dc_head']['type'] == "publickeys" and card['dc_head']['creator'] not in needed_publickey_ids):
+        #         allcards.append(card)
 
         if len(allcards) == 0:  # if nochting to export end function
             frm_main_window.statusbar.showMessage(f"Datenbank ist leer. Nichts zum teilen!", timeout=10000)

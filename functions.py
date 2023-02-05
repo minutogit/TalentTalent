@@ -1296,11 +1296,9 @@ class local_card_db:
         return b
 
     def open_cdb(self, encrypted_database=False):
-        # ic(encrypted_database)
         if not encrypted_database:
             # if encrypted db-file exist, decrypte it and delete it (usually on change from encrypted to unenrypted usage)
             if os.path.isfile(self.encrypted_db_filename):
-                # ic("verschlüsstelte datei existiert")
                 f = gzip.open(self.encrypted_db_filename)
                 safe = f.read()
                 f.close()
