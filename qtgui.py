@@ -1014,7 +1014,6 @@ class Dialog_Business_Card(QMainWindow, Ui_DialogBuisinessCard):
         """enables or disables individual hop settings on every input when extend-checkbox is checked or unchecked"""
         # print(f"check box checked? {self.checkBox_extend_hops.isChecked()}")
         if self.checkBox_extend_hops.isChecked():
-            self.label_range.setText(f"Reichweite")  # update view of range label
             self.HOPS_image_spinBox.setEnabled(True)
             self.HOPS_name_spinBox.setEnabled(True)
             self.HOPS_family_name_spinBox.setEnabled(True)

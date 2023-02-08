@@ -748,6 +748,9 @@
      <pointsize>10</pointsize>
     </font>
    </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;0 = Eintrag wird nur lokal gespeichert.&lt;/p&gt;&lt;p&gt;1 = Eintrag wird auch an Freunde geteilt (Freund ersten Grads)&lt;/p&gt;&lt;p&gt;2 = Eintrag wird bis an Freunde der Freunde geteilt (2. Grad)&lt;/p&gt;&lt;p&gt;3 = Teilen bis Freunde 3. Grads&lt;/p&gt;&lt;p&gt;4 = Teilen bis Freunde 4. Grads&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
    <property name="text">
     <string>Reichweite</string>
    </property>
@@ -768,6 +771,9 @@
      <bold>true</bold>
     </font>
    </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;0 = Eintrag wird nur lokal gespeichert.&lt;/p&gt;&lt;p&gt;1 = Eintrag wird auch an Freunde geteilt (Freund ersten Grads)&lt;/p&gt;&lt;p&gt;2 = Eintrag wird bis an Freunde der Freunde geteilt (2. Grad)&lt;/p&gt;&lt;p&gt;3 = Teilen bis Freunde 3. Grads&lt;/p&gt;&lt;p&gt;4 = Teilen bis Freunde 4. Grads&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
    <property name="text">
     <string>+</string>
    </property>
@@ -785,6 +791,9 @@
     <font>
      <pointsize>15</pointsize>
     </font>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;0 = Eintrag wird nur lokal gespeichert.&lt;/p&gt;&lt;p&gt;1 = Eintrag wird auch an Freunde geteilt (Freund ersten Grads)&lt;/p&gt;&lt;p&gt;2 = Eintrag wird bis an Freunde der Freunde geteilt (2. Grad)&lt;/p&gt;&lt;p&gt;3 = Teilen bis Freunde 3. Grads&lt;/p&gt;&lt;p&gt;4 = Teilen bis Freunde 4. Grads&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="text">
     <string>-</string>

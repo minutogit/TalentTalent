@@ -230,7 +230,7 @@ def generate_html_export_table(input_dict, type = "", filter_empty = True):
         if filter_empty and value == "":  # remove empty values from table
             continue
         #dprint(type, key, value)
-        val = adapt_text_value(key, value, type)
+        val = adapt_html_export_text_value(key, value, type)
         val = str(val).replace("&", "&amp;")
         val = html.escape(val).replace('\n', '<br />\n')  # zeilenumbrüche umwandeln
         val = make_html_links_for_export(key, val)
@@ -415,12 +415,26 @@ def adapt_text_value(key, value, type) -> str:
         if key == "edited":
             return format_date_string(value) # nice date format
 
+    if type == "business_card":
+        if key == "radius_of_activity":
+            return f"{value} km"
+
+    return value # change nothing when unknown type
+def adapt_html_export_text_value(key, value, type) -> str:
+    """change the text value of some elements on html export
+
+    :param key: key of the dict
+    :param value: value of the dict
+    :param type: type of dict. (business_card, friend, ...)
+    :return:
+    """
 
     if type == "business_card":
         if key == "radius_of_activity":
             return f"(Aktionsradius: {value}km)"
 
     return value # change nothing when unknown type
+
 
 
 def key_to_text(key, type) -> str:
