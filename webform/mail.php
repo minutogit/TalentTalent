@@ -30,6 +30,7 @@ $interests_hobbies = esc($_POST['interests_hobbies']);
 $skills_offers = esc($_POST['skills_offers']);
 $requests = esc($_POST['requests']);
 $tags = esc($_POST['tags']);
+$maxhop = esc($_POST['maxhop']);
 $card_type = "<card_type>business_card<card_type>\n";  // placeholder for more possible contents (ads, events, ...)
 $message_to_collector = esc($_POST['message_to_collector']);
 $entry_type = esc($_POST['entry_type']);
@@ -37,9 +38,9 @@ $entry_type = esc($_POST['entry_type']);
 
 $entrant_email = esc($_POST['email']);
 $collector_info = "Hinweis: Den Inhalt dieser Mail unveraendert einfach kopieren und mit TalentTalent importieren.\nZur zusaetzlichen Sicherheit eventuell warten bis der Eintrager die Mail nochmal weiterleitet.";
-$mailcontent_collector="<name>$name<name>\n<family_name>$family_name<family_name>\n<street>$street<street>\n<zip_code>$zip_code<zip_code>\n<city>$city<city>\n<country>$country<country>\n<radius_of_activity>$radius_of_activity<radius_of_activity>\n<company_profession>$company_profession<company_profession>\n<phone>$phone<phone>\n<website>$website<website>\n<email>$email<email>\n<other_contact>$other_contact<other_contact>\n<interests_hobbies>$interests_hobbies<interests_hobbies>\n<skills_offers>$skills_offers<skills_offers>\n<requests>$requests<requests>\n<tags>$tags<tags>\n\nEintragungstyp: $entry_type\n\nEintrag von: $name $family_name  ($street $zip_code $city $country)\nNachricht:$message_to_collector\n\n\n$collector_info";
+$mailcontent_collector="<name>$name<name>\n<family_name>$family_name<family_name>\n<street>$street<street>\n<zip_code>$zip_code<zip_code>\n<city>$city<city>\n<country>$country<country>\n<radius_of_activity>$radius_of_activity<radius_of_activity>\n<company_profession>$company_profession<company_profession>\n<phone>$phone<phone>\n<website>$website<website>\n<email>$email<email>\n<other_contact>$other_contact<other_contact>\n<interests_hobbies>$interests_hobbies<interests_hobbies>\n<skills_offers>$skills_offers<skills_offers>\n<requests>$requests<requests>\n<tags>$tags<tags>\n<maxhop>$maxhop<maxhop>\n\n\nEintragungstyp: $entry_type\n\nEintrag von: $name $family_name  ($street $zip_code $city $country)\nNachricht:$message_to_collector\n\n\n$collector_info";
 $entrant_info = "WICHTIG! Antworte nochmal kurz auf diese Mail, um die Eintragung zu bestaetigen! Folgender Inhalt wird dann in die Liste eingetragen.\n\n";
-$mailcontent_entrant = $entrant_info . "Name:\t$name\nFamilienname:\t$family_name\nStrasse:\t$street\nPLZ:\t$zip_code\nOrt:\t$city\nLand:\t$country\nAktivitaetsradius:\t$radius_of_activity\nUnternehmen/Beruf:\t$company_profession\nTelefon:\t$phone\nInternetseite:\t$website\nE-Mail:\t$email\nSonstiger Kontakt:\t$other_contact\nInteressen/Hobbies:\t$interests_hobbies\nAngebot/Faehigkeiten:\t$skills_offers\nGesuch:\t$requests\nStichwoerter:\t$tags\n\nEintragungstyp:\t $entry_type\n\nDeine Nachricht:\t$message_to_collector";
+$mailcontent_entrant = $entrant_info . "Name:\t$name\nFamilienname:\t$family_name\nStrasse:\t$street\nPLZ:\t$zip_code\nOrt:\t$city\nLand:\t$country\nAktivitaetsradius:\t$radius_of_activity\nUnternehmen/Beruf:\t$company_profession\nTelefon:\t$phone\nInternetseite:\t$website\nE-Mail:\t$email\nSonstiger Kontakt:\t$other_contact\nInteressen/Hobbies:\t$interests_hobbies\nAngebot/Faehigkeiten:\t$skills_offers\nGesuch:\t$requests\nStichwoerter:\t$tags\n\nmax Reichweite zum teilen:\t$maxhop\n\nEintragungstyp:\t $entry_type\n\nDeine Nachricht:\t$message_to_collector";
 $mailcontent_entrant = stripslashes($mailcontent_entrant);  //unescape the text and decode html-special-chars
 $headers = "From: $from_email \r\n"; // Add the cc header
 mail($recipient, $subject, ($card_type . $mailcontent_collector), $headers) or die("Fehler!"); // mail to collector

@@ -243,7 +243,11 @@ class Dialog_Mail_Import(QMainWindow,Ui_DialogMailImport):
         if not isinstance(data_dict, dict):
             show_message_box("Import fehlgeschlagen", f"Import nicht erfolgreich. Mailtext vollständig eingefügt?\n{data_dict}")
             return
-        dialog_business_card.open_mail_import(data_dict)
+        dprint(data_dict)
+        try:
+            dialog_business_card.open_mail_import(data_dict)
+        except:
+            show_message_box("Fehler", "Import fehlgeschlagen")
         self.close()
 
 
@@ -1263,6 +1267,7 @@ class Dialog_Business_Card(QMainWindow, Ui_DialogBuisinessCard):
         self.skills_offers_textEdit.setText(card_data['skills_offers'])
         self.requests_textEdit.setText(card_data['requests'])
         self.tags_lineEdit.setText(card_data['tags'])
+        self.set_hops_to_val(int(card_data['maxhop']))
         
 
         self.label_range.setText(f"Reichweite: {max(self.hop_list())}")  # update view of max hops
@@ -1538,12 +1543,37 @@ class Dialog_Business_Card(QMainWindow, Ui_DialogBuisinessCard):
                 self.HOPS_family_name_spinBox.text(),
                 self.HOPS_name_spinBox.text(), self.HOPS_image_spinBox.text()]
         return hops
+    
+    def set_hops_to_val(self,hops):
+        """set all hops in gui to the same value"""
+        if not isinstance(hops, int):
+            hops = int(0)
 
+        self.HOPS_image_spinBox.setValue(hops)
+        self.HOPS_name_spinBox.setValue(hops)
+        self.HOPS_family_name_spinBox.setValue(hops)
+        self.HOPS_radius_of_activity_spinBox.setValue(hops)
+        self.HOPS_street_spinBox.setValue(hops)
+        self.HOPS_zip_code_spinBox.setValue(hops)
+        self.HOPS_city_spinBox.setValue(hops)
+        self.HOPS_country_spinBox.setValue(hops)
+        self.HOPS_coordinates_spinBox.setValue(hops)
+        self.HOPS_other_contact_spinBox.setValue(hops)
+        self.HOPS_company_profession_spinBox.setValue(hops)
+        self.HOPS_phone_spinBox.setValue(hops)
+        self.HOPS_website_spinBox.setValue(hops)
+        self.HOPS_email_spinBox.setValue(hops)
+        self.HOPS_other_contact_spinBox.setValue(hops)
+        self.HOPS_interests_hobbies_spinBox.setValue(hops)
+        self.HOPS_skills_offers_spinBox.setValue(hops)
+        self.HOPS_requests_spinBox.setValue(hops)
+        self.HOPS_tags_spinBox.setValue(hops)
+    
     def increase_hops(self):
         """increases the hoops value of all spinboxes"""
 
         maxhop = int(max(self.hop_list()))
-        if maxhop < 5:
+        if maxhop < 4:
             self.HOPS_image_spinBox.setValue(int(self.HOPS_image_spinBox.text()) + 1)
             self.HOPS_name_spinBox.setValue(int(self.HOPS_name_spinBox.text()) + 1)
             self.HOPS_family_name_spinBox.setValue(int(self.HOPS_family_name_spinBox.text()) + 1)
@@ -1553,7 +1583,7 @@ class Dialog_Business_Card(QMainWindow, Ui_DialogBuisinessCard):
             self.HOPS_city_spinBox.setValue(int(self.HOPS_city_spinBox.text()) + 1)
             self.HOPS_country_spinBox.setValue(int(self.HOPS_country_spinBox.text()) + 1)
             self.HOPS_coordinates_spinBox.setValue(int(self.HOPS_coordinates_spinBox.text()) + 1)
-            self.HOPS_other_contact_spinBox.setValue(int(self.HOPS_coordinates_spinBox.text()) + 1)
+            self.HOPS_other_contact_spinBox.setValue(int(self.HOPS_other_contact_spinBox.text()) + 1)
             self.HOPS_company_profession_spinBox.setValue(int(self.HOPS_company_profession_spinBox.text()) + 1)
             self.HOPS_phone_spinBox.setValue(int(self.HOPS_phone_spinBox.text()) + 1)
             self.HOPS_website_spinBox.setValue(int(self.HOPS_website_spinBox.text()) + 1)
@@ -1568,7 +1598,7 @@ class Dialog_Business_Card(QMainWindow, Ui_DialogBuisinessCard):
         """decreases the hoops value of all spinboxes"""
         minhop = int(min(self.hop_list()))
 
-        if minhop > 1:
+        if minhop > 0:
             self.HOPS_image_spinBox.setValue(int(self.HOPS_image_spinBox.text()) - 1)
             self.HOPS_name_spinBox.setValue(int(self.HOPS_name_spinBox.text()) - 1)
             self.HOPS_family_name_spinBox.setValue(int(self.HOPS_family_name_spinBox.text()) - 1)
@@ -1578,7 +1608,7 @@ class Dialog_Business_Card(QMainWindow, Ui_DialogBuisinessCard):
             self.HOPS_city_spinBox.setValue(int(self.HOPS_city_spinBox.text()) - 1)
             self.HOPS_country_spinBox.setValue(int(self.HOPS_country_spinBox.text()) - 1)
             self.HOPS_coordinates_spinBox.setValue(int(self.HOPS_coordinates_spinBox.text()) - 1)
-            self.HOPS_other_contact_spinBox.setValue(int(self.HOPS_coordinates_spinBox.text()) - 1)
+            self.HOPS_other_contact_spinBox.setValue(int(self.HOPS_other_contact_spinBox.text()) - 1)
             self.HOPS_company_profession_spinBox.setValue(int(self.HOPS_company_profession_spinBox.text()) - 1)
             self.HOPS_phone_spinBox.setValue(int(self.HOPS_phone_spinBox.text()) - 1)
             self.HOPS_website_spinBox.setValue(int(self.HOPS_website_spinBox.text()) - 1)

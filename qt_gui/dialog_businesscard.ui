@@ -23,10 +23,10 @@
     </rect>
    </property>
    <property name="minimum">
-    <number>1</number>
+    <number>0</number>
    </property>
    <property name="maximum">
-    <number>5</number>
+    <number>4</number>
    </property>
   </widget>
   <widget class="QTextEdit" name="skills_offers_textEdit">
@@ -182,10 +182,10 @@
     </rect>
    </property>
    <property name="minimum">
-    <number>1</number>
+    <number>0</number>
    </property>
    <property name="maximum">
-    <number>5</number>
+    <number>4</number>
    </property>
   </widget>
   <widget class="QSpinBox" name="HOPS_street_spinBox">
@@ -198,10 +198,10 @@
     </rect>
    </property>
    <property name="minimum">
-    <number>1</number>
+    <number>0</number>
    </property>
    <property name="maximum">
-    <number>5</number>
+    <number>4</number>
    </property>
   </widget>
   <widget class="QSpinBox" name="HOPS_city_spinBox">
@@ -214,10 +214,10 @@
     </rect>
    </property>
    <property name="minimum">
-    <number>1</number>
+    <number>0</number>
    </property>
    <property name="maximum">
-    <number>5</number>
+    <number>4</number>
    </property>
   </widget>
   <widget class="QSpinBox" name="HOPS_country_spinBox">
@@ -230,10 +230,10 @@
     </rect>
    </property>
    <property name="minimum">
-    <number>1</number>
+    <number>0</number>
    </property>
    <property name="maximum">
-    <number>5</number>
+    <number>4</number>
    </property>
   </widget>
   <widget class="QSpinBox" name="HOPS_zip_code_spinBox">
@@ -246,10 +246,10 @@
     </rect>
    </property>
    <property name="minimum">
-    <number>1</number>
+    <number>0</number>
    </property>
    <property name="maximum">
-    <number>5</number>
+    <number>4</number>
    </property>
   </widget>
   <widget class="QLabel" name="label_14">
@@ -342,10 +342,10 @@
     </rect>
    </property>
    <property name="minimum">
-    <number>1</number>
+    <number>0</number>
    </property>
    <property name="maximum">
-    <number>5</number>
+    <number>4</number>
    </property>
   </widget>
   <widget class="QSpinBox" name="HOPS_phone_spinBox">
@@ -358,10 +358,10 @@
     </rect>
    </property>
    <property name="minimum">
-    <number>1</number>
+    <number>0</number>
    </property>
    <property name="maximum">
-    <number>5</number>
+    <number>4</number>
    </property>
   </widget>
   <widget class="QSpinBox" name="HOPS_company_profession_spinBox">
@@ -374,10 +374,10 @@
     </rect>
    </property>
    <property name="minimum">
-    <number>1</number>
+    <number>0</number>
    </property>
    <property name="maximum">
-    <number>5</number>
+    <number>4</number>
    </property>
   </widget>
   <widget class="QSpinBox" name="HOPS_email_spinBox">
@@ -390,10 +390,10 @@
     </rect>
    </property>
    <property name="minimum">
-    <number>1</number>
+    <number>0</number>
    </property>
    <property name="maximum">
-    <number>5</number>
+    <number>4</number>
    </property>
   </widget>
   <widget class="QSpinBox" name="HOPS_interests_hobbies_spinBox">
@@ -406,10 +406,10 @@
     </rect>
    </property>
    <property name="minimum">
-    <number>1</number>
+    <number>0</number>
    </property>
    <property name="maximum">
-    <number>5</number>
+    <number>4</number>
    </property>
   </widget>
   <widget class="QSpinBox" name="HOPS_skills_offers_spinBox">
@@ -422,10 +422,10 @@
     </rect>
    </property>
    <property name="minimum">
-    <number>1</number>
+    <number>0</number>
    </property>
    <property name="maximum">
-    <number>5</number>
+    <number>4</number>
    </property>
   </widget>
   <widget class="QSpinBox" name="HOPS_website_spinBox">
@@ -438,10 +438,10 @@
     </rect>
    </property>
    <property name="minimum">
-    <number>1</number>
+    <number>0</number>
    </property>
    <property name="maximum">
-    <number>5</number>
+    <number>4</number>
    </property>
   </widget>
   <widget class="QSpinBox" name="HOPS_requests_spinBox">
@@ -454,10 +454,10 @@
     </rect>
    </property>
    <property name="minimum">
-    <number>1</number>
+    <number>0</number>
    </property>
    <property name="maximum">
-    <number>5</number>
+    <number>4</number>
    </property>
   </widget>
   <widget class="QLabel" name="label_9">
@@ -496,10 +496,10 @@
     </rect>
    </property>
    <property name="minimum">
-    <number>1</number>
+    <number>0</number>
    </property>
    <property name="maximum">
-    <number>5</number>
+    <number>4</number>
    </property>
   </widget>
   <widget class="QSpinBox" name="HOPS_radius_of_activity_spinBox">
@@ -512,10 +512,10 @@
     </rect>
    </property>
    <property name="minimum">
-    <number>1</number>
+    <number>0</number>
    </property>
    <property name="maximum">
-    <number>5</number>
+    <number>4</number>
    </property>
   </widget>
   <widget class="QLabel" name="label_16">
@@ -705,10 +705,10 @@
     </rect>
    </property>
    <property name="minimum">
-    <number>1</number>
+    <number>0</number>
    </property>
    <property name="maximum">
-    <number>5</number>
+    <number>4</number>
    </property>
   </widget>
   <widget class="QLineEdit" name="tags_lineEdit">
@@ -884,10 +884,10 @@
     </rect>
    </property>
    <property name="minimum">
-    <number>1</number>
+    <number>0</number>
    </property>
    <property name="maximum">
-    <number>5</number>
+    <number>4</number>
    </property>
   </widget>
   <widget class="QLineEdit" name="other_contact_lineEdit">
