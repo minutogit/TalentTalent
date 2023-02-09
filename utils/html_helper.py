@@ -42,10 +42,12 @@ def make_html_links_for_export(key, value) -> str:
     elif key == "phone" and len(value) > 2:
         return str(f'<a href="tel:{value}">{value}</a>')
     elif key == "coordinates":
+        if str(value).strip() == ";":
+            return ""
         if geo_distance(value) == "":
-            return str(f'<a href="https://www.google.com/maps/place/{str(value.split(";")[0]).replace(" ","")}">{value.split(";")[0]}</a>')
-        else:
-            return str(f'<a href="https://www.google.com/maps/place/{str(value.split(";")[0]).replace(" ","")}">({geo_distance(value)}km)</a>')
+            return str(f'<a href="https://www.google.com/maps/place/{str(value.split(";")[0]).replace(" ","")}">({value.split(";")[0]})</a>')
+
+        return str(f'<a href="https://www.google.com/maps/place/{str(value.split(";")[0]).replace(" ","")}">({geo_distance(value)}km)</a>')
     else:
         return value
 
@@ -97,18 +99,12 @@ def filter_dict(input_dict) -> dict:
 
     #collect keys to remove
     keys_to_remove = []
-    keys_to_clear = [] #keys where the value is set to ""
     for key, value in input_dict.items():
         if str(key).find("HOPS_") == 0 or str(key).find("DELETED_") == 0:
             #print(f"remove {key}")
             keys_to_remove.append(str(key))
-        # if str(key).find("DELETED_") == 0 and value != '0': # set val to deleted marked item to ""
-        #     # example: DELETED_name is the mark that the key 'name' has to be cleared
-        #     input_dict[str(key).replace("DELETED_","")] = ""
-        #print(f"val: '{value}'")
         if len(str(value).strip()) == 0: # clear value when only whitespaces and tabs
             input_dict[key] = ""
-
 
     #revove the keys from dict
     for key in keys_to_remove:
@@ -213,7 +209,7 @@ def generate_html_table(input_dict, type = "", filter_empty = True, extra_table_
 
     return htmlcode
 
-def generate_html_export_table(input_dict, type = "", filter_empty = True):
+def generate_html_export_table(input_dict, type = "", filter_empty = True, compact_mode = True):
 
     htmlcode = ""
     column_left = ""
@@ -226,15 +222,16 @@ def generate_html_export_table(input_dict, type = "", filter_empty = True):
     keys_in_text = ["requests", "skills_offers", "tags", "interests_hobbies"]
 
     for key, value in input_dict.items():
-        #print(f"keyval='{key}'=''{value}")
         if filter_empty and value == "":  # remove empty values from table
             continue
-        #dprint(type, key, value)
+
         val = adapt_html_export_text_value(key, value, type)
+        if compact_mode:
+            val = make_text_compact(key, val)
         val = str(val).replace("&", "&amp;")
         val = html.escape(val).replace('\n', '<br />\n')  # zeilenumbrüche umwandeln
         val = make_html_links_for_export(key, val)
-        #dprint(key, val)
+
         if key in keys_left:
             column_left += val + " "
         else:
@@ -252,6 +249,23 @@ def generate_html_export_table(input_dict, type = "", filter_empty = True):
 
     return htmlcode
 
+def make_text_compact(key, text):
+    """remove linebreaks or double whitespace etc. to save space an have a more compact text"""
+
+    # adapt only the following keys
+    keys_to_replace = ["requests", "skills_offers", "tags", "interests_hobbies"]
+    if key in keys_to_replace:
+        text = re.sub(' +',' ',text) # remove multiple whitespaces
+        text = text.strip() # remove leading and trailing whitespaces
+        text = text.replace("\n", ";") # replace newline with semicolon
+        text = text.replace(";;", ";") # replace multiple semicolons with one semicolon
+        text = text.replace(";", "; ") # add space after semicolon
+        text = text.replace(",;", ";")
+        text = text.replace(" ;", ";")
+        if text.endswith("; "):
+            text = text[:-2] # remove last semicolon
+
+    return text
 
 def generate_html_export_infohead(input_dict):
     """inserts the first line with infos to the export. Date, Location, Nummber of Entrys ..."""
@@ -342,8 +356,9 @@ def data_card_to_html(data_card_dict, show_details, type="", filter = False, ful
         htmlcode += "</body>\n</html>\n" #insert end of html
     return htmlcode
 
-def data_card_html_export(data_card_dict, type="", filter = False, filter_empty = False, grouping ="", own_filter_list = []):
-    """
+def data_card_html_export(data_card_dict, type="", filter = False, filter_empty = False, grouping ="",
+                          own_filter_list = [], compact_mode = True):
+    """ needed to export all cards to a html file (for later printing or pdf generation)
 
     :param input_dict: dict with values
     :param filter: bool to remove unwanted meta-info from data-card-dict
@@ -353,20 +368,18 @@ def data_card_html_export(data_card_dict, type="", filter = False, filter_empty 
     :return: html-code
     """
 
-
     content_dict = data_card_dict['data']
     card_details = data_card_dict['dc_head']
     card_details['hops'] = data_card_dict['dc_dynamic_head']['hops']
     for el in ['type', 'deleted', 'version']: # filter out unwanted details in dc_head
         card_details.pop(el)
 
-
-    #dprint(content_dict)
     #remove own unwanted keys
     if own_filter_list != []:
         for el in own_filter_list:
             content_dict.pop(el)
 
+    # remove not needed meta info etc.
     if filter:
         content_dict = filter_dict(content_dict)
 
@@ -374,7 +387,7 @@ def data_card_html_export(data_card_dict, type="", filter = False, filter_empty 
     content_dict = group_dict_keys(content_dict, grouping)
 
     #generate table
-    htmlcode = generate_html_export_table(content_dict, type=type,filter_empty=filter_empty)
+    htmlcode = generate_html_export_table(content_dict, type=type,filter_empty=filter_empty, compact_mode=compact_mode)
 
     return htmlcode
 

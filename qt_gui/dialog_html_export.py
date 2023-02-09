@@ -15,9 +15,9 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QComboBox, QDialog, QFormLayout,
-    QFrame, QHBoxLayout, QLabel, QLineEdit,
-    QPushButton, QSizePolicy, QSpacerItem, QVBoxLayout,
+from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QDialog,
+    QFormLayout, QFrame, QHBoxLayout, QLabel,
+    QLineEdit, QPushButton, QSizePolicy, QVBoxLayout,
     QWidget)
 
 class Ui_DialogHtmlExport(object):
@@ -36,13 +36,13 @@ class Ui_DialogHtmlExport(object):
         self.pushButton_set_own_location = QPushButton(DialogHtmlExport)
         self.pushButton_set_own_location.setObjectName(u"pushButton_set_own_location")
         self.pushButton_set_own_location.setGeometry(QRect(369, 220, 231, 23))
-        self.widget = QWidget(DialogHtmlExport)
-        self.widget.setObjectName(u"widget")
-        self.widget.setGeometry(QRect(11, 20, 311, 191))
-        self.verticalLayout = QVBoxLayout(self.widget)
+        self.layoutWidget = QWidget(DialogHtmlExport)
+        self.layoutWidget.setObjectName(u"layoutWidget")
+        self.layoutWidget.setGeometry(QRect(11, 20, 311, 161))
+        self.verticalLayout = QVBoxLayout(self.layoutWidget)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
-        self.label_11 = QLabel(self.widget)
+        self.label_11 = QLabel(self.layoutWidget)
         self.label_11.setObjectName(u"label_11")
         font = QFont()
         font.setFamilies([u"Sans Serif"])
@@ -51,13 +51,13 @@ class Ui_DialogHtmlExport(object):
 
         self.verticalLayout.addWidget(self.label_11)
 
-        self.label_2 = QLabel(self.widget)
+        self.label_2 = QLabel(self.layoutWidget)
         self.label_2.setObjectName(u"label_2")
         self.label_2.setAlignment(Qt.AlignBottom|Qt.AlignLeading|Qt.AlignLeft)
 
         self.verticalLayout.addWidget(self.label_2)
 
-        self.comboBox_filter = QComboBox(self.widget)
+        self.comboBox_filter = QComboBox(self.layoutWidget)
         self.comboBox_filter.addItem("")
         self.comboBox_filter.addItem("")
         self.comboBox_filter.addItem("")
@@ -71,13 +71,13 @@ class Ui_DialogHtmlExport(object):
 
         self.verticalLayout.addWidget(self.comboBox_filter)
 
-        self.label = QLabel(self.widget)
+        self.label = QLabel(self.layoutWidget)
         self.label.setObjectName(u"label")
         self.label.setAlignment(Qt.AlignBottom|Qt.AlignLeading|Qt.AlignLeft)
 
         self.verticalLayout.addWidget(self.label)
 
-        self.comboBox_column_selection = QComboBox(self.widget)
+        self.comboBox_column_selection = QComboBox(self.layoutWidget)
         self.comboBox_column_selection.addItem("")
         self.comboBox_column_selection.setObjectName(u"comboBox_column_selection")
         sizePolicy.setHeightForWidth(self.comboBox_column_selection.sizePolicy().hasHeightForWidth())
@@ -85,20 +85,16 @@ class Ui_DialogHtmlExport(object):
 
         self.verticalLayout.addWidget(self.comboBox_column_selection)
 
-        self.verticalSpacer = QSpacerItem(20, 17, QSizePolicy.Minimum, QSizePolicy.Expanding)
-
-        self.verticalLayout.addItem(self.verticalSpacer)
-
         self.horizontalLayout_2 = QHBoxLayout()
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
-        self.label_3 = QLabel(self.widget)
+        self.label_3 = QLabel(self.layoutWidget)
         self.label_3.setObjectName(u"label_3")
         self.label_3.setMinimumSize(QSize(200, 0))
         self.label_3.setWordWrap(True)
 
         self.horizontalLayout_2.addWidget(self.label_3)
 
-        self.lineEdit_max_distance = QLineEdit(self.widget)
+        self.lineEdit_max_distance = QLineEdit(self.layoutWidget)
         self.lineEdit_max_distance.setObjectName(u"lineEdit_max_distance")
 
         self.horizontalLayout_2.addWidget(self.lineEdit_max_distance)
@@ -106,13 +102,13 @@ class Ui_DialogHtmlExport(object):
 
         self.verticalLayout.addLayout(self.horizontalLayout_2)
 
-        self.widget1 = QWidget(DialogHtmlExport)
-        self.widget1.setObjectName(u"widget1")
-        self.widget1.setGeometry(QRect(341, 20, 300, 191))
-        self.formLayout = QFormLayout(self.widget1)
+        self.layoutWidget1 = QWidget(DialogHtmlExport)
+        self.layoutWidget1.setObjectName(u"layoutWidget1")
+        self.layoutWidget1.setGeometry(QRect(341, 20, 300, 191))
+        self.formLayout = QFormLayout(self.layoutWidget1)
         self.formLayout.setObjectName(u"formLayout")
         self.formLayout.setContentsMargins(0, 0, 0, 0)
-        self.label_4 = QLabel(self.widget1)
+        self.label_4 = QLabel(self.layoutWidget1)
         self.label_4.setObjectName(u"label_4")
         font1 = QFont()
         font1.setBold(True)
@@ -120,66 +116,66 @@ class Ui_DialogHtmlExport(object):
 
         self.formLayout.setWidget(0, QFormLayout.SpanningRole, self.label_4)
 
-        self.label_10 = QLabel(self.widget1)
+        self.label_10 = QLabel(self.layoutWidget1)
         self.label_10.setObjectName(u"label_10")
 
         self.formLayout.setWidget(1, QFormLayout.SpanningRole, self.label_10)
 
-        self.label_8 = QLabel(self.widget1)
+        self.label_8 = QLabel(self.layoutWidget1)
         self.label_8.setObjectName(u"label_8")
 
         self.formLayout.setWidget(2, QFormLayout.LabelRole, self.label_8)
 
-        self.street_lineEdit = QLineEdit(self.widget1)
+        self.street_lineEdit = QLineEdit(self.layoutWidget1)
         self.street_lineEdit.setObjectName(u"street_lineEdit")
 
         self.formLayout.setWidget(2, QFormLayout.FieldRole, self.street_lineEdit)
 
-        self.label_6 = QLabel(self.widget1)
+        self.label_6 = QLabel(self.layoutWidget1)
         self.label_6.setObjectName(u"label_6")
 
         self.formLayout.setWidget(3, QFormLayout.LabelRole, self.label_6)
 
-        self.zip_code_lineEdit = QLineEdit(self.widget1)
+        self.zip_code_lineEdit = QLineEdit(self.layoutWidget1)
         self.zip_code_lineEdit.setObjectName(u"zip_code_lineEdit")
         self.zip_code_lineEdit.setInputMethodHints(Qt.ImhDigitsOnly)
         self.zip_code_lineEdit.setClearButtonEnabled(False)
 
         self.formLayout.setWidget(3, QFormLayout.FieldRole, self.zip_code_lineEdit)
 
-        self.label_7 = QLabel(self.widget1)
+        self.label_7 = QLabel(self.layoutWidget1)
         self.label_7.setObjectName(u"label_7")
 
         self.formLayout.setWidget(4, QFormLayout.LabelRole, self.label_7)
 
-        self.city_lineEdit = QLineEdit(self.widget1)
+        self.city_lineEdit = QLineEdit(self.layoutWidget1)
         self.city_lineEdit.setObjectName(u"city_lineEdit")
 
         self.formLayout.setWidget(4, QFormLayout.FieldRole, self.city_lineEdit)
 
-        self.label_5 = QLabel(self.widget1)
+        self.label_5 = QLabel(self.layoutWidget1)
         self.label_5.setObjectName(u"label_5")
 
         self.formLayout.setWidget(5, QFormLayout.LabelRole, self.label_5)
 
-        self.country_lineEdit = QLineEdit(self.widget1)
+        self.country_lineEdit = QLineEdit(self.layoutWidget1)
         self.country_lineEdit.setObjectName(u"country_lineEdit")
 
         self.formLayout.setWidget(5, QFormLayout.FieldRole, self.country_lineEdit)
 
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.label_9 = QLabel(self.widget1)
+        self.label_9 = QLabel(self.layoutWidget1)
         self.label_9.setObjectName(u"label_9")
 
         self.horizontalLayout.addWidget(self.label_9)
 
-        self.coordinates_lineEdit = QLineEdit(self.widget1)
+        self.coordinates_lineEdit = QLineEdit(self.layoutWidget1)
         self.coordinates_lineEdit.setObjectName(u"coordinates_lineEdit")
 
         self.horizontalLayout.addWidget(self.coordinates_lineEdit)
 
-        self.determine_coordinates_pushButton = QPushButton(self.widget1)
+        self.determine_coordinates_pushButton = QPushButton(self.layoutWidget1)
         self.determine_coordinates_pushButton.setObjectName(u"determine_coordinates_pushButton")
 
         self.horizontalLayout.addWidget(self.determine_coordinates_pushButton)
@@ -187,6 +183,13 @@ class Ui_DialogHtmlExport(object):
 
         self.formLayout.setLayout(6, QFormLayout.SpanningRole, self.horizontalLayout)
 
+        self.checkBox_compact_mode = QCheckBox(DialogHtmlExport)
+        self.checkBox_compact_mode.setObjectName(u"checkBox_compact_mode")
+        self.checkBox_compact_mode.setGeometry(QRect(13, 230, 309, 21))
+        self.label_12 = QLabel(DialogHtmlExport)
+        self.label_12.setObjectName(u"label_12")
+        self.label_12.setGeometry(QRect(13, 210, 231, 16))
+        self.label_12.setFont(font1)
 
         self.retranslateUi(DialogHtmlExport)
 
@@ -227,5 +230,7 @@ class Ui_DialogHtmlExport(object):
         self.label_9.setText(QCoreApplication.translate("DialogHtmlExport", u"Koordinaten*", None))
         self.coordinates_lineEdit.setText("")
         self.determine_coordinates_pushButton.setText(QCoreApplication.translate("DialogHtmlExport", u"Ermitteln", None))
+        self.checkBox_compact_mode.setText(QCoreApplication.translate("DialogHtmlExport", u"Kompakt (Zeilenumbr\u00fcche etc. entfernen)", None))
+        self.label_12.setText(QCoreApplication.translate("DialogHtmlExport", u"Text Einstellungen", None))
     # retranslateUi
 

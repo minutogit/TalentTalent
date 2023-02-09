@@ -92,7 +92,7 @@ class Dialog_HTML_Export(QMainWindow, Ui_DialogHtmlExport):
         self.lineEdit_max_distance.setMaxLength(5)
 
         self.comboBox_column_selection.currentIndexChanged.connect(self.column_selected)
-        # todo filter columns and filter max distance
+        self.checkBox_compact_mode.setChecked(True)
 
     def init_and_show(self):
         self.show()
@@ -166,20 +166,22 @@ class Dialog_HTML_Export(QMainWindow, Ui_DialogHtmlExport):
                                                           os.path.join(os.getcwd(), conf.EXPORT_FOLDER,
                                                                        f"Angebote.html"),
                                                           filter="*.html")[0])
+        if export_filename == "": # if no file selected return
+            return
+        if not export_filename.endswith('.html'):
+            export_filename = export_filename.split(".")[0] + ".html"
+
+        # read out if compact mode (remove line breaks in content)
+        compact_mode = self.checkBox_compact_mode.isChecked()
+        current_time = str(datetime.now().replace(microsecond=0))
+        current_date = str(datetime.now().strftime('%d.%m.%Y'))
+
         # filter out unselected
         filter_out = []
         for selected_index in range(len(self.all_columns)):
             itemtext = self.comboBox_column_selection.itemText(selected_index + 1)
             if itemtext.startswith("_"):
                 filter_out.append(self.all_columns[selected_index])
-
-        if export_filename == "": # if no file selected return
-            return
-        if not export_filename.endswith('.html'):
-            export_filename = export_filename.split(".")[0] + ".html"
-
-        current_time = str(datetime.now().replace(microsecond=0))
-        current_date = str(datetime.now().strftime('%d.%m.%Y'))
 
         # extra-filter types to export (own or not own)
         selected_index = self.comboBox_filter.currentIndex()
@@ -211,19 +213,20 @@ class Dialog_HTML_Export(QMainWindow, Ui_DialogHtmlExport):
             all_cards = [card for card in all_cards if functions.geo_distance(card['data']['coordinates'], False)
                          < (int(self.lineEdit_max_distance.text()) + 1)]
 
-        html = html_export_head
         number_of_entrys = len(all_cards)
         infohead = {'number_of_entrys': number_of_entrys, 'zip_code': self.zip_code_lineEdit.text(),
                     'city': self.city_lineEdit.text(), 'coordinates': self.coordinates_lineEdit.text(),
                     'current_date': current_date}
 
+        # generate html file
+        html = html_export_head # insert html head
         html += utils.generate_html_export_infohead(infohead)
         for data_card in all_cards:
             opened_type = data_card['dc_head']['type']
-            html += data_card_html_export(data_card, type=opened_type, filter=True,
-                                     filter_empty=True, grouping="business_card", own_filter_list=filter_out)
-
-        html += "</body>\n</html>\n" #insert end of html
+            html += data_card_html_export(data_card, type=opened_type, filter=True, filter_empty=True,
+                                          grouping="business_card", own_filter_list=filter_out,
+                                          compact_mode=compact_mode)
+        html += "</body>\n</html>\n" # insert end of html
         html_file = open(export_filename, "w")
         html_file.write(html)
         html_file.close()
