@@ -287,7 +287,7 @@
   </action>
   <action name="actionHTML_Export">
    <property name="text">
-    <string>HTML-Export</string>
+    <string>HTML-Export der Einträge</string>
    </property>
   </action>
   <action name="actionEMail_to_friends">

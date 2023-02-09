@@ -216,7 +216,7 @@ class Ui_MainWindow(object):
         self.actionCleanDatabase.setText(QCoreApplication.translate("MainWindow", u"Datenbank reinigen", None))
         self.actionProfilSettings.setText(QCoreApplication.translate("MainWindow", u"Profil Einstellungen", None))
         self.actionShowSeedWords.setText(QCoreApplication.translate("MainWindow", u"Schl\u00fcsselw\u00f6rter anzeigen", None))
-        self.actionHTML_Export.setText(QCoreApplication.translate("MainWindow", u"HTML-Export", None))
+        self.actionHTML_Export.setText(QCoreApplication.translate("MainWindow", u"HTML-Export der Eintr\u00e4ge", None))
         self.actionEMail_to_friends.setText(QCoreApplication.translate("MainWindow", u"E-Mail an Freunde", None))
         self.action_mailinglist.setText(QCoreApplication.translate("MainWindow", u"E-Mail an Mailverteiler", None))
         self.action_mail_import.setText(QCoreApplication.translate("MainWindow", u"Visitenkarte E-Mail Import", None))

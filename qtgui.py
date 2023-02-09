@@ -48,7 +48,7 @@ file_handler = logging.FileHandler(LOG_FILENAME)
 file_handler.setLevel(logging.WARN)  # file-log-level
 file_handler.setFormatter(log_format)
 log.addHandler(file_handler)
-log.setLevel(logging.DEBUG)  # complete level, this level limits file and console log
+#log.setLevel(logging.ERROR)  # complete level, this level limits file and console log
 
 logging.basicConfig(filename=LOG_FILENAME, level=logging.DEBUG)
 
@@ -414,8 +414,8 @@ class Dialog_Display_Content(QMainWindow, Ui_DialogDisplayContent):
         mail_subject = "Aktuelle TalentTalent Datenbank"
 
         # brief description
-        htmlcode = """<p>Klicke auf den Link um dein E-Mail Programm zu &ouml;ffnen um eine Mail an all deine Freunde 
-        zu schreiben um zum Beispiel die aktuelle Datenbank mit neuen Eintr&auml;gen zu teilen.</p>"""
+        htmlcode = """<p>Klicke auf den Link, um dein E-Mail Programm zu &ouml;ffnen und eine Mail an alle deine Freunde 
+        zu schreiben, z.B. um die aktuelle Datenbank mit den Eintr&auml;gen zu teilen.</p>"""
 
         # mail link
         htmlcode += (f"""<p style="text-align: center;"><a href="mailto:{my_mail_address}?bcc={friends_mail_adresses}""" +
@@ -443,7 +443,7 @@ class Dialog_Display_Content(QMainWindow, Ui_DialogDisplayContent):
 
         # brief description
         htmlcode = """<p>Klicke auf den Link, um eine Mail an alle 
-        Interessenten vom E-Mail-Verteiler zu senden.</p> """
+        Interessenten vom E-Mail-Verteiler zu senden, z.B. um die exportieren Eintr&auml;ge zu versenden. </p> """
 
         # mail link
         htmlcode += (f"""<p style="text-align: center;"><a href="mailto:{my_mail_address}?bcc={all_mail_adresses}""" +
