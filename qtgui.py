@@ -1269,7 +1269,6 @@ class Dialog_Business_Card(QMainWindow, Ui_DialogBuisinessCard):
         self.skills_offers_textEdit.setText(card_data['skills_offers'])
         self.requests_textEdit.setText(card_data['requests'])
         self.tags_lineEdit.setText(card_data['tags'])
-        self.set_hops_to_val(int(card_data['maxhop']))
         
 
         self.label_range.setText(f"Reichweite: {max(self.hop_list())}")  # update view of max hops
@@ -1545,32 +1544,7 @@ class Dialog_Business_Card(QMainWindow, Ui_DialogBuisinessCard):
                 self.HOPS_family_name_spinBox.text(),
                 self.HOPS_name_spinBox.text(), self.HOPS_image_spinBox.text()]
         return hops
-    
-    def set_hops_to_val(self,hops):
-        """set all hops in gui to the same value"""
-        if not isinstance(hops, int):
-            hops = int(0)
 
-        self.HOPS_image_spinBox.setValue(hops)
-        self.HOPS_name_spinBox.setValue(hops)
-        self.HOPS_family_name_spinBox.setValue(hops)
-        self.HOPS_radius_of_activity_spinBox.setValue(hops)
-        self.HOPS_street_spinBox.setValue(hops)
-        self.HOPS_zip_code_spinBox.setValue(hops)
-        self.HOPS_city_spinBox.setValue(hops)
-        self.HOPS_country_spinBox.setValue(hops)
-        self.HOPS_coordinates_spinBox.setValue(hops)
-        self.HOPS_other_contact_spinBox.setValue(hops)
-        self.HOPS_company_profession_spinBox.setValue(hops)
-        self.HOPS_phone_spinBox.setValue(hops)
-        self.HOPS_website_spinBox.setValue(hops)
-        self.HOPS_email_spinBox.setValue(hops)
-        self.HOPS_other_contact_spinBox.setValue(hops)
-        self.HOPS_interests_hobbies_spinBox.setValue(hops)
-        self.HOPS_skills_offers_spinBox.setValue(hops)
-        self.HOPS_requests_spinBox.setValue(hops)
-        self.HOPS_tags_spinBox.setValue(hops)
-    
     def increase_hops(self):
         """increases the hoops value of all spinboxes"""
 

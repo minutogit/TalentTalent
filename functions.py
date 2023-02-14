@@ -54,7 +54,7 @@ def parse_mail_text(text: str) -> dict:
     content_dict = {'card_type': '', 'name': '', 'family_name': '', 'street': '', 'zip_code': '', 'city': '',
                     'country': '', 'radius_of_activity': '', 'company_profession': '', 'phone': '', 'website': '',
                     'email': '', 'other_contact': '', 'interests_hobbies': '', 'skills_offers': '', 'requests': '',
-                    'tags': '', 'maxhop': 0}
+                    'tags': ''}
 
     content_elements = re.findall(r"<[a-z_]+>", text) # find all content_elements
     elements = [i for n, i in enumerate(content_elements) if i not in content_elements[:n]] # remove duplicates & keep order

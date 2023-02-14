@@ -110,7 +110,7 @@ footer {
   <div class="container">
   <h1 style="text-align: center;">Regional vernetzt - Angebotsliste</h1>
   <p>Gegenseitige Unterst&uuml;tzung und Zusammenarbeit sind das Gebot der Stunde. Was sind deine F&auml;higkeiten
-  und Talente? Wo kannst du gelegentlich Unterst&uuml;tzung gebrauchen?</br>Trage nur Informationen ein, mit denen du einverstanden bist, wenn sie ggf. von vielen anderen Menschen eingesehen werden k&ouml;nnen. Wie weit dein Eintrag verbreitet wird, kannst du am Ende des Formulars bestimmen.</br>Wenn du dich eingetragen hast, erh&auml;ltst du
+  und Talente? Wo kannst du gelegentlich Unterst&uuml;tzung gebrauchen?</br>Trage nur Informationen ein, mit denen du einverstanden bist, wenn sie ggf. von vielen anderen Menschen eingesehen werden k&ouml;nnen.</br>Wenn du dich eingetragen hast, erh&auml;ltst du
     gelegentlich per E-Mail eine Liste mit Angeboten / Gesuchen von Menschen aus deiner Region, die offen
     sind f&uuml;r alternative Tauschsysteme oder einfach nur helfen wollen.</p>
   </div>
@@ -259,33 +259,15 @@ footer {
       </fieldset>
       <fieldset  class="fieldset1">
         <div class="row">
-          <div class="col-left">
-          <label>Reichweite des Eintrags (Freundesebenen)</label>
-          </div>
-          <div class="col-right">
-            <select name="maxhop" required="required">
-            <option value="0">Eintrag nicht weiter teilen (nicht empfohlen)</option>
-            <option value="1">Ebene 1 - nur an befreundente Listenverwalter</option>
-            <option value="2" selected="selected">Ebene 2 - bis Freundesfreund (empfohlen)</option>
-            <option value="3">Ebene 3 - weite Verbreitung</option>
-            <option value="4">Ebene 4 - sehr weite Verbreitung</option>
-            </select>
-            <label>Der Listenverwalter ist mit anderen Listenverwaltern in der Region befreundet, um gemeinsam eine gr&ouml;&szlig;ere regionale Liste zu sammeln. Bis in welche Freundesebene darf dein Eintrag an andere befreundete Sammler verbreitet werden?<br>
-              Ebene 1 hei&szlig;t nur an befreundete Sammler. Ebene 2 hei&szlig;t auch an die Freunde der befreundeten Sammler. (usw.)
-            </label>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-left">
-            <label>Eintragstyp</label>
-          </div>
-          <div class="col-right">
-            <select name="entry_type" required="required">
-              <option value="Neueintrag">Bitte neu in Liste eintragen</option>
-              <option value="Eintrag aktualisieren">Meinen Eintrag aktualisieren</option>
-              <option value="Eintragung l&ouml;schen">Meinen Eintrag aus der Liste l&ouml;schen</option>
-            </select>
-          </div>
+          <label>
+        <input type="radio" id="new_entry2" name="entry_type" value="Neueintrag" required> Bitte neu eintragen
+        </label>
+        <label>
+          <input type="radio" id="update_entry2" name="entry_type" value="Eintrag aktualisieren"> Meinen Eintrag aktualisieren
+        </label>
+        <label>
+          <input type="radio" id="remove_entry2" name="entry_type" value="Eintragung l&ouml;schen"> Meinen Eintrag aus der Liste l&ouml;schen
+        </label>
         </div>
       </fieldset>
       <div class="row">
