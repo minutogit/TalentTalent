@@ -348,7 +348,7 @@ class config():
         self.IMPORT_FAILED_SUBFOLDER = os.path.join(self.IMPORT_FOLDER, 'import_fehlgeschlagen')  # failed import-files
 
 
-        self.ENCRYPT_LOCAL_DATABASE = True  # Set if local DB should be stored encryped
+        self.ENCRYPT_LOCAL_DATABASE = False  # Set if local DB should be stored encryped
 
 
         if not os.path.exists(os.path.join(os.getcwd(), self.PROGRAMM_FOLDER)):
@@ -493,13 +493,21 @@ class local_card_db:
 
 
     def unhide_data_card(self,card_id):
-            """
-                    marks the content as not hidden (for example, if it was wrongly considered inadequate)
+        """
+                marks the content as not hidden (for example, if it was wrongly considered inadequate)
 
-                    :param card_id: ID of the car
-                    :return:
-                    """
-            self.sql("UPDATE local_card_info SET hidden = 0 WHERE card_id = ?;", (card_id, ))
+                :param card_id: ID of the car
+                :return:
+                """
+        self.sql("UPDATE local_card_info SET hidden = 0 WHERE card_id = ?;", (card_id, ))
+
+    def recalculate_local_ids(self):
+        """ Calculates an unique local id ford every card_id in local_card_info sorted by distance of the card_id.
+            Is needed to have an short local unique_id)
+                """
+        self.sql("""WITH ordered_rows AS ( SELECT card_id, ROW_NUMBER() OVER (ORDER BY distance) AS new_order
+                      FROM local_card_info ) UPDATE local_card_info SET local_id = 
+                      ( SELECT new_order FROM ordered_rows WHERE ordered_rows.card_id = local_card_info.card_id );""")
 
 
     def datacard_to_sql_update(self, datacard):
@@ -607,10 +615,12 @@ class local_card_db:
 
             commands.append([sql_command, sql_data_tuble])
 
-        # insert card_id in local_card_info table
-        sql_command = f"INSERT INTO local_card_info ( card_id ) VALUES ( ? );"
-        sql_data_tuble = (card_id,)
-        commands.append([sql_command, sql_data_tuble])
+        # insert card_id in local_card_info table if needed (for example publickey not needed)
+        types_needed_local_card_info = ["business_card"] # all type which need local card info
+        if datacard['dc_head']['type'] in types_needed_local_card_info:
+            sql_command = f"INSERT INTO local_card_info ( card_id ) VALUES ( ? );"
+            sql_data_tuble = (card_id,)
+            commands.append([sql_command, sql_data_tuble])
 
         return commands
 
@@ -1090,7 +1100,8 @@ class local_card_db:
                                 card_id    REFERENCES dc_head (card_id),
                                 hidden     BOOLEAN DEFAULT (0),
                                 distance   CHAR (8),
-                                mailing_list TEXT (64) DEFAULT ('')                                
+                                mailing_list TEXT (64) DEFAULT (''),
+                                local_id     INTEGER                               
                             );
                             """
             self.sql(sqlite_command)

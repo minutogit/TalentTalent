@@ -307,6 +307,7 @@ class Dialog_Profile_Settings(QMainWindow, Ui_DialogProfileSettings):
         conf.write() #save settings to file
         if new_local_coordinate: # if coordinates changed then recalculate distances of all cards
             self.update_distances()
+            localdb.recalculate_local_ids()
         frm_main_window.set_gui_depending_profile_status()
 
 
@@ -1234,19 +1235,13 @@ class Dialog_Business_Card(QMainWindow, Ui_DialogBuisinessCard):
         self.label_range.setText(f"Reichweite: {max(self.hop_list())}")  # update view of max hops
 
         mailinglist_mail = localdb.sql_list("SELECT mailing_list FROM local_card_info WHERE card_id = ?;", (card_id,))[0]
-        #dprint(mailinglist_mail)
         if functions.isValidEmail(mailinglist_mail):
-            #dprint("is in mailinglist")
             self.checkBox_add_to_mailling_list.setChecked(True)
         else:
-            #dprint("not in mailinglist")
             self.checkBox_add_to_mailling_list.setChecked(False)
-            #self.checkBox_add_to_mailling_list.set
         self.show()
         
     def open_mail_import(self, card_data, opened_from_content_display = False):
-        # print(self.checkBox_extend_hops.isChecked())
-        #dprint("mail-import")
         self.set_defaults_businesscard_window()
         self.opened_from_content_display = opened_from_content_display # need to reload content display on close
         self.setWindowTitle(f"Visitenkarte  ID: {self.current_card_id[:8]}")
@@ -1481,6 +1476,7 @@ class Dialog_Business_Card(QMainWindow, Ui_DialogBuisinessCard):
         self.month_valid_label.hide()
         self.valid_until_label.show()
 
+        localdb.recalculate_local_ids() # recalculate local ids depending on distance
         self.status_label.setText("Visitenkarte erfolgreich gespeichert")
         QTimer.singleShot(4000, lambda: self.status_label.setText(""))
 
@@ -1862,7 +1858,7 @@ class Frm_Mainwin(QMainWindow, Ui_MainWindow):
         Adds all colmuns to to the column-selcetion-combobox
         :return:
         """
-        all_columns = ['ID', 'NAME', 'TELEFON', 'E-MAIL', 'WWW', 'PLZ', 'ORT', 'ENTFERNUNG', 'ANGEBOT',
+        all_columns = ['NR.', 'NAME', 'TELEFON', 'E-MAIL', 'WWW', 'PLZ', 'ORT', 'ENTFERNUNG', 'ANGEBOT',
                        'INTERESSEN', 'GESUCH', 'STICHWÖRTER', 'GÜLTIGKEIT']
         for col in all_columns:
             self.comboBox_column_selection.addItem(col)
@@ -1957,7 +1953,7 @@ class Frm_Mainwin(QMainWindow, Ui_MainWindow):
         if conf.GUI_COLUMN_SELECTION[0] == 0:
             self.tableView.hideColumn(0) # hide ID when not selected
 
-        column_selection = "card_id AS ID, "
+        column_selection = "local_id AS [NR.], "
         if conf.GUI_COLUMN_SELECTION[1] == 1: # 1 means active, so add selection
             column_selection += "(name || ' ' || family_name) AS Name, "
         if conf.GUI_COLUMN_SELECTION[2] == 1:
@@ -2017,6 +2013,7 @@ class Frm_Mainwin(QMainWindow, Ui_MainWindow):
         self.proxy_model = build_filter_models(filtertext, table_view_model)
         number_of_filtered_items = self.proxy_model.rowCount()
         self.tableView.setModel(self.proxy_model)
+        self.tableView.verticalHeader().setVisible(False) # hide index column
         self.tableView.setSortingEnabled(True)
 
         # show number of items
@@ -2035,7 +2032,8 @@ class Frm_Mainwin(QMainWindow, Ui_MainWindow):
     def table_click(self, index):
         """determines the card id an opens the window gui """
 
-        selected_card_id = self.proxy_model.data(self.proxy_model.index(index.row(), 0))
+        selected_local_id = self.proxy_model.data(self.proxy_model.index(index.row(), 0))
+        selected_card_id = localdb.sql(f"SELECT card_id FROM local_card_info WHERE local_id = {selected_local_id};")[0][0]
         dialog_display_content.show_card_id(selected_card_id)
 
     def set_gui_depending_profile_status(self):
@@ -2381,6 +2379,7 @@ class Frm_Mainwin(QMainWindow, Ui_MainWindow):
 
         # claculated distances of new and updated cards
         localdb.update_distances( new_imported_cardids + updated_cardids, conf.PROFILE_SET_COORDINATES)
+        localdb.recalculate_local_ids() # recalc new local_ids
         frm_main_window.update_table_view()
         frm_main_window.statusbar.showMessage(f"{len(new_imported_cardids)} neue Einträge und {len(updated_cardids)} aktuallisierte Einträge erfolgreich importiert.", timeout=20000)
 
