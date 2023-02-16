@@ -1681,8 +1681,10 @@ class Dialog_Enter_Password(QMainWindow, Ui_DialogEnterPassword):
 
             frm_main_window.set_gui_depending_profile_status()  # if necessary change window title
             frm_main_window.update_table_view()  # show current table
-            frm_main_window.tableView.setColumnWidth(0, 10) # ID column small
-            #frm_main_window.tableView.hideColumn(0)
+
+            frm_main_window.tableView.setColumnWidth(0, 10)
+            if conf.GUI_COLUMN_SELECTION[0] == 0:
+                frm_main_window.tableView.hideColumn(0)
 
 
         if not password_correct:
@@ -1872,6 +1874,7 @@ class Frm_Mainwin(QMainWindow, Ui_MainWindow):
                 itemtext = self.comboBox_column_selection.itemText(index + 1)
                 itemtext = "___" + itemtext.lower() + "___"  # mark as inactive (to hide this column)
                 self.comboBox_column_selection.setItemText(index + 1, itemtext)
+                self.tableView.hideColumn(0)
 
 
     def column_selected(self) -> None:

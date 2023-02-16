@@ -169,8 +169,8 @@ def generate_html_table(input_dict, type = "", filter_empty = True, extra_table_
         #dprint(f"keyval='{key}'=''{value}")
         if filter_empty and value == "":  # remove empty values from table
             continue
-        val = str(value).replace("&", "&amp;")
-        val = html.escape(val).replace('\n', '<br />\n')  # zeilenumbrüche umwandeln
+        #val = str(value).replace("&", "&amp;")
+        val = html.escape(value).replace('\n', '<br />\n')  # zeilenumbrüche umwandeln
         val = make_html_links(key, val)
         htmlcode += newtable
         newtable = ""
@@ -228,7 +228,7 @@ def generate_html_export_table(input_dict, type = "", filter_empty = True, compa
         val = adapt_html_export_text_value(key, value, type)
         if compact_mode:
             val = make_text_compact(key, val)
-        val = str(val).replace("&", "&amp;")
+        #val = str(val).replace("&", "&amp;")
         val = html.escape(val).replace('\n', '<br />\n')  # zeilenumbrüche umwandeln
         val = make_html_links_for_export(key, val)
 
