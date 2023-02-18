@@ -4,6 +4,7 @@ import calendar
 import inspect
 import random
 import sys
+import time
 import zlib
 from math import sqrt
 import binascii
@@ -137,7 +138,7 @@ def system_clock_ntp_difference():
     except:
         return 0
     if (ntpResponse):
-      now = float(datetime.now().strftime('%s'))
+      now = float(int(time.time()))
       diff = now-ntpResponse.tx_time
       return round(float(diff), 6)
 
