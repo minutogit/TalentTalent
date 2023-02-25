@@ -1043,6 +1043,7 @@ class local_card_db:
                                 valid_until DATE,
                                 version     INT DEFAULT (0),
                                 deleted     BOOLEAN DEFAULT (0),
+                                foreign_card     BOOLEAN DEFAULT (0),
                                 maxhop      INT (1)
                             );"""
             self.sql(sqlite_command)

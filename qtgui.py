@@ -976,11 +976,12 @@ class Dialog_Business_Card(QMainWindow, Ui_DialogBuisinessCard):
         self.status_label.setText("")  # to display status messages
         # self.checkBox_extend_hops.changeEvent.triggered.connect(self.set_hop_settings)
         self.checkBox_extend_hops.stateChanged.connect(self.set_hop_settings)  # when checkbox change
-
+        self.foreign_card = True
         self.set_hop_settings()  # init status of all hop spinboxes
 
-    def show_and_init(self):
+    def show_and_init(self,foreign_card = True):
         self.set_defaults_businesscard_window()
+        self.foreign_card = foreign_card
         self.show()
 
 
@@ -1381,9 +1382,9 @@ class Dialog_Business_Card(QMainWindow, Ui_DialogBuisinessCard):
 
 
             # insert dc_head
-            sql_command = (f"""INSERT INTO dc_head ( version, maxhop, deleted, valid_until, edited, created, type, creator, card_id )
-                               VALUES ( ? , '{maxhop}', ?, '{valid_until}', '{edited}', '{created}', '{type}', '{creator}', '{card_id}' ); """)
-            localdb.sql(sql_command, (version, deleted))
+            sql_command = (f"""INSERT INTO dc_head ( version, maxhop, deleted, valid_until, edited, created, type, creator, card_id, foreign_card )
+                               VALUES ( ? , '{maxhop}', ?, '{valid_until}', '{edited}', '{created}', '{type}', '{creator}', '{card_id}', ? ); """)
+            localdb.sql(sql_command, (version, deleted, self.foreign_card))
 
             # insert distance of card to db
             distance = functions.geo_distance(f"{self.coordinates_lineEdit.text()};{conf.PROFILE_SET_COORDINATES}")
@@ -1488,6 +1489,7 @@ class Dialog_Business_Card(QMainWindow, Ui_DialogBuisinessCard):
         self.adopt_validity_pushButton.hide()
         self.valid_until_label.hide()
         self.set_hop_settings()
+        self.foreign_card = True
         self.setWindowTitle(f"Visitenkarte  ID: {self.current_card_id[:8]}")
 
         self.name_lineEdit.setText("")
@@ -1814,6 +1816,7 @@ class Frm_Mainwin(QMainWindow, Ui_MainWindow):
 
         # database actions
         self.pushButton_add_businesscard.clicked.connect(self.show_business_card)  # button
+        self.pushButton_add_own_businesscard.clicked.connect(self.own_business_card) # button
         self.actionAdd_BusinessCard.triggered.connect(self.show_business_card)  # menu Klick -> FUnktion ausführen
 
         # profile actions
@@ -2080,6 +2083,7 @@ class Frm_Mainwin(QMainWindow, Ui_MainWindow):
             enable(self.menuExtended)
             enable(self.actionAdd_BusinessCard)
             enable(self.pushButton_add_businesscard)
+            enable(self.pushButton_add_own_businesscard)
             enable(self.comboBox_column_selection)
             enable(self.comboBox_filter)
             enable(self.lineEdit_filter)
@@ -2100,6 +2104,7 @@ class Frm_Mainwin(QMainWindow, Ui_MainWindow):
             disable(self.menuExtended)
             disable(self.actionAdd_BusinessCard)
             disable(self.pushButton_add_businesscard)
+            disable(self.pushButton_add_own_businesscard)
             disable(self.comboBox_column_selection)
             disable(self.comboBox_filter)
             disable(self.lineEdit_filter)
@@ -2121,6 +2126,7 @@ class Frm_Mainwin(QMainWindow, Ui_MainWindow):
             disable(self.menuExtended)
             disable(self.actionAdd_BusinessCard)
             disable(self.pushButton_add_businesscard)
+            disable(self.pushButton_add_own_businesscard)
             disable(self.comboBox_column_selection)
             disable(self.comboBox_filter)
             disable(self.lineEdit_filter)
@@ -2406,6 +2412,18 @@ class Frm_Mainwin(QMainWindow, Ui_MainWindow):
 
     def show_business_card(self):
         dialog_business_card.show_and_init()
+
+    def own_business_card(self):
+        # todo what happend when own card is created an old own card is reimported from friends (after db delteion)
+                # then there will be two own businesscards in db!
+        creator = crypt.Profile.rsa_key_pair_id
+        own_card_id = localdb.sql_list(f"""SELECT card_id FROM dc_head WHERE type = 'business_card' AND foreign_card = 0 
+                                        AND deleted = 0 AND creator = '{creator}';""")
+        if len(own_card_id) == 0: # no own card exists
+            dialog_business_card.show_and_init(foreign_card=False)
+        if len(own_card_id) == 1:
+            dialog_display_content.show_card_id(own_card_id[0])
+
 
     def show_dialog_generate_profile(self):
         dialog_profile_create_selection.show()

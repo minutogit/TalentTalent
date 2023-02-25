@@ -131,11 +131,22 @@
      </widget>
     </item>
     <item>
-     <widget class="QPushButton" name="pushButton_add_businesscard">
-      <property name="text">
-       <string>Visitenkarte hinzufügen</string>
-      </property>
-     </widget>
+     <layout class="QHBoxLayout" name="horizontalLayout_3">
+      <item>
+       <widget class="QPushButton" name="pushButton_add_own_businesscard">
+        <property name="text">
+         <string>Persönliche Visitenkarte</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButton_add_businesscard">
+        <property name="text">
+         <string>Andere Visitenkarte hinzufügen</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </item>
    </layout>
   </widget>

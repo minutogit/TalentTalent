@@ -143,10 +143,20 @@ class Ui_MainWindow(object):
 
         self.verticalLayout.addWidget(self.label_statistics)
 
+        self.horizontalLayout_3 = QHBoxLayout()
+        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
+        self.pushButton_add_own_businesscard = QPushButton(self.centralwidget)
+        self.pushButton_add_own_businesscard.setObjectName(u"pushButton_add_own_businesscard")
+
+        self.horizontalLayout_3.addWidget(self.pushButton_add_own_businesscard)
+
         self.pushButton_add_businesscard = QPushButton(self.centralwidget)
         self.pushButton_add_businesscard.setObjectName(u"pushButton_add_businesscard")
 
-        self.verticalLayout.addWidget(self.pushButton_add_businesscard)
+        self.horizontalLayout_3.addWidget(self.pushButton_add_businesscard)
+
+
+        self.verticalLayout.addLayout(self.horizontalLayout_3)
 
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
@@ -233,7 +243,8 @@ class Ui_MainWindow(object):
         self.comboBox_filter.setItemText(4, QCoreApplication.translate("MainWindow", u"Ausgeblendete", None))
 
         self.label_statistics.setText(QCoreApplication.translate("MainWindow", u"---", None))
-        self.pushButton_add_businesscard.setText(QCoreApplication.translate("MainWindow", u"Visitenkarte hinzuf\u00fcgen", None))
+        self.pushButton_add_own_businesscard.setText(QCoreApplication.translate("MainWindow", u"Eigene Visitenkarte", None))
+        self.pushButton_add_businesscard.setText(QCoreApplication.translate("MainWindow", u"Andere Visitenkarte hinzuf\u00fcgen", None))
         self.menuStart.setTitle(QCoreApplication.translate("MainWindow", u"Start", None))
         self.menuExtended.setTitle(QCoreApplication.translate("MainWindow", u"Erweitert", None))
         self.menuFriends.setTitle(QCoreApplication.translate("MainWindow", u"Freunde", None))
