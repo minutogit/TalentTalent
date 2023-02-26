@@ -1669,6 +1669,8 @@ class Dialog_Enter_Password(QMainWindow, Ui_DialogEnterPassword):
                                                    crypt.rsapubkey_to_rsapukeystring(
                                                        crypt.Profile.rsa_key_pair.public_key()), rsa_keypair)
 
+            localdb.update_database_friends_info(crypt.Profile.rsa_key_pair_id, rsa_keypair)
+
             # start clean database (remove old cards etc., disable expired friendship)
             if not localdb.clean_database(crypt.Profile.profile_id, check_system_time=True):
                 show_message_box("Wichtig!",
@@ -2154,6 +2156,9 @@ class Frm_Mainwin(QMainWindow, Ui_MainWindow):
         if export_password == False and not friends_are_exiting:
             show_message_box("Keine Freunde", "Es gibt keine Freunde an die exportiert werden kann.")
             return
+
+        # update data_card with friends_info (that friends know my friends)
+        localdb.update_database_friends_info(crypt.Profile.rsa_key_pair_id, crypt.Profile.rsa_key_pair, do_update=True)
 
         export_filename = str(QFileDialog.getSaveFileName(self, 'Datenbank speichern',
                                                           os.path.join(os.getcwd(), conf.EXPORT_FOLDER,

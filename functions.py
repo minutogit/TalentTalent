@@ -833,7 +833,7 @@ class local_card_db:
         if not own_pupkey_in_database:
             date_time_now = datetime.now().replace(microsecond=0)
 
-            maxhop = 5  # the max distribution of pubkeys is not limited by maxhop, instead it should only by
+            maxhop = 4  # the max distribution of pubkeys is not limited by maxhop, instead it should only by
             # distributed to friends when the pub key is needed it will be exported (when a an other datacard exists
             # where the key is need to verify signature)
             version = 0
@@ -874,6 +874,77 @@ class local_card_db:
                                           WHERE card_id = '{card_id}';"""
             self.sql(sql_command)
 
+    def update_database_friends_info(self, creator_id, rsa_keypair, do_update = False):
+        """ adds or updates the own friends info (the ids of my friends) to the database as data card
+        if is not in the database that friends know my friends
+        :param creator_id:
+        :param friend_ids:
+        :return:
+        """
+
+        # todo in cleaning and export - remove this datacard from database if no card_id exists with this creator id (so card is not needed)
+
+        card_id = "friends" + creator_id[7:16] + creator_id[:16] # static card id derived from local creator id and beginning with "friends"
+        friends_info_in_database = self.sql(f"SELECT EXISTS(SELECT * FROM friends_of_friends WHERE card_id = '{card_id}')")[0][0]
+        dprint(friends_info_in_database)
+        friend_ids = ','.join(self.sql_list(f"SELECT pubkey_id FROM friends WHERE active_friendship = True"))
+        dprint(friend_ids)
+        date_time_now = datetime.now().replace(microsecond=0)
+        valid_until = add_months(date_time_now, 36)
+        edited = date_time_now
+
+        # if key_id not exist add key
+        if not friends_info_in_database:
+            maxhop = 2  # the max distribution of friends_of_friends is not limited by maxhop,
+            version = 0
+            deleted = False
+            created = date_time_now
+            type = "friends_of_friends"
+            creator = creator_id
+
+            # insert dc_head
+            sql_command = (f"""INSERT INTO dc_head ( version, maxhop, deleted, valid_until, edited, created, type, creator, card_id )
+                               VALUES ( ? , ?, ?, ?, ?, ?, ?, ?, ? ); """)
+            self.sql(sql_command, (version, maxhop, deleted, valid_until, edited, created, type, creator, card_id))
+
+            sql_command = (
+                "INSERT INTO friends_of_friends (card_id, creator_id, friends_ids, HOPS_creator_id, HOPS_friends_ids) VALUES ( ?, ?, ?, ?, ? );")
+            self.sql(sql_command, (
+                card_id, creator_id, friend_ids, maxhop, maxhop))  # hops for every part to max
+
+            salts = (binascii.hexlify(os.urandom(8)).decode())  # one salt ist added
+
+            # insert dynamic head
+            sql_command = (f"""INSERT INTO dc_dynamic_head (salts, signature, hops, card_id) 
+                               VALUES ('{salts}',  NULL, 0, '{card_id}');""")
+            self.sql(sql_command)
+
+            # calc signature and add to database
+            special_hash = self.special_hash_from_sql(card_id).encode("utf-8")
+            signature = sign(special_hash, rsa_keypair).decode("utf-8")
+
+            sql_command = f"""UPDATE dc_dynamic_head SET signature = '{signature}' 
+                                          WHERE card_id = '{card_id}';"""
+            self.sql(sql_command)
+
+        elif friends_info_in_database and do_update: # update friends table
+            dprint("firends update")
+            # head update
+            sql_command = (f"""UPDATE dc_head SET edited = ?, valid_until = ?, version = version + 1
+                                         WHERE card_id = ?;""")
+            self.sql(sql_command, (edited, valid_until, card_id))
+
+            # content update - update friends
+            sql_command = (f"""UPDATE friends_of_friends SET friends_ids = ? WHERE card_id = ?;""")
+            self.sql(sql_command, (friend_ids, card_id))
+
+            # calc new signature and add to database
+            special_hash = self.special_hash_from_sql(card_id).encode("utf-8")
+            signature = sign(special_hash, rsa_keypair).decode("utf-8")
+
+            sql_command = f"""UPDATE dc_dynamic_head SET signature = '{signature}' 
+                                                      WHERE card_id = '{card_id}';"""
+            self.sql(sql_command)
 
     def remove_datacards(self, card_ids) -> bool:
         """removes multiple datacards from all tables (head, dynamic_head, ...)
@@ -937,6 +1008,16 @@ class local_card_db:
         OR (valid_until < '{delete_time_limit}' AND creator = '{profile_id}' AND deleted = True);"""
         cards = self.sql_list(sql_command)
         self.remove_datacards(cards) # remove all expired cards
+
+        # todo remove friends_info when not needed
+        # #### REMOVE NOT NEEDED friends-info (datacard with info friends of friend) ####
+        # # selects pukeys where need from existing data_cards in db (but not pubkeys of pubkey-datacards)
+        # needed_friend_ids = self.sql_list(f"""SELECT DISTINCT creator FROM dc_head WHERE type = 'business_card';""")  #
+        # needed_friend_ids.append(profile_id)
+        # needed_friend_ids = [*set(needed_friend_ids)]  # removes duplicates from list
+        # all_friend_ids = self.sql_list(f"""SELECT DISTINCT creator_id FROM friends_of_friends;""")  # collect all keys
+        # for id in needed_friend_ids:
+        #     self.sql(f"DELETE FROM publickeys WHERE pubkey_id = '{key}';")
 
 
         #### REMOVE NOT NEEDED PUBKEYS ####
@@ -1129,6 +1210,14 @@ class local_card_db:
             self.sql(sqlite_command)
             self.extend_table("publickeys")
 
+        if not self.table_exists("friends_of_friends"):
+            # datacard that stores all the friends_ids of an creator_id
+            sqlite_command = """CREATE TABLE friends_of_friends (card_id REFERENCES dc_head (card_id),
+                                creator_id CHAR (32), 
+                                friends_ids TEXT); """
+            self.sql(sqlite_command)
+            self.extend_table("friends_of_friends")
+
         if not self.table_exists("friends"):
             sqlite_command = """CREATE TABLE friends (
                                 pubkey_id         CHAR (32) PRIMARY KEY  UNIQUE,
@@ -1293,8 +1382,8 @@ class local_card_db:
         #dprint(card_ids)
         for card_id in card_ids:
             type = self.sql_list(f"""SELECT type FROM dc_head WHERE card_id = '{card_id}'""")[0]
-            if type == 'publickeys':
-                continue # pubkeys has no coordinates
+            if type in ['publickeys', 'friends_of_friends']:
+                continue # pubkeys, friends_of_friends has no coordinates
             [coordinate] = self.sql(f"""SELECT coordinates FROM {type} WHERE card_id = '{card_id}'""")[0]
             distance = geo_distance(f"{coordinate};{local_coordinate}")
             #dprint(card_id, type, coordinate, distance, adapt_dist(distance))
