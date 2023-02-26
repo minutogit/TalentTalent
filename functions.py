@@ -964,6 +964,14 @@ class local_card_db:
         # set friendship to inactive when expired
         self.sql(f"UPDATE friends SET active_friendship = 0 WHERE expire_date < '{delete_time_limit}';")
 
+        # remove uneeded cards in local cards info
+        local_card_ids = self.sql_list("SELECT card_id FROM local_card_info;")
+        needed_card_ids = self.sql_list("SELECT card_id FROM dc_head WHERE deleted = False;")
+        ids_to_delete = [id for id in local_card_ids if id not in needed_card_ids]
+        for id in ids_to_delete:
+            self.sql(f"DELETE FROM local_card_info WHERE card_id = '{id}';")
+        self.recalculate_local_ids() # calculate new ids after clean
+
         # save last_db clean time
         self.sql(f"UPDATE local_status SET value = '{str((datetime.now()).replace(microsecond=0))}' WHERE status_name = 'last_db_clean';")
         print("database cleaned")

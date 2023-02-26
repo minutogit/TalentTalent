@@ -243,7 +243,7 @@ class Ui_MainWindow(object):
         self.comboBox_filter.setItemText(4, QCoreApplication.translate("MainWindow", u"Ausgeblendete", None))
 
         self.label_statistics.setText(QCoreApplication.translate("MainWindow", u"---", None))
-        self.pushButton_add_own_businesscard.setText(QCoreApplication.translate("MainWindow", u"Eigene Visitenkarte", None))
+        self.pushButton_add_own_businesscard.setText(QCoreApplication.translate("MainWindow", u"Pers\u00f6nliche Visitenkarte", None))
         self.pushButton_add_businesscard.setText(QCoreApplication.translate("MainWindow", u"Andere Visitenkarte hinzuf\u00fcgen", None))
         self.menuStart.setTitle(QCoreApplication.translate("MainWindow", u"Start", None))
         self.menuExtended.setTitle(QCoreApplication.translate("MainWindow", u"Erweitert", None))
