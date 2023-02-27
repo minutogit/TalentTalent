@@ -415,6 +415,10 @@ def adapt_text_value(key, value, type) -> str:
             return value[:16] # shorten card_id to first 16 chars
         if key == "creator":
             return value[:16] # shorten creator to first 16 chars
+        if key == "foreign_card" and value == "0":
+            return str("Nein")
+        if key == "foreign_card" and value == "1":
+            return str("Ja")
         if key == "hops" and value == "0":
             return str("0 (eigener Eintrag)")
         if key == "hops" and value == "1":
@@ -474,7 +478,7 @@ def key_to_text(key, type) -> str:
     if type == "card_details":
             key_text = {"card_id": "ID", "creator": "Ersteller ID", "created": "Erstellt",
                     "valid_until": "Gültig bis", "expire_date": "Ablauf der Freundschaft", "edited": "letzte Bearbeitung",
-                    "hops": "Freund-Distanz", "maxhop": "Max-Freund-Distanz"}
+                    "hops": "Freund-Distanz", "maxhop": "Max-Freund-Distanz", "foreign_card": "Fremdeintrag"}
 
 
     if key in key_text.keys():
