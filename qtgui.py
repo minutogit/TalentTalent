@@ -308,6 +308,7 @@ class Dialog_Profile_Settings(QMainWindow, Ui_DialogProfileSettings):
         if new_local_coordinate: # if coordinates changed then recalculate distances of all cards
             self.update_distances()
             localdb.recalculate_local_ids()
+            frm_main_window.update_table_view()
         frm_main_window.set_gui_depending_profile_status()
 
 
@@ -315,7 +316,6 @@ class Dialog_Profile_Settings(QMainWindow, Ui_DialogProfileSettings):
         # update all distances in database
         card_ids = localdb.sql_list(f"""SELECT card_id FROM dc_head WHERE deleted = False and type != 'publickeys'""")
         localdb.update_distances(card_ids, conf.PROFILE_SET_COORDINATES)
-        frm_main_window.update_table_view()
 
 
 class Dialog_Display_Content(QMainWindow, Ui_DialogDisplayContent):

@@ -510,6 +510,53 @@ class local_card_db:
                       FROM local_card_info ) UPDATE local_card_info SET local_id = 
                       ( SELECT new_order FROM ordered_rows WHERE ordered_rows.card_id = local_card_info.card_id );""")
 
+        self.calculate_friend_ids()
+
+
+    def calculate_friend_ids(self):
+        """Determines from a data-card (business_Card) the local ID of the friends datacard.
+        To know from where (which freind) is the data card from. If there are multiple friends then the
+        closest friend (regarding to the local profile coordinates) is choosend as friend"""
+
+        local_card_ids = self.sql_list("SELECT card_id from local_card_info;")
+        local_ids = self.sql_tuble_to_dict(self.sql("SELECT card_id, local_id FROM local_card_info;"))
+
+        foreign_card_id = self.sql_tuble_to_dict(self.sql("SELECT card_id, foreign_card FROM dc_head;")) # stores if card_id is foreign_card
+        creators_card_ids = self.sql_tuble_to_dict(self.sql("""SELECT creator, card_id FROM dc_head 
+                                                           WHERE foreign_card = False AND type = 'business_card';"""))
+        card_id_creators = self.sql_tuble_to_dict(self.sql("""SELECT card_id, creator FROM dc_head;"""))
+        card_id_distances = self.sql_tuble_to_dict(self.sql("SELECT card_id, distance FROM local_card_info;"))
+        creators_friends = self.sql_tuble_to_dict(self.sql("""SELECT creator_id, friends_ids FROM friends_of_friends;"""))
+
+        # determine friends of all local cards ids
+        for card_id in local_card_ids:
+            #dprint("id:", card_id)
+            if foreign_card_id[card_id] == 0:
+                # card is the personal card of the creator itself so all friends must be determined
+                # then the business cards (if exists) of the friends are need to get the local id (which is the friends number in gui)
+                creator = card_id_creators[card_id]
+                friends_of_creator = str(creators_friends[creator]).split(',')
+                min_distance = "~~~~~~~~~" # distance is string in database and ~ represents a high value (need to get minimum)
+                friends_local_id = ""
+                # determine off all friends which business_card is the closest to choose this card creator as friend
+                for friend_creator_id in friends_of_creator:
+                    creators_card_id = creators_card_ids.get(friend_creator_id, 'noid')
+                    distance = card_id_distances.get(creators_card_id, '~~~~~~~~~~~~~~')
+                    #dprint("dist", distance, "friend-id:", local_ids.get(creators_card_id, ''))
+                    if distance < min_distance:
+                        min_distance = distance
+                        friends_local_id = local_ids.get(creators_card_id, '') # empty string if no card_id found
+                self.sql("UPDATE local_card_info SET friend_id = ? WHERE card_id = ?;", (friends_local_id, card_id,))
+                #dprint("id:", local_ids[card_id], "  freund:", friends_local_id)
+
+            else:
+                # foreign_card -> the creator of the card is the friend -> set local ID of creator and set as friend
+                creator = card_id_creators[card_id]
+                creators_card_id = creators_card_ids.get(creator, 'noid')
+                friends_local_id = local_ids.get(creators_card_id, '')  # empty string if no card_id found
+                self.sql("UPDATE local_card_info SET friend_id = ? WHERE card_id = ?;", (friends_local_id, card_id,))
+                #dprint("id:", local_ids[card_id], "  freund:", friends_local_id, "simple")
+
 
     def datacard_to_sql_update(self, datacard):
         """ Generate from a datacard the sql commands for needed tables to update the existing datacard in the sql database.
@@ -886,9 +933,9 @@ class local_card_db:
 
         card_id = "friends" + creator_id[7:16] + creator_id[:16] # static card id derived from local creator id and beginning with "friends"
         friends_info_in_database = self.sql(f"SELECT EXISTS(SELECT * FROM friends_of_friends WHERE card_id = '{card_id}')")[0][0]
-        dprint(friends_info_in_database)
+        #dprint(friends_info_in_database)
         friend_ids = ','.join(self.sql_list(f"SELECT pubkey_id FROM friends WHERE active_friendship = True"))
-        dprint(friend_ids)
+        #dprint(friend_ids)
         date_time_now = datetime.now().replace(microsecond=0)
         valid_until = add_months(date_time_now, 36)
         edited = date_time_now
@@ -928,7 +975,7 @@ class local_card_db:
             self.sql(sql_command)
 
         elif friends_info_in_database and do_update: # update friends table
-            dprint("firends update")
+            #dprint("friends update")
             # head update
             sql_command = (f"""UPDATE dc_head SET edited = ?, valid_until = ?, version = version + 1
                                          WHERE card_id = ?;""")
@@ -1192,7 +1239,8 @@ class local_card_db:
                                 hidden     BOOLEAN DEFAULT (0),
                                 distance   CHAR (8),
                                 mailing_list TEXT (64) DEFAULT (''),
-                                local_id     INTEGER                               
+                                local_id     INTEGER,
+                                friend_id    INTEGER                               
                             );
                             """
             self.sql(sqlite_command)
