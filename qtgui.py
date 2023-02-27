@@ -193,7 +193,7 @@ class Dialog_HTML_Export(QMainWindow, Ui_DialogHtmlExport):
 
         # get all needed cards
         card_ids = localdb.sql_list(f"""SELECT card_id FROM dc_head WHERE 
-                deleted = False AND type != 'publickeys'  AND valid_until > '{current_time}'{extra_where_filter};""")
+                deleted = False AND type = 'business_card'  AND valid_until > '{current_time}'{extra_where_filter};""")
         all_cards = [localdb.convert_db_to_dict(card_id, add_hops_info=False) for card_id in card_ids]
 
         #prepare data for sorting with distance (distance between 2 coordinates)
@@ -857,6 +857,8 @@ class Dialog_Add_Friendship(QMainWindow, Ui_DialogFriendship):
                         (friends_email, friends_comment, friendship_expiration, friends_name, True, friends_profile_id))
             self.show_friend(friends_profile_id, opened_from_content_display=self.opened_from_content_display)
 
+        localdb.update_database_friends_info(crypt.Profile.rsa_key_pair_id, crypt.Profile.rsa_key_pair, do_update=True)
+
     def add_delete_friendship(self):
         """this func is for adding new friend, extend friendFship etc """
         # print("delete friend")
@@ -865,6 +867,8 @@ class Dialog_Add_Friendship(QMainWindow, Ui_DialogFriendship):
         if msgbox == QMessageBox.Yes:
             localdb.sql(f"DELETE FROM friends WHERE pubkey_id = '{self.existing_friend_id}';")
             self.close()
+            localdb.update_database_friends_info(crypt.Profile.rsa_key_pair_id, crypt.Profile.rsa_key_pair,
+                                                 do_update=True)
 
     def check_friends_key(self, last_check_before_database_change=False):
         """checks if the pasted key of the friend is correct and enables the button to add the friend"""
@@ -1477,7 +1481,7 @@ class Dialog_Business_Card(QMainWindow, Ui_DialogBuisinessCard):
         self.month_valid_label.hide()
         self.valid_until_label.show()
 
-        localdb.recalculate_local_ids() # recalculate local ids depending on distance
+        localdb.recalculate_local_ids() # recalculate local ids depending on distance # todo not always recalc
         self.status_label.setText("Visitenkarte erfolgreich gespeichert")
         QTimer.singleShot(4000, lambda: self.status_label.setText(""))
 
