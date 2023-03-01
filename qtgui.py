@@ -1093,6 +1093,7 @@ class Dialog_Business_Card(QMainWindow, Ui_DialogBuisinessCard):
             # full remove of card when it wasn't exported to friends (else: only delete content and share deleted content)
             if last_friend_export < card_creation: # card created but no export happend after creation (-> full delete)
                 localdb.remove_datacards([card_id])
+                localdb.recalculate_local_ids(fast_mode=True)
                 return
 
             # the deleted marked cards have to be shared with the same hops number
@@ -1134,6 +1135,12 @@ class Dialog_Business_Card(QMainWindow, Ui_DialogBuisinessCard):
 
             sql_command = (f"""UPDATE dc_dynamic_head SET signature = ? WHERE card_id = ? ;""")
             localdb.sql(sql_command, (signature, card_id))
+
+            # remove from local_card_info
+            localdb.sql(f"DELETE FROM local_card_info WHERE card_id = '{card_id}'")
+
+            # recalculate local ids depending on distance
+            localdb.recalculate_local_ids(fast_mode=True)
 
             if close_window:
                 self.close()
@@ -1452,6 +1459,9 @@ class Dialog_Business_Card(QMainWindow, Ui_DialogBuisinessCard):
             sql_command = f"""UPDATE dc_dynamic_head SET signature = '{signature}' WHERE card_id = '{card_id}';"""
             localdb.sql(sql_command)
 
+            # calc local id, if foreign_card then fast_mode
+            localdb.recalculate_local_ids(fast_mode=self.foreign_card)
+
         # insert / remove mail to mailing list table
         email_address = self.email_lineEdit.text().strip()
         if self.checkBox_add_to_mailling_list.isChecked() and functions.isValidEmail(email_address):
@@ -1481,7 +1491,7 @@ class Dialog_Business_Card(QMainWindow, Ui_DialogBuisinessCard):
         self.month_valid_label.hide()
         self.valid_until_label.show()
 
-        localdb.recalculate_local_ids() # recalculate local ids depending on distance # todo not always recalc
+
         self.status_label.setText("Visitenkarte erfolgreich gespeichert")
         QTimer.singleShot(4000, lambda: self.status_label.setText(""))
 
@@ -2397,7 +2407,8 @@ class Frm_Mainwin(QMainWindow, Ui_MainWindow):
 
         # claculated distances of new and updated cards
         localdb.update_distances( new_imported_cardids + updated_cardids, conf.PROFILE_SET_COORDINATES)
-        localdb.recalculate_local_ids() # recalc new local_ids
+        if len(new_imported_cardids) > 0:
+            localdb.recalculate_local_ids() # recalc new local_ids
         frm_main_window.update_table_view()
         frm_main_window.statusbar.showMessage(f"{len(new_imported_cardids)} neue Einträge und {len(updated_cardids)} aktuallisierte Einträge erfolgreich importiert.", timeout=20000)
 

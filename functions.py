@@ -502,10 +502,27 @@ class local_card_db:
                 """
         self.sql("UPDATE local_card_info SET hidden = 0 WHERE card_id = ?;", (card_id, ))
 
-    def recalculate_local_ids(self):
+    def recalculate_local_ids(self,fast_mode = False):
         """ Calculates an unique local id ford every card_id in local_card_info sorted by distance of the card_id.
             Is needed to have an short local unique_id)
                 """
+        if fast_mode: # fast mode ignores the distance fo card_id
+            card_ids_without_local_id = self.sql_list("SELECT card_id FROM local_card_info WHERE local_id IS NULL OR local_id = ''")
+
+            # find next free id beginning with one
+            used_local_ids = self.sql_list("""SELECT local_id FROM local_card_info""")
+            use_id = 0
+            # set local_ids for cards without local id
+            for card_id in card_ids_without_local_id:
+                use_id += 1
+                while use_id in used_local_ids:
+                    use_id += 1
+                self.sql(f"UPDATE local_card_info SET local_id = {use_id} WHERE card_id ='{card_id}'")
+
+            self.calculate_friend_ids(fast_mode=True)
+            return
+
+
         self.sql("""WITH ordered_rows AS ( SELECT card_id, ROW_NUMBER() OVER (ORDER BY distance) AS new_order
                       FROM local_card_info ) UPDATE local_card_info SET local_id = 
                       ( SELECT new_order FROM ordered_rows WHERE ordered_rows.card_id = local_card_info.card_id );""")
@@ -513,11 +530,10 @@ class local_card_db:
         self.calculate_friend_ids()
 
 
-    def calculate_friend_ids(self):
+    def calculate_friend_ids(self, fast_mode=False):
         """Determines from a data-card (business_Card) the local ID of the friends datacard.
-        To know from where (which freind) is the data card from. If there are multiple friends then the
-        closest friend (regarding to the local profile coordinates) is choosend as friend"""
-
+        To know from where (which friend) is the data card from. If there are multiple friends then the
+        closest friend (regarding to the local profile coordinates) is choosed as friend"""
         local_card_ids = self.sql_list("SELECT card_id from local_card_info;")
         local_ids = self.sql_tuble_to_dict(self.sql("SELECT card_id, local_id FROM local_card_info;"))
 
@@ -528,9 +544,24 @@ class local_card_db:
         card_id_distances = self.sql_tuble_to_dict(self.sql("SELECT card_id, distance FROM local_card_info;"))
         creators_friends = self.sql_tuble_to_dict(self.sql("""SELECT creator_id, friends_ids FROM friends_of_friends;"""))
 
-        # determine friends of all local cards ids
+        # check if there are cards with friends_id but local_id does not exists (on deletion it can happen)
+        # then full recalculation of all local_ids with
+        if fast_mode:
+            # on fast mode only calc friends for cards without friends or wrong friend id
+            local_card_ids = self.sql_list(
+                "SELECT card_id from local_card_info WHERE friend_id IS NULL OR friend_id = '';")
+
+            # determine friends with wrong friend id
+            used_friend_ids = self.sql_list("""SELECT friend_id from local_card_info 
+                                            WHERE NOT (friend_id IS NULL OR friend_id = '');""")
+            all_local_ids = self.sql_list("SELECT local_id from local_card_info;")
+            used_friend_ids = [*set(used_friend_ids)] # remove duplicates
+            for friend_id in used_friend_ids:
+                if friend_id not in all_local_ids:
+                    local_card_ids += self.sql_list(f"SELECT card_id FROM local_card_info WHERE friend_id = {friend_id}")
+
+        # determine friends of all local cards ids or when fast mode -> only cards without friends or wrong friend id
         for card_id in local_card_ids:
-            #dprint("id:", card_id)
             if foreign_card_id[card_id] == 0:
                 # card is the personal card of the creator itself so all friends must be determined
                 # then the business cards (if exists) of the friends are need to get the local id (which is the friends number in gui)
@@ -538,16 +569,14 @@ class local_card_db:
                 friends_of_creator = str(creators_friends[creator]).split(',')
                 min_distance = "~~~~~~~~~" # distance is string in database and ~ represents a high value (need to get minimum)
                 friends_local_id = ""
-                # determine off all friends which business_card is the closest to choose this card creator as friend
+                # determine of all friends which business_card is the closest to choose this card creator as friend
                 for friend_creator_id in friends_of_creator:
                     creators_card_id = creators_card_ids.get(friend_creator_id, 'noid')
                     distance = card_id_distances.get(creators_card_id, '~~~~~~~~~~~~~~')
-                    #dprint("dist", distance, "friend-id:", local_ids.get(creators_card_id, ''))
                     if distance < min_distance:
                         min_distance = distance
                         friends_local_id = local_ids.get(creators_card_id, '') # empty string if no card_id found
                 self.sql("UPDATE local_card_info SET friend_id = ? WHERE card_id = ?;", (friends_local_id, card_id,))
-                #dprint("id:", local_ids[card_id], "  freund:", friends_local_id)
 
             else:
                 # foreign_card -> the creator of the card is the friend -> set local ID of creator and set as friend
@@ -555,7 +584,6 @@ class local_card_db:
                 creators_card_id = creators_card_ids.get(creator, 'noid')
                 friends_local_id = local_ids.get(creators_card_id, '')  # empty string if no card_id found
                 self.sql("UPDATE local_card_info SET friend_id = ? WHERE card_id = ?;", (friends_local_id, card_id,))
-                #dprint("id:", local_ids[card_id], "  freund:", friends_local_id, "simple")
 
 
     def datacard_to_sql_update(self, datacard):
@@ -1098,11 +1126,11 @@ class local_card_db:
         ids_to_delete = [id for id in local_card_ids if id not in needed_card_ids]
         for id in ids_to_delete:
             self.sql(f"DELETE FROM local_card_info WHERE card_id = '{id}';")
-        self.recalculate_local_ids() # calculate new ids after clean
 
         # save last_db clean time
         self.sql(f"UPDATE local_status SET value = '{str((datetime.now()).replace(microsecond=0))}' WHERE status_name = 'last_db_clean';")
         print("database cleaned")
+        self.recalculate_local_ids()  # calculate new ids after clean
         return True # clean succesful
 
 
