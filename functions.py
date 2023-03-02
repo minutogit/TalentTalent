@@ -554,11 +554,14 @@ class local_card_db:
             # determine friends with wrong friend id
             used_friend_ids = self.sql_list("""SELECT friend_id from local_card_info 
                                             WHERE NOT (friend_id IS NULL OR friend_id = '');""")
+            #convert comma separated items (when multiple friends) to list items ([2, 6, '7,9', 1] -> [2, 6, 7, 9, 1]
+            used_friend_ids = [int(num) for item in used_friend_ids for num in str(item).split(',')]
+            used_friend_ids = [*set(used_friend_ids)]  # remove duplicates
             all_local_ids = self.sql_list("SELECT local_id from local_card_info;")
-            used_friend_ids = [*set(used_friend_ids)] # remove duplicates
             for friend_id in used_friend_ids:
                 if friend_id not in all_local_ids:
                     local_card_ids += self.sql_list(f"SELECT card_id FROM local_card_info WHERE friend_id = {friend_id}")
+
 
         # determine friends of all local cards ids or when fast mode -> only cards without friends or wrong friend id
         for card_id in local_card_ids:
@@ -575,8 +578,16 @@ class local_card_db:
                     distance = card_id_distances.get(creators_card_id, '~~~~~~~~~~~~~~')
                     if distance < min_distance:
                         min_distance = distance
-                        friends_local_id = local_ids.get(creators_card_id, '') # empty string if no card_id found
-                self.sql("UPDATE local_card_info SET friend_id = ? WHERE card_id = ?;", (friends_local_id, card_id,))
+                        friends_local_id = [local_ids.get(creators_card_id, )]
+
+                # add rest of friends
+                for friend_creator_id in friends_of_creator:
+                    creators_card_id = creators_card_ids.get(friend_creator_id, 'noid')
+                    if local_ids.get(creators_card_id, ) not in friends_local_id:
+                        friends_local_id += [local_ids.get(creators_card_id, )]
+                friends_local_id = [x for x in friends_local_id if x is not None] # remove Nones
+                self.sql("UPDATE local_card_info SET friend_id = ? WHERE card_id = ?;",
+                         (",".join(str(x) for x in friends_local_id), card_id,)) # add comma separated ids to db
 
             else:
                 # foreign_card -> the creator of the card is the friend -> set local ID of creator and set as friend

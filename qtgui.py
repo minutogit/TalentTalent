@@ -1879,7 +1879,7 @@ class Frm_Mainwin(QMainWindow, Ui_MainWindow):
         Adds all colmuns to to the column-selcetion-combobox
         :return:
         """
-        all_columns = ['NR.', 'NAME', 'TELEFON', 'E-MAIL', 'WWW', 'PLZ', 'ORT', 'ENTFERNUNG', 'ANGEBOT',
+        all_columns = ['NR.', 'Freunde','NAME', 'TELEFON', 'E-MAIL', 'WWW', 'PLZ', 'ORT', 'ENTFERNUNG', 'ANGEBOT',
                        'INTERESSEN', 'GESUCH', 'STICHWÖRTER', 'GÜLTIGKEIT']
         for col in all_columns:
             self.comboBox_column_selection.addItem(col)
@@ -1976,31 +1976,26 @@ class Frm_Mainwin(QMainWindow, Ui_MainWindow):
             self.tableView.hideColumn(0) # hide ID when not selected
 
         column_selection = "local_id AS [NR.], "
-        if conf.GUI_COLUMN_SELECTION[1] == 1: # 1 means active, so add selection
-            column_selection += "(name || ' ' || family_name) AS Name, "
-        if conf.GUI_COLUMN_SELECTION[2] == 1:
-            column_selection += "phone as Telefon, "
-        if conf.GUI_COLUMN_SELECTION[3] == 1:
-            column_selection += "email as [E-Mail], "
-        if conf.GUI_COLUMN_SELECTION[4] == 1:
-            column_selection += "website AS www, "
-        if conf.GUI_COLUMN_SELECTION[5] == 1:
-            column_selection += "zip_code AS PLZ, "
-        if conf.GUI_COLUMN_SELECTION[6] == 1:
-            column_selection += "city AS Ort, "
-        if conf.GUI_COLUMN_SELECTION[7] == 1:
-            column_selection += "distance AS [Entfernung], "
-        if conf.GUI_COLUMN_SELECTION[8] == 1:
-            column_selection += "skills_offers AS Angebot, "
-        if conf.GUI_COLUMN_SELECTION[9] == 1:
-            column_selection += "interests_hobbies AS [Interessen], "
-        if conf.GUI_COLUMN_SELECTION[10] == 1:
-            column_selection += "requests AS Gesuch, "
-        if conf.GUI_COLUMN_SELECTION[11] == 1:
-            column_selection += "tags AS Stichwörter, "
-        if conf.GUI_COLUMN_SELECTION[12] == 1:
-            column_selection += "valid_until AS Gültigkeit, "
-        column_selection = column_selection[:-2]
+        columns = [ ("friend_id as Freunde", conf.GUI_COLUMN_SELECTION[1]),
+                   ("(name || ' ' || family_name) AS Name", conf.GUI_COLUMN_SELECTION[2]),
+                   ("phone as Telefon", conf.GUI_COLUMN_SELECTION[3]),
+                   ("email as [E-Mail]", conf.GUI_COLUMN_SELECTION[4]),
+                   ("website AS www", conf.GUI_COLUMN_SELECTION[5]),
+                   ("zip_code AS PLZ", conf.GUI_COLUMN_SELECTION[6]),
+                   ("city AS Ort", conf.GUI_COLUMN_SELECTION[7]),
+                   ("distance AS [Entfernung]", conf.GUI_COLUMN_SELECTION[8]),
+                   ("skills_offers AS Angebot", conf.GUI_COLUMN_SELECTION[9]),
+                   ("interests_hobbies AS [Interessen]", conf.GUI_COLUMN_SELECTION[10]),
+                   ("requests AS Gesuch", conf.GUI_COLUMN_SELECTION[11]),
+                   ("tags AS Stichwörter", conf.GUI_COLUMN_SELECTION[12]),
+                   ("valid_until AS Gültigkeit", conf.GUI_COLUMN_SELECTION[13])
+                   ]
+
+        # filter the columns based on the value in conf.GUI_COLUMN_SELECTION
+        selected_columns = [col[0] for col in columns if col[1] == 1]
+
+        # join the selected columns using join() function
+        column_selection += ", ".join(selected_columns)
 
         table_view_model = QtSql.QSqlRelationalTableModel()
         # card id has to be the first column, needed for table_click func (will only be hidden when column not selected)
