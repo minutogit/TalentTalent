@@ -468,7 +468,7 @@ def key_to_text(key, type) -> str:
                 "coordinates": "Koordinaten", "company_profession": "Unternehmen / Beruf", "phone": "Telefon",
                 "email": "E-Mail", "other_contact": "weiterer Kontakt", "interests_hobbies": "Interessen", "requests": "Gesuch",
                 "skills_offers": "Angebot", "tags": "Stichwörter",
-                "full_name": "Name", "full_address": "Adresse"}
+                "full_name": "Name", "full_address": "Adresse", "friend_ids": "Freunde"}
 
     if type == "friend":
         key_text = {"name": "Name", "comment": "Kommentar", "active_friendship": "Freundschaftsstatus",

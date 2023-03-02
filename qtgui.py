@@ -489,8 +489,12 @@ class Dialog_Display_Content(QMainWindow, Ui_DialogDisplayContent):
         self.setWindowTitle(f"Karten ID: {card_id[:8]}")
         local_creator_id = crypt.Profile.rsa_key_pair_id
         data_card = localdb.convert_db_to_dict(card_id, add_hops_info=False)
+
+        # add friends_ids to datacard (to display friendsinfo)
+        friend_ids = localdb.sql("SELECT friend_ids FROM local_card_info WHERE card_id = ?", (card_id, ))[0][0]
+        data_card['data']['friend_ids'] = friend_ids
+
         is_hidden_card = (localdb.sql_list("SELECT hidden FROM local_card_info WHERE card_id = ?", (card_id, ))[0] == 1)
-        #dprint(is_hidden_card)
         self.opened_type = data_card['dc_head']['type']
 
         # adapt coordinates and append own coordinates  (that distance can calculated and be shown)
@@ -1976,7 +1980,7 @@ class Frm_Mainwin(QMainWindow, Ui_MainWindow):
             self.tableView.hideColumn(0) # hide ID when not selected
 
         column_selection = "local_id AS [NR.], "
-        columns = [ ("friend_id as Freunde", conf.GUI_COLUMN_SELECTION[1]),
+        columns = [ ("friend_ids as Freunde", conf.GUI_COLUMN_SELECTION[1]),
                    ("(name || ' ' || family_name) AS Name", conf.GUI_COLUMN_SELECTION[2]),
                    ("phone as Telefon", conf.GUI_COLUMN_SELECTION[3]),
                    ("email as [E-Mail]", conf.GUI_COLUMN_SELECTION[4]),
