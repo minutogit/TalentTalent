@@ -1,7 +1,7 @@
 # Python code to merge dict using a single
 # expression
 import html, re
-from functions import format_date_string, geo_distance, dprint
+from functions import format_date_string, geo_distance, dprint, order_dict, isValidCoordinate
 #import html2text
 
 
@@ -42,7 +42,7 @@ def make_html_links_for_export(key, value) -> str:
     elif key == "phone" and len(value) > 2:
         return str(f'<a href="tel:{value}">{value}</a>')
     elif key == "coordinates":
-        if str(value).strip() == ";":
+        if str(value).strip().startswith(';'):
             return ""
         if geo_distance(value) == "":
             return str(f'<a href="https://www.google.com/maps/place/{str(value.split(";")[0]).replace(" ","")}">({value.split(";")[0]})</a>')
@@ -216,7 +216,7 @@ def generate_html_export_table(input_dict, type = "", filter_empty = True, compa
     column_right = ""
 
     keys_left = ["full_name", "full_address", "name", "family_name", "card_id", "radius_of_activity", "street", "zip_code", "city", "country", "website",
-                "coordinates", "company_profession", "phone", "email", "other_contact"]
+                "coordinates", "company_profession", "phone", "email", "other_contact", "friend_ids", "local_id"]
 
     # keys which should be writen to text in the export
     keys_in_text = ["requests", "skills_offers", "tags", "interests_hobbies"]
@@ -229,7 +229,8 @@ def generate_html_export_table(input_dict, type = "", filter_empty = True, compa
         if compact_mode:
             val = make_text_compact(key, val)
         #val = str(val).replace("&", "&amp;")
-        val = html.escape(val).replace('\n', '<br />\n')  # zeilenumbrüche umwandeln
+
+        val = html.escape(str(val)).replace('\n', '<br />\n')  # zeilenumbrüche umwandeln
         val = make_html_links_for_export(key, val)
 
         if key in keys_left:
@@ -269,9 +270,10 @@ def make_text_compact(key, text):
 
 def generate_html_export_infohead(input_dict):
     """inserts the first line with infos to the export. Date, Location, Nummber of Entrys ..."""
-    htmlcode = f"<p><b>Liste vom:</b> {input_dict['current_date']} ---- "
-    htmlcode += f"<b>Einträge:</b> {input_dict['number_of_entrys']} ---- "
-    htmlcode += f"<b>Entfernungsangaben von:</b> {input_dict['zip_code']} {input_dict['city']} ({input_dict['coordinates']})"
+    htmlcode = f"<p><b>Liste vom:</b> {input_dict['current_date']} -- "
+    htmlcode += f"<b>Einträge:</b> {input_dict['number_of_entrys']} -- "
+    if isValidCoordinate(input_dict['coordinates']):
+        htmlcode += f"<b>Entfernungen von:</b> {input_dict['zip_code']} {input_dict['city']} ({input_dict['coordinates']})"
     htmlcode += "</p>"
     return htmlcode
 
@@ -386,6 +388,9 @@ def data_card_html_export(data_card_dict, type="", filter = False, filter_empty 
     #try to group keys to on key with more content
     content_dict = group_dict_keys(content_dict, grouping)
 
+    # order the dict, beginning with the local_id
+    content_dict = order_dict(content_dict, ['local_id'])
+
     #generate table
     htmlcode = generate_html_export_table(content_dict, type=type,filter_empty=filter_empty, compact_mode=compact_mode)
 
@@ -449,6 +454,12 @@ def adapt_html_export_text_value(key, value, type) -> str:
     if type == "business_card":
         if key == "radius_of_activity":
             return f"(Aktionsradius: {value}km)"
+        if key == "local_id":
+            return f"{value})"
+        if key == "friend_ids":
+            return f"(Freund: {str(value).split(',')[0]})"
+
+
 
     return value # change nothing when unknown type
 
@@ -468,7 +479,7 @@ def key_to_text(key, type) -> str:
                 "coordinates": "Koordinaten", "company_profession": "Unternehmen / Beruf", "phone": "Telefon",
                 "email": "E-Mail", "other_contact": "weiterer Kontakt", "interests_hobbies": "Interessen", "requests": "Gesuch",
                 "skills_offers": "Angebot", "tags": "Stichwörter",
-                "full_name": "Name", "full_address": "Adresse", "friend_ids": "Freunde"}
+                "full_address": "Adresse", "friend_ids": "Freunde", "local_id": "Nr"}
 
     if type == "friend":
         key_text = {"name": "Name", "comment": "Kommentar", "active_friendship": "Freundschaftsstatus",

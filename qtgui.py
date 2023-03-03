@@ -102,8 +102,8 @@ class Dialog_HTML_Export(QMainWindow, Ui_DialogHtmlExport):
         Adds all colmuns to to the column-selcetion-combobox
         :return:
         """
-        self.all_columns = ["name", "family_name", "street", "zip_code", "city", "country", "company_profession", "coordinates",  "phone", "email", "website", "radius_of_activity",
-                       "other_contact", "interests_hobbies", "requests", "skills_offers", "tags"]
+        self.all_columns = ["local_id", "name", "family_name", "street", "zip_code", "city", "country", "company_profession", "coordinates",  "phone", "email", "website", "radius_of_activity",
+                       "other_contact", "interests_hobbies", "requests", "skills_offers", "tags", "friend_ids"]
 
         # keys which should be writen to text in the export
         keys_in_text = []
@@ -183,6 +183,7 @@ class Dialog_HTML_Export(QMainWindow, Ui_DialogHtmlExport):
             if itemtext.startswith("_"):
                 filter_out.append(self.all_columns[selected_index])
 
+        #dprint(filter_out)
         # extra-filter types to export (own or not own)
         selected_index = self.comboBox_filter.currentIndex()
         extra_where_filter = ""
@@ -199,6 +200,8 @@ class Dialog_HTML_Export(QMainWindow, Ui_DialogHtmlExport):
         #prepare data for sorting with distance (distance between 2 coordinates)
         for data_card in all_cards:
             data_card['data']['coordinates'] += f";{self.coordinates_lineEdit.text()}"
+
+
 
         # remove hidden datacards
         hidden_cards = localdb.sql_list("SELECT card_id FROM local_card_info WHERE hidden = True;")
@@ -222,6 +225,20 @@ class Dialog_HTML_Export(QMainWindow, Ui_DialogHtmlExport):
         html = html_export_head # insert html head
         html += utils.generate_html_export_infohead(infohead)
         for data_card in all_cards:
+            # add friends_ids to datacard (to display friendsinfo)
+            card_id = data_card['dc_head']['card_id']
+            friend_ids = localdb.sql("SELECT friend_ids FROM local_card_info WHERE card_id = ?", (card_id,))[0][0]
+            data_card['data']['friend_ids'] = friend_ids
+
+            local_id = localdb.sql("SELECT local_id FROM local_card_info WHERE card_id = ?", (card_id,))[0][0]
+            #data_card['data']['local_id'] = local_id
+            data_part = {'local_id': local_id}
+            #dprint(data_part)
+            data_part.update(data_card['data'])
+            #dprint(data_part)
+            data_card['data'] = data_part
+            #dprint(data_card)
+
             opened_type = data_card['dc_head']['type']
             html += data_card_html_export(data_card, type=opened_type, filter=True, filter_empty=True,
                                           grouping="business_card", own_filter_list=filter_out,

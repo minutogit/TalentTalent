@@ -40,6 +40,24 @@ def shred_file(file):
         f.write(random_data) # overwrite file
     os.remove(file) # delete file
 
+def order_dict(input_dict: dict, key_order: list) -> dict:
+    """ order a dict in the order af the keys in key_order. keys with nor in the key_order will be append to the end.
+    functions ignores if a key from the key_order is not a key of dict_in.
+    {'x': 7, 'b': 1, 'c': 5, 'a': 6} with list ['a', 'b'] returns {'a': 6, 'b': 1, 'x': 7, 'c': 5}
+    :param input_dict: dict which have to be ordered
+    :param key_order_list: a list of keys in the specific order
+    :return: the orderd dict
+    """
+    ordered_dict = {}
+    for key in key_order:
+        if key in input_dict:
+            ordered_dict[key] = input_dict[key]
+    # append rest of missing keys
+    for key, val in input_dict.items():
+        if key not in ordered_dict:
+            ordered_dict[key] = val
+    return ordered_dict
+
 def parse_mail_text(text: str) -> dict:
     """
     parse the mail text from the webform for import
