@@ -229,7 +229,7 @@ def PWGen(pwlength=10, alphabet=''):
 
 def isValidEmail(email):
     # mthis regexp match not exact rfc mail format, but will catch a lot of errors
-    if re.fullmatch(r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+', email):
+    if re.fullmatch(r'([A-Za-z0-9]+[.\-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+', email):
         return True
     return False
 
