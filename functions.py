@@ -367,7 +367,7 @@ class config():
         self.IMPORT_FAILED_SUBFOLDER = os.path.join(self.IMPORT_FOLDER, 'import_fehlgeschlagen')  # failed import-files
 
 
-        self.ENCRYPT_LOCAL_DATABASE = False  # Set if local DB should be stored encryped
+        #self.ENCRYPT_LOCAL_DATABASE = False  # Set if local DB should be stored encryped
 
 
         if not os.path.exists(os.path.join(os.getcwd(), self.PROGRAMM_FOLDER)):
@@ -414,9 +414,9 @@ class config():
         self.PROFILE_SET_WEBSITE  = self.data['profile_settings']['website']
         self.PROFILE_SET_INTERESTS_HOBBIES = self.data['profile_settings']['interests_hobbies']
 
-
         self.GUI_COLUMN_SELECTION = ast.literal_eval(str(self.data['gui']['column_selection'])) # interpret string as python-list
         self.HTML_EXPORT_COLUMN_SELECTION = self.data['gui']['html_export_column_selection'] = ast.literal_eval(str(self.data['gui']['html_export_column_selection'])) # interpret string as python-list
+        self.DATABASE_ENCRYPT_ON_EXIT = bool(self.data['database']['encrypt_on_exit'])
 
     def write(self, filename='config.json'):
         configfilename = os.path.join(os.getcwd(), self.PROGRAMM_FOLDER, filename)
@@ -438,6 +438,7 @@ class config():
         self.data['gui']['column_selection'] = str(self.GUI_COLUMN_SELECTION)
         self.data['gui']['html_export_column_selection'] = str(self.HTML_EXPORT_COLUMN_SELECTION)
 
+        self.data['database']['encrypt_on_exit'] = bool(self.DATABASE_ENCRYPT_ON_EXIT)
         save_in_json(configfilename, self.data)
 
         self.confchanged = False  # nach speicherung wieder auf false setzen
@@ -450,7 +451,8 @@ class config():
                                           'city': '', 'country': '', 'company_profession': '', 'email': '',
                                           'radius_of_activity': '', 'coordinates': '', 'phone': '', 'website': '',
                                           'interests_hobbies': ''},
-                     'gui': {'column_selection': [], 'html_export_column_selection': []}
+                     'gui': {'column_selection': [], 'html_export_column_selection': []},
+                     'database': {'encrypt_on_exit': 1}
                      }
 
     # zum abfragen ob config gespeichert werden muss

@@ -1696,7 +1696,7 @@ class Dialog_Enter_Password(QMainWindow, Ui_DialogEnterPassword):
             frm_main_window.statusbar.showMessage("Passwort korrekt. Profil erfolgreich geladen.", timeout=10000)
 
             localdb.password = crypt.Profile.database_key
-            localdb.init_password(conf.ENCRYPT_LOCAL_DATABASE)
+            localdb.init_password(conf.DATABASE_ENCRYPT_ON_EXIT)
 
             #add own pubkey to db, necessary when only db-file was deleted and not profile
             rsa_keypair = crypt.Profile.rsa_key_pair
@@ -1796,7 +1796,7 @@ class Dialog_New_Password(QMainWindow, Ui_DialogNewPassword):
         crypt.save_profile(profile_filename, new_password)
         crypt.init_profile(new_password)  # instantly init Pofile that all profile variables are set
         localdb.password = crypt.Profile.database_key
-        localdb.init_password(conf.ENCRYPT_LOCAL_DATABASE)  # db neu anlegen bzw. initialisieren
+        localdb.init_password(conf.DATABASE_ENCRYPT_ON_EXIT)  # db neu anlegen bzw. initialisieren
 
         rsa_keypair = crypt.Profile.rsa_key_pair
         localdb.add_own_public_key_to_database(crypt.Profile.rsa_key_pair_id,
@@ -2097,6 +2097,10 @@ class Frm_Mainwin(QMainWindow, Ui_MainWindow):
 
         def enable(object):
             object.setEnabled(True)
+
+        # hide old not need elements (later possible full remove)
+        hide(self.action_import_database_with_password)
+        hide(self.action_generate_database_with_password)
 
         #changings of GUI
         if profile_initialized:
@@ -2501,5 +2505,5 @@ frm_main_window.profile_login()
 app.exec()
 
 if crypt.Profile.profile_is_initialized:  # save only when profile was initialized correctly with password
-    localdb.save_and_close_database(conf.ENCRYPT_LOCAL_DATABASE) # close db
+    localdb.save_and_close_database(conf.DATABASE_ENCRYPT_ON_EXIT) # close db
     conf.write() # save config on close
