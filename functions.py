@@ -1174,7 +1174,12 @@ class local_card_db:
         :return:
         """
         all_columns = self.list_tables_colums(table_name)
-        # add columns for all column aexcept card_id (card_id is the foreign key)
+        # filter out columns wich already extended
+        all_columns = [el for el in all_columns if
+                        (("HOPS_" + el) not in all_columns or ("DELETED_" + el) not in all_columns)]
+        # filter out hops and deleted columns which are the extension
+        all_columns = [el for el in all_columns if not (el.find("HOPS_") == 0 or el.find("DELETED_") == 0)]
+        # add columns for all column except card_id (card_id is the foreign key)
         for column in all_columns:
             if column != "card_id":  #
                 sqlite_command = (
@@ -1224,85 +1229,152 @@ class local_card_db:
             self.sql(sql_com, sql_com_data)
         pass
 
-    def init_standard_tables(self):
-        # sqlite info: STRING will convert it into a numeric value, while TEXT will not perform any conversion
-        if not self.table_exists("dc_head"):
-            sqlite_command = """ CREATE TABLE dc_head (
-                                card_id          CHAR (32) PRIMARY KEY
-                                                      UNIQUE
-                                                      NOT NULL,
-                                creator     CHAR (32) NOT NULL,
-                                type        CHAR,
-                                created     DATETIME,
-                                edited      DATETIME,
-                                valid_until DATE,
-                                version     INT DEFAULT (0),
-                                deleted     BOOLEAN DEFAULT (0),
-                                foreign_card     BOOLEAN DEFAULT (0),
-                                maxhop      INT (1)
-                            );"""
+    def init_table(self, table_name, columns):
+
+        # construct the SQL command to create the table if not exists
+        sqlite_command = f"CREATE TABLE IF NOT EXISTS {table_name} ({', '.join(columns)});"
+        self.sql(sqlite_command)
+        #dprint(sqlite_command)
+
+        # check if all columns exist in the table
+        table_info = self.sql(f"PRAGMA table_info('{table_name}')")
+        #dprint(table_info)
+        existing_columns = set(row[1] for row in table_info)
+        #dprint(existing_columns)
+        new_columns = [col for col in columns if col.split()[0] not in existing_columns]
+        #dprint(new_columns)
+
+        # extend the table with the missing columns
+        for col in new_columns:
+            sqlite_command = f"ALTER TABLE {table_name} ADD COLUMN {col}"
             self.sql(sqlite_command)
+            #dprint(sqlite_command)
+
+
+    def init_standard_tables(self):
+        existing_tables = self.list_all_tables() # get all existing table names as list
+
+        # sqlite info: STRING will convert it into a numeric value, while TEXT will not perform any conversion
+        self.init_table("dc_head", ["card_id     CHAR (32) PRIMARY KEY UNIQUE NOT NULL",
+                                    "creator     CHAR (32) NOT NULL",
+                                    "type        CHAR",
+                                    "created     DATETIME",
+                                    "edited      DATETIME",
+                                    "valid_until DATE",
+                                    "version     INT DEFAULT (0)",
+                                    "deleted     BOOLEAN DEFAULT (0)",
+                                    "foreign_card     BOOLEAN DEFAULT (0)",
+                                    "maxhop      INT (1)"])
+        # if not self.table_exists("dc_head"):
+        #     sqlite_command = """ CREATE TABLE dc_head (
+        #                         card_id          CHAR (32) PRIMARY KEY UNIQUE NOT NULL,
+        #                         creator     CHAR (32) NOT NULL,
+        #                         type        CHAR,
+        #                         created     DATETIME,
+        #                         edited      DATETIME,
+        #                         valid_until DATE,
+        #                         version     INT DEFAULT (0),
+        #                         deleted     BOOLEAN DEFAULT (0),
+        #                         foreign_card     BOOLEAN DEFAULT (0),
+        #                         maxhop      INT (1)
+        #                     );"""
+        #     self.sql(sqlite_command)
+
+        # if not self.table_exists("local_status"):
+        #     sqlite_command = """CREATE TABLE local_status (
+        #                         status_name       TEXT PRIMARY KEY  UNIQUE,
+        #                         value      TEXT,
+        #                         comment    TEXT
+        #                     );"""
+        #     self.sql(sqlite_command)
 
         # stores need status info like: last_database_clean, last_export, ...
-        if not self.table_exists("local_status"):
-            sqlite_command = """CREATE TABLE local_status (
-                                status_name       TEXT PRIMARY KEY  UNIQUE,
-                                value      TEXT,
-                                comment    TEXT
-                            );"""
-            self.sql(sqlite_command)
-            self.init_status_table() # write first needed values to table
+        self.init_table("local_status", ["status_name TEXT PRIMARY KEY UNIQUE",
+                                         "value TEXT",
+                                         "comment TEXT"])
+        if "local_status" not in existing_tables:
+            self.init_status_table()  # write first needed values to table
 
 
-        if not self.table_exists("dc_dynamic_head"):
-            sqlite_command = """ CREATE TABLE dc_dynamic_head (
-                                card_id                    REFERENCES dc_head (card_id),
-                                hops      INT (1),
-                                signature TEXT,
-                                salts     TEXT
-                            );"""
-            self.sql(sqlite_command)
+        # table dc_dynamic_head
+        self.init_table("dc_dynamic_head", ["card_id   REFERENCES dc_head (card_id)",
+                                            "hops      INT (1)",
+                                            "signature TEXT",
+                                            "salts     TEXT"])
+        # if not self.table_exists("dc_dynamic_head"):
+        #     sqlite_command = """ CREATE TABLE dc_dynamic_head (
+        #                         card_id   REFERENCES dc_head (card_id),
+        #                         hops      INT (1),
+        #                         signature TEXT,
+        #                         salts     TEXT
+        #                     );"""
+        #     self.sql(sqlite_command)
 
-        if not self.table_exists("business_card"):
-            # the first colum has to be the current_element_id
-            sqlite_command = """CREATE TABLE business_card (
-                                card_id                    REFERENCES dc_head (card_id),
-                                image              TEXT,
-                                name               TEXT,
-                                family_name        TEXT,
-                                street             TEXT,
-                                zip_code           INTEGER,
-                                city               TEXT,
-                                country            TEXT,
-                                coordinates        TEXT,
-                                company_profession TEXT,
-                                phone              TEXT,
-                                website            TEXT,
-                                email              TEXT,
-                                other_contact      TEXT,
-                                radius_of_activity TEXT,
-                                interests_hobbies  TEXT,
-                                skills_offers      TEXT,
-                                requests           TEXT,
-                                tags               TEXT
-                            );
-                            """
-            self.sql(sqlite_command)
-            self.extend_table("business_card")
+        self.init_table("business_card", ["card_id            REFERENCES dc_head (card_id)",
+                                            "image              TEXT",
+                                            "name               TEXT",
+                                            "family_name        TEXT",
+                                            "street             TEXT",
+                                            "zip_code           INTEGER",
+                                            "city               TEXT",
+                                            "country            TEXT",
+                                            "coordinates        TEXT",
+                                            "company_profession TEXT",
+                                            "phone              TEXT",
+                                            "website            TEXT",
+                                            "email              TEXT",
+                                            "other_contact      TEXT",
+                                            "radius_of_activity TEXT",
+                                            "interests_hobbies  TEXT",
+                                            "skills_offers      TEXT",
+                                            "requests           TEXT",
+                                            "tags               TEXT"])
+        self.extend_table("business_card")
 
+        # if not self.table_exists("business_card"):
+        #     # the first colum has to be the current_element_id
+        #     sqlite_command = """CREATE TABLE business_card (
+        #                         card_id            REFERENCES dc_head (card_id),
+        #                         image              TEXT,
+        #                         name               TEXT,
+        #                         family_name        TEXT,
+        #                         street             TEXT,
+        #                         zip_code           INTEGER,
+        #                         city               TEXT,
+        #                         country            TEXT,
+        #                         coordinates        TEXT,
+        #                         company_profession TEXT,
+        #                         phone              TEXT,
+        #                         website            TEXT,
+        #                         email              TEXT,
+        #                         other_contact      TEXT,
+        #                         radius_of_activity TEXT,
+        #                         interests_hobbies  TEXT,
+        #                         skills_offers      TEXT,
+        #                         requests           TEXT,
+        #                         tags               TEXT
+        #                     );
+        #                     """
+        #     self.sql(sqlite_command)
 
-        if not self.table_exists("local_card_info"):
-            # stores information which are not shared to other. (distance or to hide card locally ...)
-            sqlite_command = """CREATE TABLE local_card_info (
-                                card_id    REFERENCES dc_head (card_id),
-                                hidden     BOOLEAN DEFAULT (0),
-                                distance   CHAR (8),
-                                mailing_list TEXT (64) DEFAULT (''),
-                                local_id     INTEGER,
-                                friend_ids   TEXT DEFAULT ('')                               
-                            );
-                            """
-            self.sql(sqlite_command)
+        self.init_table("local_card_info", ["card_id    REFERENCES dc_head (card_id)",
+                                            "hidden     BOOLEAN DEFAULT (0)",
+                                            "distance   CHAR (8)",
+                                            "mailing_list TEXT (64) DEFAULT ('')",
+                                            "local_id     INTEGER",
+                                            "friend_ids   TEXT DEFAULT ('')"])
+        # if not self.table_exists("local_card_info"):
+        #     # stores information which are not shared to other. (distance or to hide card locally ...)
+        #     sqlite_command = """CREATE TABLE local_card_info (
+        #                         card_id    REFERENCES dc_head (card_id),
+        #                         hidden     BOOLEAN DEFAULT (0),
+        #                         distance   CHAR (8),
+        #                         mailing_list TEXT (64) DEFAULT (''),
+        #                         local_id     INTEGER,
+        #                         friend_ids   TEXT DEFAULT ('')
+        #                     );
+        #                     """
+        #     self.sql(sqlite_command)
 
 
         if not self.table_exists("complete_table"):
@@ -1311,32 +1383,51 @@ class local_card_db:
             dc_head.card_id = local_card_info.card_id) WHERE deleted = False;"""
             self.sql(sqlite_command)
 
-        if not self.table_exists("publickeys"):
-            sqlite_command = """CREATE TABLE publickeys (pubkey_id CHAR (32) PRIMARY KEY, publickey TEXT, 
-            card_id CHAR (32) REFERENCES dc_head (card_id)); """
-            self.sql(sqlite_command)
-            self.extend_table("publickeys")
 
-        if not self.table_exists("friends_of_friends"):
-            # datacard that stores all the friends_ids of an creator_id
-            sqlite_command = """CREATE TABLE friends_of_friends (card_id REFERENCES dc_head (card_id),
-                                creator_id CHAR (32), 
-                                friends_ids TEXT); """
-            self.sql(sqlite_command)
-            self.extend_table("friends_of_friends")
+        self.init_table("publickeys", ["pubkey_id CHAR (32) PRIMARY KEY",
+                                     "publickey TEXT",
+                                     "card_id CHAR (32) REFERENCES dc_head (card_id)"])
+        self.extend_table("publickeys")
 
-        if not self.table_exists("friends"):
-            sqlite_command = """CREATE TABLE friends (
-                                pubkey_id         CHAR (32) PRIMARY KEY  UNIQUE,
-                                publickey         TEXT,
-                                active_friendship BOOLEAN   DEFAULT (0),
-                                name              TEXT,
-                                friend_since_date      CHAR (30),
-                                expire_date       CHAR (30),
-                                comment           TEXT,
-                                email     TEXT
-                            );"""
-            self.sql(sqlite_command)
+        # if not self.table_exists("publickeys"):
+        #     sqlite_command = """CREATE TABLE publickeys (pubkey_id CHAR (32) PRIMARY KEY, publickey TEXT,
+        #     card_id CHAR (32) REFERENCES dc_head (card_id)); """
+        #     self.sql(sqlite_command)
+
+        self.init_table("friends_of_friends", ["card_id REFERENCES dc_head (card_id)",
+                                                "creator_id CHAR (32)",
+                                                "friends_ids TEXT"])
+        self.extend_table("friends_of_friends")
+
+        # if not self.table_exists("friends_of_friends"):
+        #     # datacard that stores all the friends_ids of an creator_id
+        #     sqlite_command = """CREATE TABLE friends_of_friends (
+        #                         card_id REFERENCES dc_head (card_id),
+        #                         creator_id CHAR (32),
+        #                         friends_ids TEXT); """
+        #     self.sql(sqlite_command)
+
+
+        self.init_table("friends", ["pubkey_id         CHAR (32) PRIMARY KEY  UNIQUE",
+                                    "publickey         TEXT",
+                                    "active_friendship BOOLEAN   DEFAULT (0)",
+                                    "name              TEXT",
+                                    "friend_since_date      CHAR (30)",
+                                    "expire_date       CHAR (30)",
+                                    "comment           TEXT",
+                                    "email     TEXT"])
+        # if not self.table_exists("friends"):
+        #     sqlite_command = """CREATE TABLE friends (
+        #                         pubkey_id         CHAR (32) PRIMARY KEY  UNIQUE,
+        #                         publickey         TEXT,
+        #                         active_friendship BOOLEAN   DEFAULT (0),
+        #                         name              TEXT,
+        #                         friend_since_date      CHAR (30),
+        #                         expire_date       CHAR (30),
+        #                         comment           TEXT,
+        #                         email     TEXT
+        #                     );"""
+        #     self.sql(sqlite_command)
 
 
     def init_status_table(self):
@@ -1475,6 +1566,9 @@ class local_card_db:
         :return: dict like: {"1": "abc", "2": "def"}
         """
         #dprint(sql_list)
+        if len(sql_list) == 0:
+            return {} # return empty dict when sql_list empty
+
         if len(sql_list[0]) != 2:
             raise Exception("Wrong Tuble length")
         new_dict = {}
