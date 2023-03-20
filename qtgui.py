@@ -1802,6 +1802,8 @@ class Dialog_New_Password(QMainWindow, Ui_DialogNewPassword):
         localdb.add_own_public_key_to_database(crypt.Profile.rsa_key_pair_id,
                                                crypt.rsapubkey_to_rsapukeystring(
                                                 crypt.Profile.rsa_key_pair.public_key()), rsa_keypair)
+        localdb.update_database_friends_info(crypt.Profile.rsa_key_pair_id, rsa_keypair)
+
         dialog_new_password.close()
         frm_main_window.set_gui_depending_profile_status()
         frm_main_window.update_table_view()
