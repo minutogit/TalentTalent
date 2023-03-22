@@ -34,6 +34,11 @@ $card_type = "<card_type>business_card<card_type>\n";  // placeholder for more p
 $message_to_collector = esc($_POST['message_to_collector']);
 $entry_type = esc($_POST['entry_type']);
 
+// preventing sending an empty mail when this file is loaded directly (without webform before)
+if ($email == "") {
+  die("-");
+}
+
 
 $entrant_email = esc($_POST['email']);
 $collector_info = "Hinweis: Den Inhalt dieser Mail unveraendert einfach kopieren und mit TalentTalent importieren.\nZur zusaetzlichen Sicherheit eventuell warten bis der Eintrager die Mail nochmal weiterleitet.";
