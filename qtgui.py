@@ -1902,7 +1902,7 @@ class Frm_Mainwin(QMainWindow, Ui_MainWindow):
         Adds all colmuns to to the column-selcetion-combobox
         :return:
         """
-        all_columns = ['NR.', 'Freunde','NAME', 'TELEFON', 'E-MAIL', 'WWW', 'PLZ', 'ORT', 'ENTFERNUNG', 'ANGEBOT',
+        all_columns = ['NR.', 'Freunde','NAME', 'Unternehmen / Beruf', 'TELEFON', 'E-MAIL', 'WWW', 'PLZ', 'ORT', 'ENTFERNUNG', 'ANGEBOT',
                        'INTERESSEN', 'GESUCH', 'STICHWÖRTER', 'GÜLTIGKEIT']
         for col in all_columns:
             self.comboBox_column_selection.addItem(col)
@@ -2001,17 +2001,18 @@ class Frm_Mainwin(QMainWindow, Ui_MainWindow):
         column_selection = "local_id AS [NR.], "
         columns = [ ("friend_ids as Freunde", conf.GUI_COLUMN_SELECTION[1]),
                    ("(name || ' ' || family_name) AS Name", conf.GUI_COLUMN_SELECTION[2]),
-                   ("phone as Telefon", conf.GUI_COLUMN_SELECTION[3]),
-                   ("email as [E-Mail]", conf.GUI_COLUMN_SELECTION[4]),
+                   ("company_profession as [Untern. Beruf]", conf.GUI_COLUMN_SELECTION[3]),
+                   ("phone as Telefon", conf.GUI_COLUMN_SELECTION[4]),
+                   ("email as [E-Mail]", conf.GUI_COLUMN_SELECTION[5]),
                    ("website AS www", conf.GUI_COLUMN_SELECTION[5]),
-                   ("zip_code AS PLZ", conf.GUI_COLUMN_SELECTION[6]),
-                   ("city AS Ort", conf.GUI_COLUMN_SELECTION[7]),
-                   ("distance AS [Entfernung]", conf.GUI_COLUMN_SELECTION[8]),
-                   ("skills_offers AS Angebot", conf.GUI_COLUMN_SELECTION[9]),
-                   ("interests_hobbies AS [Interessen]", conf.GUI_COLUMN_SELECTION[10]),
-                   ("requests AS Gesuch", conf.GUI_COLUMN_SELECTION[11]),
-                   ("tags AS Stichwörter", conf.GUI_COLUMN_SELECTION[12]),
-                   ("valid_until AS Gültigkeit", conf.GUI_COLUMN_SELECTION[13])
+                   ("zip_code AS PLZ", conf.GUI_COLUMN_SELECTION[7]),
+                   ("city AS Ort", conf.GUI_COLUMN_SELECTION[8]),
+                   ("distance AS [Entfernung]", conf.GUI_COLUMN_SELECTION[9]),
+                   ("skills_offers AS Angebot", conf.GUI_COLUMN_SELECTION[10]),
+                   ("interests_hobbies AS [Interessen]", conf.GUI_COLUMN_SELECTION[11]),
+                   ("requests AS Gesuch", conf.GUI_COLUMN_SELECTION[12]),
+                   ("tags AS Stichwörter", conf.GUI_COLUMN_SELECTION[13]),
+                   ("valid_until AS Gültigkeit", conf.GUI_COLUMN_SELECTION[14])
                    ]
 
         # filter the columns based on the value in conf.GUI_COLUMN_SELECTION
