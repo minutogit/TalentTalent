@@ -589,7 +589,7 @@ class local_card_db:
                 # card is the personal card of the creator itself so all friends must be determined
                 # then the business cards (if exists) of the friends are need to get the local id (which is the friends number in gui)
                 creator = card_id_creators[card_id]
-                friends_of_creator = str(creators_friends[creator]).split(',')
+                friends_of_creator = str(creators_friends.get(creator, 'nocreator')).split(',')
                 min_distance = "~~~~~~~~~" # distance is string in database and ~ represents a high value (need to get minimum)
                 friends_local_id = ""
                 # determine of all friends which business_card is the closest to choose this card creator as friend
