@@ -1,5 +1,6 @@
 import binascii, warnings
 import re
+import sys
 from datetime import datetime, timedelta
 import logging, os
 from PySide6.QtCore import QTimer, QSortFilterProxyModel, QTranslator
@@ -37,7 +38,7 @@ conf = functions.config()
 conf.read()
 
 # logging management
-LOG_FILENAME = os.path.join(os.getcwd(), conf.PROGRAMM_FOLDER, "log.txt")
+LOG_FILENAME = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), conf.PROGRAMM_FOLDER, "log.txt")
 log_format = logging.Formatter("%(asctime)s [%(levelname)s] %(message)s")
 log = logging.getLogger(__name__)
 console_handler = logging.StreamHandler()
@@ -163,7 +164,7 @@ class Dialog_HTML_Export(QMainWindow, Ui_DialogHtmlExport):
     def html_export(self):
         """export all cards to html for printing to paper"""
         export_filename = str(QFileDialog.getSaveFileName(self, 'HTML speichern',
-                                                          os.path.join(os.getcwd(), conf.EXPORT_FOLDER,
+                                                          os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), conf.EXPORT_FOLDER,
                                                                        f"Angebote.html"),
                                                           filter="*.html")[0])
         if export_filename == "": # if no file selected return
@@ -1792,7 +1793,7 @@ class Dialog_New_Password(QMainWindow, Ui_DialogNewPassword):
             self.change_password = False
 
         # print("seed und pw\n", crypt.Profile.rsa_key_word_seeds[0], "\n", crypt.Profile.user_pw)
-        profile_filename = os.path.join(os.getcwd(), conf.PROGRAMM_FOLDER, "profile.dat")
+        profile_filename = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), conf.PROGRAMM_FOLDER, "profile.dat")
         crypt.save_profile(profile_filename, new_password)
         crypt.init_profile(new_password)  # instantly init Pofile that all profile variables are set
         localdb.password = crypt.Profile.database_key
@@ -2198,7 +2199,7 @@ class Frm_Mainwin(QMainWindow, Ui_MainWindow):
         localdb.update_database_friends_info(crypt.Profile.rsa_key_pair_id, crypt.Profile.rsa_key_pair, do_update=True)
 
         export_filename = str(QFileDialog.getSaveFileName(self, 'Datenbank speichern',
-                                                          os.path.join(os.getcwd(), conf.EXPORT_FOLDER,
+                                                          os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), conf.EXPORT_FOLDER,
                                        f"{crypt.Profile.rsa_key_pair_id[:8]}_talents.fdb"), filter="*.fdb")[0])
         if export_filename == "":
             return
@@ -2302,7 +2303,7 @@ class Frm_Mainwin(QMainWindow, Ui_MainWindow):
                 continue # catch when no file selected on file open dialog
 
             if files_from_import_folder:
-                file_path = os.path.join(os.getcwd(), conf.IMPORT_FOLDER, file)
+                file_path = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), conf.IMPORT_FOLDER, file)
             else:
                 file_path = file
             encrypted_file = functions.load_var_from_file(file_path)
@@ -2313,7 +2314,7 @@ class Frm_Mainwin(QMainWindow, Ui_MainWindow):
                 show_message_box("Import fehlgeschlagen", f"""Der Import folgender Datei ist fehlgeschlagen.
                 Falsches Passwort oder die Datei ist nicht von einem Freund.\n{file}""")
                 if files_from_import_folder: # move files to subfolder to keep import folder clean
-                    os.replace(file_path, os.path.join(os.getcwd(), conf.IMPORT_FAILED_SUBFOLDER, os.path.basename(file_path)))
+                    os.replace(file_path, os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), conf.IMPORT_FAILED_SUBFOLDER, os.path.basename(file_path)))
                 continue
 
             # first check and import temporary new pubkeys need for check of signature
@@ -2426,7 +2427,7 @@ class Frm_Mainwin(QMainWindow, Ui_MainWindow):
             frm_main_window.statusbar.showMessage(f"{file_path} erfolgreich importiert.", timeout=10000)
 
         if files_from_import_folder:  # move files to subfolder to keep import folder clean
-            os.replace(file_path, os.path.join(os.getcwd(), conf.IMPORT_DONE_SUBFOLDER, os.path.basename(file_path)))
+            os.replace(file_path, os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), conf.IMPORT_DONE_SUBFOLDER, os.path.basename(file_path)))
 
         # claculated distances of new and updated cards
         localdb.update_distances( new_imported_cardids + updated_cardids, conf.PROFILE_SET_COORDINATES)
@@ -2441,7 +2442,7 @@ class Frm_Mainwin(QMainWindow, Ui_MainWindow):
         used to login on profile. if no profile exists prompt to create / restore profile
         """
         # check if profile exists and try to load profile
-        profile_filename = os.path.join(os.getcwd(), conf.PROGRAMM_FOLDER, "profile.dat")
+        profile_filename = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), conf.PROGRAMM_FOLDER, "profile.dat")
         profile_exist = os.path.isfile(profile_filename)  # checks if the file exists in app folder
         if profile_exist:
             crypt.Profile.profile_exist = True

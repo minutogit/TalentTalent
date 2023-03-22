@@ -370,27 +370,27 @@ class config():
         #self.ENCRYPT_LOCAL_DATABASE = False  # Set if local DB should be stored encryped
 
 
-        if not os.path.exists(os.path.join(os.getcwd(), self.PROGRAMM_FOLDER)):
-            os.makedirs(os.path.join(os.getcwd(), self.PROGRAMM_FOLDER))
+        if not os.path.exists(os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), self.PROGRAMM_FOLDER)):
+            os.makedirs(os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), self.PROGRAMM_FOLDER))
 
-        if not os.path.exists(os.path.join(os.getcwd(), self.EXPORT_FOLDER)):
-            os.makedirs(os.path.join(os.getcwd(), self.EXPORT_FOLDER))
+        if not os.path.exists(os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), self.EXPORT_FOLDER)):
+            os.makedirs(os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), self.EXPORT_FOLDER))
 
-        if not os.path.exists(os.path.join(os.getcwd(), self.IMPORT_FOLDER)):
-            os.makedirs(os.path.join(os.getcwd(), self.IMPORT_FOLDER))
+        if not os.path.exists(os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), self.IMPORT_FOLDER)):
+            os.makedirs(os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), self.IMPORT_FOLDER))
 
-        if not os.path.exists(os.path.join(os.getcwd(), self.IMPORT_DONE_SUBFOLDER)):
-            os.makedirs(os.path.join(os.getcwd(), self.IMPORT_DONE_SUBFOLDER))
+        if not os.path.exists(os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), self.IMPORT_DONE_SUBFOLDER)):
+            os.makedirs(os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), self.IMPORT_DONE_SUBFOLDER))
 
-        if not os.path.exists(os.path.join(os.getcwd(), self.IMPORT_FAILED_SUBFOLDER)):
-            os.makedirs(os.path.join(os.getcwd(), self.IMPORT_FAILED_SUBFOLDER))
+        if not os.path.exists(os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), self.IMPORT_FAILED_SUBFOLDER)):
+            os.makedirs(os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), self.IMPORT_FAILED_SUBFOLDER))
 
         self.confchanged = False  # bei änderungen der config auf True, damit dann settings gespeichert werden
         pass
 
     def read(self, filename=('config.json')):
 
-        configfilename = os.path.join(os.getcwd(), self.PROGRAMM_FOLDER, filename)
+        configfilename = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), self.PROGRAMM_FOLDER, filename)
         # wenn keine config existiernt mit passwort anlegen
         if not os.path.isfile(configfilename):
             self.load_default_settings()
@@ -419,7 +419,7 @@ class config():
         self.DATABASE_ENCRYPT_ON_EXIT = bool(self.data['database']['encrypt_on_exit'])
 
     def write(self, filename='config.json'):
-        configfilename = os.path.join(os.getcwd(), self.PROGRAMM_FOLDER, filename)
+        configfilename = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), self.PROGRAMM_FOLDER, filename)
         self.data['profile_settings']['profile_name'] = self.PROFILE_SET_PROFILE_NAME
         self.data['profile_settings']['name'] = self.PROFILE_SET_NAME
         self.data['profile_settings']['family_name'] = self.PROFILE_SET_FAMILIY_NAME
@@ -497,8 +497,8 @@ def rand_hex(length):
 class local_card_db:
     def __init__(self, file, folder):
         # self.filename = file
-        self.encrypted_db_file = os.path.join(os.getcwd(), folder, "crypted_" + file)
-        self.db_file = os.path.join(os.getcwd(), folder, file)
+        self.encrypted_db_file = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), folder, "crypted_" + file)
+        self.db_file = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), folder, file)
         #self.db_filename = self.decrypted_db_filename
         self.password = ''
 
