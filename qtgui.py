@@ -378,6 +378,7 @@ class Dialog_Display_Content(QMainWindow, Ui_DialogDisplayContent):
             dialog_business_card.open_business_card(self.current_element_id, opened_from_content_display=True)
 
     def delete_card(self):
+
         if self.opened_type == "friend":
             reply = QMessageBox.question(self, 'Freundschaft wirklich beenden?', 'Soll die Freundschaft wirklich beendet werden??',
                                          QMessageBox.No | QMessageBox.Yes, QMessageBox.No)
@@ -414,6 +415,7 @@ class Dialog_Display_Content(QMainWindow, Ui_DialogDisplayContent):
                         localdb.hide_data_card(self.current_element_id)
                 frm_main_window.update_table_view()
                 self.close()
+        conf.STATUS_BACKUP_NEEDED = True  # db is changed so enable backup
 
 
     def email_to_friends_helper(self) -> None:
@@ -1484,6 +1486,8 @@ class Dialog_Business_Card(QMainWindow, Ui_DialogBuisinessCard):
             # calc local id, if foreign_card then fast_mode
             localdb.recalculate_local_ids(fast_mode=self.foreign_card)
 
+        conf.STATUS_BACKUP_NEEDED = True # db is changed so enable backup
+
         # insert / remove mail to mailing list table
         email_address = self.email_lineEdit.text().strip()
         if self.checkBox_add_to_mailling_list.isChecked() and functions.isValidEmail(email_address):
@@ -2433,6 +2437,10 @@ class Frm_Mainwin(QMainWindow, Ui_MainWindow):
         localdb.update_distances( new_imported_cardids + updated_cardids, conf.PROFILE_SET_COORDINATES)
         if len(new_imported_cardids) > 0:
             localdb.recalculate_local_ids() # recalc new local_ids
+
+        if len(new_imported_cardids) + len(updated_cardids) > 0:
+            conf.STATUS_BACKUP_NEEDED = True  # db is changed so enable backup
+
         frm_main_window.update_table_view()
         frm_main_window.statusbar.showMessage(f"{len(new_imported_cardids)} neue Einträge und {len(updated_cardids)} aktuallisierte Einträge erfolgreich importiert.", timeout=20000)
 
@@ -2510,4 +2518,6 @@ app.exec()
 
 if crypt.Profile.profile_is_initialized:  # save only when profile was initialized correctly with password
     localdb.save_and_close_database(conf.DATABASE_ENCRYPT_ON_EXIT) # close db
+    if conf.STATUS_BACKUP_NEEDED: # make backup when needed
+        functions.backup_data_directory(conf.PROGRAMM_FOLDER, conf.BACKUP_FOLDER)
     conf.write() # save config on close

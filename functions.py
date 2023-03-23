@@ -3,6 +3,7 @@ import ast
 import calendar
 import inspect
 import random
+import shutil
 import sys
 import time
 import zlib
@@ -23,6 +24,7 @@ from Crypto.Hash import SHA256
 from datetime import datetime, timedelta
 from geopy.geocoders import Nominatim
 from geopy import distance as geopydist
+import zipfile
 
 import ntplib
 
@@ -31,6 +33,57 @@ def dprint(*args):
     frame = inspect.stack()[1]
     _, filename = os.path.split(frame[1])
     print (f"{filename}:{frame[2]}", *args)
+
+def backup_data_directory(backup_source_folder, backup_destination_folder):
+    '''
+    This function creates backup files of specific frequencies in a given source folder, and stores them in a
+    specified destination folder while maintaining a maximum number of backups for each frequency.
+    '''
+
+    # Define the maximum number of backups to keep for each frequency
+    max_backups = {
+        'backup': 5,
+        'stundenbackup': 5,
+        'tagesbackup': 5,
+        'wochenbackup': 4,
+        'monatsbackup': 6
+    }
+
+    # Define the backup frequency directories
+    backup_types = {
+        'backup': datetime.now().strftime('%Y-%m-%d_%H-%M'),
+        'stundenbackup': datetime.now().strftime('%Y-%m-%d_%H') + 'Uhr',
+        'tagesbackup': datetime.now().strftime('%Y-%m-%d'),
+        'wochenbackup': datetime.now().strftime('%Y-%U'),
+        'monatsbackup': datetime.now().strftime('%Y-%m')
+    }
+
+    # Define the backup directory
+    backup_dir = os.path.join(backup_destination_folder)
+    os.makedirs(backup_dir, exist_ok=True)
+
+    backup_file_name = 'letztes-backup.zip'
+    last_backup = os.path.join(backup_dir, backup_file_name)
+    file_extensions = ['.db', '.dat', '.json'] # zip only this files
+    with zipfile.ZipFile(last_backup, 'w') as zipf:
+        for file in os.listdir(backup_source_folder):
+            if os.path.isfile(os.path.join(backup_source_folder, file)) and \
+                    any(file.lower().endswith(ext) for ext in file_extensions):
+                zipf.write(os.path.join(backup_source_folder, file), file)
+
+    for freq, backup_type in backup_types.items():
+        backup_file = os.path.join(backup_dir, f'{freq}_{backup_type}.zip')
+
+        # create backup file only when file not exist (beginning of month, week ,..)
+        if not os.path.isfile(backup_file):
+            shutil.copy(last_backup, backup_file)
+
+        # Check if the maximum number of backups has been reached
+        backups = [f for f in os.listdir(backup_dir) if f.startswith(f'{freq}_')]
+        while len(backups) > max_backups[freq]:
+            backups.sort()
+            os.remove(os.path.join(backup_dir, backups[0]))
+            backups = [f for f in os.listdir(backup_dir) if f.startswith(f'{freq}_')]
 
 def shred_file(file):
     """overwirtes a file with random pattern and deletes it"""
@@ -361,17 +414,20 @@ class config():
         # temporäre globale variablen / Einstellungen, die nicht Datei gespeichert werden
         self.TEMP_STARTUP_PASSWORD = ""
         self.PROGRAMM_FOLDER = 'TalentData'  # Verzeichnis wo Daten gespeichert werden
+        self.BACKUP_FOLDER = 'TalentBackups'  # Verzeichnis wo Daten gespeichert werden
         self.EXPORT_FOLDER = 'TalentExport'  # folder where data is exported
         self.IMPORT_FOLDER = 'TalentImport'  # folder from where data is imported
         self.IMPORT_DONE_SUBFOLDER = os.path.join(self.IMPORT_FOLDER, 'importiert')  # imported files
         self.IMPORT_FAILED_SUBFOLDER = os.path.join(self.IMPORT_FOLDER, 'import_fehlgeschlagen')  # failed import-files
 
-
-        #self.ENCRYPT_LOCAL_DATABASE = False  # Set if local DB should be stored encryped
+        self.STATUS_BACKUP_NEEDED = False # status var which sets to true on db changes to do backup
 
 
         if not os.path.exists(os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), self.PROGRAMM_FOLDER)):
             os.makedirs(os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), self.PROGRAMM_FOLDER))
+
+        if not os.path.exists(os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), self.PROGRAMM_FOLDER)):
+            os.makedirs(os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), self.BACKUP_FOLDER))
 
         if not os.path.exists(os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), self.EXPORT_FOLDER)):
             os.makedirs(os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), self.EXPORT_FOLDER))
