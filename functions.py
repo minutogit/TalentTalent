@@ -94,8 +94,8 @@ def shred_file(file):
     os.remove(file) # delete file
 
 def order_dict(input_dict: dict, key_order: list) -> dict:
-    """ order a dict in the order af the keys in key_order. keys with nor in the key_order will be append to the end.
-    functions ignores if a key from the key_order is not a key of dict_in.
+    """ Orders a dictionary based on the specified key order. Keys not present in the key_order will be appended
+    to the end of the result. If a key from the key_order is not in the input_dict, it will be ignored.
     {'x': 7, 'b': 1, 'c': 5, 'a': 6} with list ['a', 'b'] returns {'a': 6, 'b': 1, 'x': 7, 'c': 5}
     :param input_dict: dict which have to be ordered
     :param key_order_list: a list of keys in the specific order

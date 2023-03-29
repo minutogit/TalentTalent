@@ -2519,5 +2519,6 @@ app.exec()
 if crypt.Profile.profile_is_initialized:  # save only when profile was initialized correctly with password
     localdb.save_and_close_database(conf.DATABASE_ENCRYPT_ON_EXIT) # close db
     if conf.STATUS_BACKUP_NEEDED: # make backup when needed
-        functions.backup_data_directory(conf.PROGRAMM_FOLDER, conf.BACKUP_FOLDER)
+        functions.backup_data_directory(os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), conf.PROGRAMM_FOLDER),
+                                        os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), conf.BACKUP_FOLDER))
     conf.write() # save config on close
