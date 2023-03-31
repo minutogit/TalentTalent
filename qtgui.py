@@ -4,7 +4,7 @@ import sys
 from datetime import datetime, timedelta
 import logging, os
 from PySide6.QtCore import QTimer, QSortFilterProxyModel, QTranslator
-from PySide6.QtGui import QTextOption
+from PySide6.QtGui import QTextOption, QDoubleValidator
 from PySide6.QtWidgets import QApplication, QMainWindow, \
     QMessageBox, QFileDialog
 from PySide6 import QtSql, QtGui   #Qt.CaseInsensitive  # , Qt
@@ -83,9 +83,12 @@ class Dialog_HTML_Export(QMainWindow, Ui_DialogHtmlExport):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+        self.max_radius_lineedit.setValidator(QDoubleValidator()) # allow only numbers
+        self.max_radius_lineedit.setText("5") # set 5 as default radius
         self.init_column_selction_entries()
         self.set_own_location()
         self.pushButton_html_export.clicked.connect(self.html_export)
+        self.pushButton_html_multi_export.clicked.connect(self.html_multi_export)
         self.pushButton_set_own_location.clicked.connect(self.set_own_location)
         self.determine_coordinates_pushButton.clicked.connect(self.get_coordinates)
         self.lineEdit_max_distance.setInputMask("00000;")
@@ -160,19 +163,58 @@ class Dialog_HTML_Export(QMainWindow, Ui_DialogHtmlExport):
         self.country_lineEdit.setText(conf.PROFILE_SET_COUNTRY)
         self.coordinates_lineEdit.setText(conf.PROFILE_SET_COORDINATES)
 
+    def html_multi_export(self):
 
-    def html_export(self):
-        """export all cards to html for printing to paper"""
         export_filename = str(QFileDialog.getSaveFileName(self, 'HTML speichern',
-                                                          os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), conf.EXPORT_FOLDER,
+                                                          os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])),
+                                                                       conf.EXPORT_FOLDER,
                                                                        f"Angebote.html"),
                                                           filter="*.html")[0])
-        if export_filename == "": # if no file selected return
+        if export_filename == "":  # if no file selected return
             return
         if not export_filename.endswith('.html'):
             export_filename = export_filename.split(".")[0] + ".html"
 
-        # read out if compact mode (remove line breaks in content)
+        current_time = str(datetime.now().replace(microsecond=0))
+
+        # select only own created cards (only this cities are relevant)
+        card_ids = localdb.sql_list(f"""SELECT card_id FROM dc_head WHERE 
+                        deleted = False AND type = 'business_card'  AND valid_until > '{current_time}' and creator = '{crypt.Profile.profile_id}';""")
+        all_cards = [localdb.convert_db_to_dict(card_id, add_hops_info=False) for card_id in card_ids]
+
+        # get all places
+        city_list = []
+        for data_card in all_cards:
+            city_list += [[data_card['data']['zip_code'], data_card['data']['city'], data_card['data']['coordinates']]]
+
+        city_list = functions.cluster_representative(city_list, float(self.max_radius_lineedit.text().replace(",", ".")))
+
+        for city in city_list:
+            filename = export_filename.rsplit(".", 1)[0] + " " + str(city[0]) + " " + str(city[1]) + ".html"
+            self.html_export(city, filename)
+
+
+    def html_export(self, multi_export_city = None, export_filename = ""):
+        """export all cards to html for printing to paper"""
+        if multi_export_city == None:
+            export_filename = str(QFileDialog.getSaveFileName(self, 'HTML speichern',
+                                                              os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), conf.EXPORT_FOLDER,
+                                                                           f"Angebote.html"),
+                                                              filter="*.html")[0])
+            if export_filename == "": # if no file selected return
+                return
+            if not export_filename.endswith('.html'):
+                export_filename = export_filename.split(".")[0] + ".html"
+            coordinates = self.coordinates_lineEdit.text()
+            zip_code = self.zip_code_lineEdit.text()
+            city = self.city_lineEdit.text()
+
+        else:
+            coordinates = multi_export_city[2]
+            city = multi_export_city[1]
+            zip_code = multi_export_city[0]
+
+            # read out if compact mode (remove line breaks in content)
         compact_mode = self.checkBox_compact_mode.isChecked()
         current_time = str(datetime.now().replace(microsecond=0))
         current_date = str(datetime.now().strftime('%d.%m.%Y'))
@@ -200,9 +242,8 @@ class Dialog_HTML_Export(QMainWindow, Ui_DialogHtmlExport):
 
         #prepare data for sorting with distance (distance between 2 coordinates)
         for data_card in all_cards:
-            data_card['data']['coordinates'] += f";{self.coordinates_lineEdit.text()}"
-
-
+            new_list = [data_card['data']['zip_code'], data_card['data']['city'], data_card['data']['coordinates']]
+            data_card['data']['coordinates'] += f";{coordinates}"
 
         # remove hidden datacards
         hidden_cards = localdb.sql_list("SELECT card_id FROM local_card_info WHERE hidden = True;")
@@ -218,8 +259,8 @@ class Dialog_HTML_Export(QMainWindow, Ui_DialogHtmlExport):
                          < (int(self.lineEdit_max_distance.text()) + 1)]
 
         number_of_entrys = len(all_cards)
-        infohead = {'number_of_entrys': number_of_entrys, 'zip_code': self.zip_code_lineEdit.text(),
-                    'city': self.city_lineEdit.text(), 'coordinates': self.coordinates_lineEdit.text(),
+        infohead = {'number_of_entrys': number_of_entrys, 'zip_code': zip_code,
+                    'city': city, 'coordinates': coordinates,
                     'current_date': current_date}
 
         # generate html file

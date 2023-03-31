@@ -34,3 +34,5 @@ cryptography~=38.0.1
 html2text~=2020.1.16
 ntplib~=0.4.0
 PyCryptodome
+haversine~=2.8.0
+scikit-learn~=1.2.2

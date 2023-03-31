@@ -25,14 +25,65 @@ from datetime import datetime, timedelta
 from geopy.geocoders import Nominatim
 from geopy import distance as geopydist
 import zipfile
-
+import numpy as np
 import ntplib
+from haversine import haversine, Unit
+from sklearn.cluster import DBSCAN
 
 def dprint(*args):
     """debugprint with file and linelumber from where it is called"""
     frame = inspect.stack()[1]
     _, filename = os.path.split(frame[1])
     print (f"{filename}:{frame[2]}", *args)
+
+
+def cluster_representative(cities, max_cluster_radius):
+    """
+    This function takes a list of cities with their coordinates and a maximum cluster radius as input.
+    It clusters the cities based on the maximum cluster radius and finds the representative city for
+    each cluster. The representative city is the one with the minimum sum of distances to other cities
+    within the same cluster. The function returns a list of representative cities with their postal codes,
+    names, and coordinates.
+
+    Args:
+    cities (list): List of cities with their postal codes, names, and coordinates.
+                  Example: [[10115, 'Berlin', '52.53, 13.38'], ...]
+    max_cluster_radius (float): Maximum radius of a cluster in kilometers.
+
+    Returns:
+    cluster_representatives (list): List of representative cities with their postal codes, names, and coordinates.
+    """
+
+    # Extract coordinates
+    coords = np.array([list(map(float, city[2].split(', '))) for city in cities])
+
+    # Perform clustering
+    clustering = DBSCAN(eps=max_cluster_radius, min_samples=1, metric=haversine).fit(coords)
+
+    # Extract cluster labels and number of clusters
+    labels = clustering.labels_
+    num_clusters = len(set(labels))
+
+    cluster_representatives = []
+
+    # Find the representative city for each cluster
+    for cluster_id in range(num_clusters):
+        cluster_coords = coords[labels == cluster_id]
+        cluster_cities = [city for city, label in zip(cities, labels) if label == cluster_id]
+
+
+        min_distance = float('inf')
+        representative = None
+        # Find the representative city (minimum sum of distances to other cities in the cluster)
+        for city, coord in zip(cluster_cities, cluster_coords):
+            distance_sum = sum(haversine(coord, other_coord, unit=Unit.KILOMETERS) for other_coord in cluster_coords)
+            if distance_sum < min_distance:
+                min_distance = distance_sum
+                representative = city
+
+        cluster_representatives.append(representative)
+
+    return cluster_representatives
 
 def backup_data_directory(backup_source_folder, backup_destination_folder):
     '''
@@ -227,7 +278,6 @@ def format_date_string(datestring) -> str:
         if newdatestring.find(" ") > 7: # long format with time
             dt = datetime.strptime(newdatestring, "%Y-%m-%d %H:%M:%S")
             return dt.strftime('%d.%m.%Y %H:%M:%S')
-            #print(dt.strftime('%d.%m.%Y, %H:%M:%S'))
         else: # shot format, only date, no time
             dt = datetime.strptime(newdatestring, "%Y-%m-%d")
             return dt.strftime('%d.%m.%Y')
