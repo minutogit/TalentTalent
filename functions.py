@@ -2,6 +2,7 @@
 import ast
 import calendar
 import inspect
+import math
 import random
 import shutil
 import sys
@@ -25,10 +26,10 @@ from datetime import datetime, timedelta
 from geopy.geocoders import Nominatim
 from geopy import distance as geopydist
 import zipfile
-import numpy as np
+#import numpy as np
 import ntplib
-from haversine import haversine, Unit
-from sklearn.cluster import DBSCAN
+#from haversine import haversine, Unit
+#from sklearn.cluster import DBSCAN
 
 def dprint(*args):
     """debugprint with file and linelumber from where it is called"""
@@ -37,53 +38,145 @@ def dprint(*args):
     print (f"{filename}:{frame[2]}", *args)
 
 
+# def cluster_representative_(cities, max_cluster_radius):
+#     """
+#     This function takes a list of cities with their coordinates and a maximum cluster radius as input.
+#     It clusters the cities based on the maximum cluster radius and finds the representative city for
+#     each cluster. The representative city is the one with the minimum sum of distances to other cities
+#     within the same cluster. The function returns a list of representative cities with their postal codes,
+#     names, and coordinates.
+#
+#     Args:
+#     cities (list): List of cities with their postal codes, names, and coordinates.
+#                   Example: [[10115, 'Berlin', '52.53, 13.38'], ...]
+#     max_cluster_radius (float): Maximum radius of a cluster in kilometers.
+#
+#     Returns:
+#     cluster_representatives (list): List of representative cities with their postal codes, names, and coordinates.
+#     """
+#
+#     # Extract coordinates
+#     coords = np.array([list(map(float, city[2].split(', '))) for city in cities])
+#
+#     # Perform clustering
+#     clustering = DBSCAN(eps=max_cluster_radius, min_samples=1, metric=haversine).fit(coords)
+#
+#     # Extract cluster labels and number of clusters
+#     labels = clustering.labels_
+#     num_clusters = len(set(labels))
+#
+#     cluster_representatives = []
+#
+#     # Find the representative city for each cluster
+#     for cluster_id in range(num_clusters):
+#         cluster_coords = coords[labels == cluster_id]
+#         cluster_cities = [city for city, label in zip(cities, labels) if label == cluster_id]
+#
+#
+#         min_distance = float('inf')
+#         representative = None
+#         # Find the representative city (minimum sum of distances to other cities in the cluster)
+#         for city, coord in zip(cluster_cities, cluster_coords):
+#             distance_sum = sum(haversine(coord, other_coord, unit=Unit.KILOMETERS) for other_coord in cluster_coords)
+#             if distance_sum < min_distance:
+#                 min_distance = distance_sum
+#                 representative = city
+#
+#         cluster_representatives.append(representative)
+#
+#     return cluster_representatives
+
+#import math
+
+def haversine(coord1, coord2):
+    R = 6371  # Earth radius in kilometers
+    lat1, lon1 = math.radians(coord1[0]), math.radians(coord1[1])
+    lat2, lon2 = math.radians(coord2[0]), math.radians(coord2[1])
+
+    dlat = lat2 - lat1
+    dlon = lon2 - lon1
+
+    a = math.sin(dlat / 2) ** 2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon / 2) ** 2
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+
+    return R * c
+
 def cluster_representative(cities, max_cluster_radius):
     """
-    This function takes a list of cities with their coordinates and a maximum cluster radius as input.
-    It clusters the cities based on the maximum cluster radius and finds the representative city for
-    each cluster. The representative city is the one with the minimum sum of distances to other cities
-    within the same cluster. The function returns a list of representative cities with their postal codes,
-    names, and coordinates.
+        This function takes a list of cities with their coordinates and a maximum cluster radius as input.
+        It clusters the cities based on the maximum cluster radius and finds the representative city for
+        each cluster. The representative city is the one with the minimum sum of distances to other cities
+        within the same cluster. The function returns a list of representative cities with their postal codes,
+        names, and coordinates.
 
-    Args:
-    cities (list): List of cities with their postal codes, names, and coordinates.
-                  Example: [[10115, 'Berlin', '52.53, 13.38'], ...]
-    max_cluster_radius (float): Maximum radius of a cluster in kilometers.
+        Args:
+        cities (list): List of cities with their postal codes, names, and coordinates.
+                      Example: [[10115, 'Berlin', '52.53, 13.38'], ...]
+        max_cluster_radius (float): Maximum radius of a cluster in kilometers.
 
-    Returns:
-    cluster_representatives (list): List of representative cities with their postal codes, names, and coordinates.
-    """
+        Returns:
+        cluster_representatives (list): List of representative cities with their postal codes, names, and coordinates.
+        """
 
-    # Extract coordinates
-    coords = np.array([list(map(float, city[2].split(', '))) for city in cities])
+    # Convert the coordinates string to a list of floats
+    coords = [list(map(float, city[2].split(', '))) for city in cities]
 
-    # Perform clustering
-    clustering = DBSCAN(eps=max_cluster_radius, min_samples=1, metric=haversine).fit(coords)
+    # Calculate the number of neighbors for each city within the max_cluster_radius
+    neighbors_count = []
+    for i, coord in enumerate(coords):
+        neighbors = sum(1 for other_coord in coords if haversine(coord, other_coord) <= max_cluster_radius)
+        neighbors_count.append((i, neighbors))
 
-    # Extract cluster labels and number of clusters
-    labels = clustering.labels_
-    num_clusters = len(set(labels))
+    # Sort the cities by the number of neighbors in descending order
+    neighbors_count.sort(key=lambda x: x[1], reverse=True)
 
+    # Initialize the list of clusters
+    clusters = []
+
+    # Iterate over the cities sorted by the number of neighbors
+    for i, _ in neighbors_count:
+        city, coord = cities[i], coords[i]
+        added = False
+
+        # Iterate over the existing clusters
+        for cluster in clusters:
+            # Check if the city is within the max_cluster_radius of the first city in the cluster
+            if haversine(coord, cluster[0][1]) <= max_cluster_radius:
+                # Add the city to the cluster
+                cluster.append((city, coord))
+                added = True
+                break
+
+        # If the city was not added to an existing cluster, create a new cluster
+        if not added:
+            clusters.append([(city, coord)])
+
+    # Initialize the list of cluster representatives
     cluster_representatives = []
 
-    # Find the representative city for each cluster
-    for cluster_id in range(num_clusters):
-        cluster_coords = coords[labels == cluster_id]
-        cluster_cities = [city for city, label in zip(cities, labels) if label == cluster_id]
-
-
+    # Iterate over the clusters
+    for cluster in clusters:
+        # Initialize variables to track the minimum distance and the representative city
         min_distance = float('inf')
         representative = None
-        # Find the representative city (minimum sum of distances to other cities in the cluster)
-        for city, coord in zip(cluster_cities, cluster_coords):
-            distance_sum = sum(haversine(coord, other_coord, unit=Unit.KILOMETERS) for other_coord in cluster_coords)
+
+        # Iterate over the cities in the cluster
+        for city, coord in cluster:
+            # Calculate the sum of distances from the current city to other cities in the cluster
+            distance_sum = sum(haversine(coord, other_coord) for _, other_coord in cluster)
+            # Update the minimum distance and the representative city if needed
             if distance_sum < min_distance:
                 min_distance = distance_sum
                 representative = city
 
+        # Add the representative city to the list of cluster representatives
         cluster_representatives.append(representative)
 
     return cluster_representatives
+
+
+
+
 
 def backup_data_directory(backup_source_folder, backup_destination_folder):
     '''
