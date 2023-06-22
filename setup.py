@@ -1,25 +1,17 @@
-# build with: python setup.py build
-
 import sys
-from cx_Freeze import setup, Executable
-from meta_info import __description__, __version__
+from subprocess import call
 
-base = None
-if sys.platform == 'win32':
-    base = 'Win32GUI'
-elif sys.platform == 'linux':
-    base = None
+# Terminal command to start this setup.py: python setup.py
+# This command builds the script using PyInstaller
 
-executables = [
-    Executable('talenttalent.py', base=base)
-]
+# Define the path to your spec file
+spec_file = 'talenttalent.app.spec'
 
-build_exe_options = {"packages": ["PySide6"], "excludes": []}
+if __name__ == '__main__':
+    # If running 'python setup.py'
+    if len(sys.argv) == 1:
+        # Build the script with PyInstaller using the spec file
+        call(['pyinstaller', spec_file])
 
-setup(
-    name = "TalentTalent",
-    version = __version__,
-    description = __description__,
-    options = {"build_exe": build_exe_options},
-    executables = executables
-)
+    # Keep the window open until a key is pressed
+    input("\nPress any key to continue...")
