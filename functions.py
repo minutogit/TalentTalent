@@ -1,5 +1,5 @@
-# benötige funktionen / Klassen
 import ast
+import binascii
 import calendar
 import inspect
 import math
@@ -8,28 +8,28 @@ import shutil
 import sys
 import time
 import zlib
-from math import sqrt
-import binascii
-# import datetime
-import pickle, os, json
-import sqlite3
-from cryptography.fernet import Fernet
-from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.backends import default_backend
-from Crypto.Signature.pkcs1_15 import PKCS115_SigScheme
+
 import base64
-# from os import getcwd
-import gzip, os, re
+import json
+import os
+import pickle
+import sqlite3
+
 from Crypto.Hash import SHA256
+from Crypto.Signature.pkcs1_15 import PKCS115_SigScheme
+from cryptography.fernet import Fernet
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from datetime import datetime, timedelta
 from geopy.geocoders import Nominatim
 from geopy import distance as geopydist
-import zipfile
-#import numpy as np
+import gzip
 import ntplib
-#from haversine import haversine, Unit
-#from sklearn.cluster import DBSCAN
+import re
+import zipfile
+
+
 
 def dprint(*args):
     """debugprint with file and linelumber from where it is called"""
@@ -38,55 +38,6 @@ def dprint(*args):
     print (f"{filename}:{frame[2]}", *args)
 
 
-# def cluster_representative_(cities, max_cluster_radius):
-#     """
-#     This function takes a list of cities with their coordinates and a maximum cluster radius as input.
-#     It clusters the cities based on the maximum cluster radius and finds the representative city for
-#     each cluster. The representative city is the one with the minimum sum of distances to other cities
-#     within the same cluster. The function returns a list of representative cities with their postal codes,
-#     names, and coordinates.
-#
-#     Args:
-#     cities (list): List of cities with their postal codes, names, and coordinates.
-#                   Example: [[10115, 'Berlin', '52.53, 13.38'], ...]
-#     max_cluster_radius (float): Maximum radius of a cluster in kilometers.
-#
-#     Returns:
-#     cluster_representatives (list): List of representative cities with their postal codes, names, and coordinates.
-#     """
-#
-#     # Extract coordinates
-#     coords = np.array([list(map(float, city[2].split(', '))) for city in cities])
-#
-#     # Perform clustering
-#     clustering = DBSCAN(eps=max_cluster_radius, min_samples=1, metric=haversine).fit(coords)
-#
-#     # Extract cluster labels and number of clusters
-#     labels = clustering.labels_
-#     num_clusters = len(set(labels))
-#
-#     cluster_representatives = []
-#
-#     # Find the representative city for each cluster
-#     for cluster_id in range(num_clusters):
-#         cluster_coords = coords[labels == cluster_id]
-#         cluster_cities = [city for city, label in zip(cities, labels) if label == cluster_id]
-#
-#
-#         min_distance = float('inf')
-#         representative = None
-#         # Find the representative city (minimum sum of distances to other cities in the cluster)
-#         for city, coord in zip(cluster_cities, cluster_coords):
-#             distance_sum = sum(haversine(coord, other_coord, unit=Unit.KILOMETERS) for other_coord in cluster_coords)
-#             if distance_sum < min_distance:
-#                 min_distance = distance_sum
-#                 representative = city
-#
-#         cluster_representatives.append(representative)
-#
-#     return cluster_representatives
-
-#import math
 
 def haversine(coord1, coord2):
     R = 6371  # Earth radius in kilometers
@@ -1191,9 +1142,7 @@ class local_card_db:
 
         card_id = "friends" + creator_id[7:16] + creator_id[:16] # static card id derived from local creator id and beginning with "friends"
         friends_info_in_database = self.sql(f"SELECT EXISTS(SELECT * FROM friends_of_friends WHERE card_id = '{card_id}')")[0][0]
-        #dprint(friends_info_in_database)
         friend_ids = ','.join(self.sql_list(f"SELECT pubkey_id FROM friends WHERE active_friendship = True"))
-        #dprint(friend_ids)
         date_time_now = datetime.now().replace(microsecond=0)
         valid_until = add_months(date_time_now, 36)
         edited = date_time_now
@@ -1233,7 +1182,6 @@ class local_card_db:
             self.sql(sql_command)
 
         elif friends_info_in_database and do_update: # update friends table
-            #dprint("friends update")
             # head update
             sql_command = (f"""UPDATE dc_head SET edited = ?, valid_until = ?, version = version + 1
                                          WHERE card_id = ?;""")
@@ -1433,7 +1381,6 @@ class local_card_db:
         # construct the SQL command to create the table if not exists
         sqlite_command = f"CREATE TABLE IF NOT EXISTS {table_name} ({', '.join(columns)});"
         self.sql(sqlite_command)
-        #dprint(sqlite_command)
 
         # check if all columns exist in the table
         table_info = self.sql(f"PRAGMA table_info('{table_name}')")
@@ -1610,34 +1557,6 @@ class local_card_db:
                               FROM {table} WHERE card_id = '{card_id}';"""
             self.sql(sql_command)
 
-        # #dprint(card_type)
-        #
-        # #copy into dc_dynamic_head
-        # table_columns = self.list_tables_colums("dc_dynamic_head")
-        # all_columns = ', '.join(table_columns)
-        # new_colums = all_columns.replace("card_id", f"\"{new_card_id}\"")
-        # #dprint(all_columns, "\n", new_colums)
-        # sql_command = f"""INSERT INTO dc_dynamic_head ({all_columns}) SELECT {new_colums} FROM dc_dynamic_head WHERE card_id = '{card_id}';"""
-        # #dprint(sql_command, "\n")
-        # self.sql(sql_command)
-        #
-        # # copy into card_type table (for example business_card)
-        # table_columns = self.list_tables_colums(card_type)
-        # all_columns = ', '.join(table_columns)
-        # new_colums = all_columns.replace("card_id", f"\"{new_card_id}\"")
-        # #dprint(all_columns, "\n", new_colums)
-        # sql_command = f"""INSERT INTO {card_type} ({all_columns}) SELECT {new_colums} FROM {card_type} WHERE card_id = '{card_id}';"""
-        # #dprint(sql_command, "\n")
-        # self.sql(sql_command)
-        #
-        # # copy into card_type table (for example business_card)
-        # table_columns = self.list_tables_colums(card_type)
-        # all_columns = ', '.join(table_columns)
-        # new_colums = all_columns.replace("card_id", f"\"{new_card_id}\"")
-        # # dprint(all_columns, "\n", new_colums)
-        # sql_command = f"""INSERT INTO {card_type} ({all_columns}) SELECT {new_colums} FROM {card_type} WHERE card_id = '{card_id}';"""
-        # # dprint(sql_command, "\n")
-        # self.sql(sql_command)
 
     def sql_list(self, sql_command, args="") ->list:
         """ excecutes an SQLite Command with only on selected column and returns  the answer as list
@@ -1656,7 +1575,6 @@ class local_card_db:
                 newlist.append(el[0])
 
         return newlist
-
 
 
     def sql_dict(self, sql_command):
@@ -1678,7 +1596,6 @@ class local_card_db:
         :param sql_list:
         :return: dict like: {"1": "abc", "2": "def"}
         """
-        #dprint(sql_list)
         if len(sql_list) == 0:
             return {} # return empty dict when sql_list empty
 
