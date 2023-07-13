@@ -1,4 +1,5 @@
 import binascii, warnings
+import platform
 import re
 import sys
 from datetime import datetime, timedelta
@@ -36,6 +37,14 @@ import utils
 # Config und Daten einlesen  (zusätzlich für temporäre globale variablen)
 conf = functions.config()
 conf.read()
+
+# TODO: Encrypt db-file for Windows on program exit and shred temp db file.
+# Workaround for Windows because the temporary unencrypted database file is not deleted (because it is in use),
+# so the encryption option makes no sense.
+if platform.system() == "Windows":
+    conf.DATABASE_ENCRYPT_ON_EXIT = False
+
+
 
 # logging management
 LOG_FILENAME = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), conf.PROGRAMM_FOLDER, "log.txt")
