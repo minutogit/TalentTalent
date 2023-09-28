@@ -1,6 +1,8 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+// preventing sending an empty mail when this file is loaded directly (without webform before)
+if (!isset($_POST['email']) || $_POST['email'] == "") {
+    die("-");
+}
 
 include 'settings.php'; // Settings / Einstellungen
 $base_url = "webform.domain.com";  // url of the webform
@@ -91,10 +93,7 @@ $card_type = "<card_type>business_card<card_type>\n";  // placeholder for more p
 $message_to_collector = $_POST['message_to_collector'];
 $entry_type = $_POST['entry_type'];
 
-// preventing sending an empty mail when this file is loaded directly (without webform before)
-if ($email == "") {
-  die("-");
-}
+
 
 $confirmation_needed = true;
 // Check if ID and key are received from the form
@@ -171,7 +170,7 @@ $mailcontent_collector .= $collector_info;
 
 
 if ($confirmation_needed) {
-    $entrant_info = "WICHTIG! Klicke den folgenden Link um die Eintragung zu bestaetigen! Bei Bedarf Kannst damit auch Aenderungen vornehmen.\n$encryptedLink\n\n";
+    $entrant_info = "WICHTIG! Klicke den folgenden Link um die Eintragung zu bestaetigen! Bei Bedarf kannst du damit auch Aenderungen vornehmen.\n$encryptedLink\n\n";
 
 } else {
     $entrant_info = "Hier mit dem Link kannst du Aenderungen vornehmen.\n$encryptedLink\n\n";
@@ -205,4 +204,43 @@ if ($confirmation_needed) {
     echo htmlentities(" (Dient zur Überprüfung, ob dies auch tatsächlich deine E-Mail Adresse ist.)");
     echo "</p>";
 }
+
+// delete automatically old files to keep server clean
+// Read the last run date
+$last_run_file = 'last_run.txt';
+if (file_exists($last_run_file)) {
+    $last_run_date = file_get_contents($last_run_file);
+    $last_run_timestamp = strtotime($last_run_date);
+} else {
+    $last_run_timestamp = 0;  // Set an old timestamp
+}
+
+$current_date = date('Y-m-d');
+$current_timestamp = strtotime($current_date);
+// keep files at least one year (to prevent wrong user settings)
+if ($delete_files_after_years < 1) {
+    $delete_files_after_years = 1;
+}
+
+// If the current date is not equal to the last run date
+if ($current_timestamp != $last_run_timestamp) {
+    // Record the current date as the last run date
+    file_put_contents($last_run_file, $current_date);
+
+    // Now, handle the deletion of old files
+    $files = glob('encrypted-form-data/*'); // gets all the files in the directory
+    foreach ($files as $file) {
+        if (is_file($file)) {
+            $file_last_modified_time = filemtime($file);
+            if (strpos($file, '.temptxt') !== false && time() - $file_last_modified_time >= 30 * 24 * 60 * 60) {
+                // If it's a '.temptxt' file and older than 1 month, delete
+                unlink($file);
+            } elseif (strpos($file, '.txt') !== false && time() - $file_last_modified_time >= $delete_files_after_years * 365.25 * 24 * 60 * 60) {
+                // If it's a '.txt' file and older than the specified number of years, delete
+                unlink($file);
+            }
+        }
+    }
+}
+
 ?>
