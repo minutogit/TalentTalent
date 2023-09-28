@@ -301,11 +301,10 @@ footer {
         <span id="success" style="color:green;"></span>
       </div>
       <button type="submit" >   Senden   </button>
-
     </form>
   </div>
 
-      <script type="text/javascript">
+   <script type="text/javascript">
       function generateCaptcha(event)
          {
              event.preventDefault();
@@ -347,7 +346,9 @@ footer {
         $(window).on('load', function () {
             generateCaptcha(event);
         });
-    </script>
+   </script>
+
+
 </body>
 <footer>
   <p>Die Angebotsliste wird verwaltet mit: <a href="https://github.com/minutogit/TalentTalent/">TalentTalent</a>.</p>
