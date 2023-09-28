@@ -309,8 +309,7 @@ footer {
   </div>
   <script type="text/javascript">
    <?php
-    error_reporting(E_ALL);
-    ini_set('display_errors', 1);
+    include 'settings.php'; // Settings / Einstellungen
 
     function deriveIVfromID($id) {
         // Hash the ID with SHA-256
@@ -345,10 +344,18 @@ footer {
         $id = $_GET['id'];
         $key = $_GET['key'];
 
-        // Retrieve encrypted data from the file
-        $file = 'encrypted-form-data/' . $id . '.txt';
-        if(file_exists($file)) {
-            $encryptedData = file_get_contents($file);
+        $temptxtFile = 'encrypted-form-data/' . $id . '.temptxt';
+        $txtFile = 'encrypted-form-data/' . $id . '.txt';
+        $fileToRead = '';
+
+        // Determine which file to read
+        if (file_exists($temptxtFile)) {
+            $fileToRead = $temptxtFile;
+        } elseif (file_exists($txtFile)) {
+            $fileToRead = $txtFile;
+        }
+        if(file_exists($fileToRead)) {
+            $encryptedData = file_get_contents($fileToRead);
 
             // Decrypt the data
             $decryptedData = decryptData($encryptedData, $key, $id);
@@ -383,6 +390,13 @@ footer {
 
                 // Echo the variables as JavaScript
                 echo "var formData = " . json_encode($variables) . ";";
+                // Rename .temptxt file to .txt and send confirmation mail
+                if ($fileToRead === $temptxtFile) {
+                    echo "alert(\"$website_alert_confirmation_text\");"; // JavaScript alert for confirmation
+                    $headers = "From: $from_email \r\n"; // Add the cc header
+                    mail($recipient, ($confirmation_mail_subject . " ID-" . $id), $confirmation_mail_text, $headers) or die("Fehler!"); // mail to collector
+                    rename($temptxtFile, $txtFile);
+                }
             }
         }
     }
