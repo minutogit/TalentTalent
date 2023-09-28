@@ -1,5 +1,6 @@
 <?php
-
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
 include 'settings.php'; // Settings / Einstellungen
 $base_url = "webform.domain.com";  // url of the webform
@@ -95,11 +96,13 @@ if ($email == "") {
   die("-");
 }
 
+$confirmation_needed = true;
 // Check if ID and key are received from the form
 if (isset($_POST['id']) && isset($_POST['key'])) {
     $id = $_POST['id'];
     $key = $_POST['key'];
     $file_extension = '.txt';
+    $confirmation_needed = false;
 } else {
     // Generate random ID and key only if not received from form
     $id = uniqid();
@@ -138,7 +141,12 @@ $encryptedLink = $base_url . 'index.php?id=' . urlencode($id) . '&key=' . urlenc
 
 
 $entrant_email = esc($_POST['email']);
-$collector_info = "Hinweis: Den Inhalt dieser Mail unveraendert einfach kopieren und mit TalentTalent importieren.\nZur zusaetzlichen Sicherheit eventuell warten bis der Eintrag bestaetigt wurde.";
+if ($confirmation_needed) {
+    $collector_info = "Hinweis: Den Inhalt dieser Mail unveraendert einfach kopieren und mit TalentTalent importieren.\nZur zusaetzlichen Sicherheit eventuell warten bis der Eintrag bestaetigt wurde.";
+} else {
+    $collector_info = "Hinweis: Den Inhalt dieser Mail unveraendert einfach kopieren und mit TalentTalent importieren.\n Wenn neu importiert wird muss alter Eintrag eventuell noch geloescht werden.";
+}
+
 $mailcontent_collector = "<name>" . esc($name) . "<name>\n";
 $mailcontent_collector .= "<family_name>" . esc($family_name) . "<family_name>\n";
 $mailcontent_collector .= "<street>" . esc($street) . "<street>\n";
@@ -160,11 +168,24 @@ $mailcontent_collector .= "Eintrag von: " . esc($name . ' ' . $family_name) . " 
 $mailcontent_collector .= "Nachricht:" . esc($message_to_collector) . "\n\n\n";
 $mailcontent_collector .= $collector_info;
 
-$entrant_info = "WICHTIG! Klicke den folgenden Link um die Eintragung zu bestaetigen! Bei Bedarf Kannst damit auch Aenderungen vornehmen.\n$encryptedLink\n\n";
+
+
+if ($confirmation_needed) {
+    $entrant_info = "WICHTIG! Klicke den folgenden Link um die Eintragung zu bestaetigen! Bei Bedarf Kannst damit auch Aenderungen vornehmen.\n$encryptedLink\n\n";
+
+} else {
+    $entrant_info = "Hier mit dem Link kannst du Aenderungen vornehmen.\n$encryptedLink\n\n";
+}
+
 $mailcontent_entrant = $entrant_info . "Name:\t$name\nFamilienname:\t$family_name\nStrasse:\t$street\nPLZ:\t$zip_code\nOrt:\t$city\nLand:\t$country\nAktivitaetsradius:\t$radius_of_activity\nUnternehmen/Beruf:\t$company_profession\nTelefon:\t$phone\nInternetseite:\t$website\nE-Mail:\t$email\nSonstiger Kontakt:\t$other_contact\nInteressen/Hobbies:\t$interests_hobbies\nAngebot/Faehigkeiten:\t$skills_offers\nGesuch:\t$requests\nStichwoerter:\t$tags\n\nEintragungstyp:\t $entry_type\n\nDeine Nachricht:\t$message_to_collector\n";
 $mailcontent_entrant = stripslashes($mailcontent_entrant);  //unescape the text and decode html-special-chars
 $headers = "From: $from_email \r\n"; // Add the cc header
-mail($recipient, ($subject . " ID-" . $id), ($card_type . $mailcontent_collector), $headers) or die("Fehler!"); // mail to collector
+
+if ($confirmation_needed) {
+    mail($recipient, ($subject . " ID-" . $id), ($card_type . $mailcontent_collector), $headers) or die("Fehler!"); // mail to collector
+} else {
+    mail($recipient, ($subject_confirmed . " ID-" . $id), ($card_type . $mailcontent_collector), $headers) or die("Fehler!"); // mail to collector
+}
 
 $headers_entrant = "From: $from_email \r\n"; // Add the cc header
 mail($entrant_email, $subject, $mailcontent_entrant, $headers_entrant) or die("Fehler!"); // Mail to the entrant
@@ -177,9 +198,11 @@ echo '<!DOCTYPE html>
 </head>
 <body>';
 echo htmlentities("Vielen Dank für die Eintragung. Du solltest gleich eine E-Mail an $email erhalten. (Notfalls im Spam Ordner nachschauen.)");
-echo "</br></br><strong>";
-echo htmlentities("Bitte bestätige deine Eintragung in dem du den Bestätigungslink in der Mailadresse anklickst!");
-echo "</strong>";
-echo htmlentities(" (Dient zur Überprüfung, ob dies auch tatsächlich deine E-Mail Adresse ist.)");
-echo "</p>";
+if ($confirmation_needed) {
+    echo "</br></br><strong>";
+    echo htmlentities("Bitte bestätige deine Eintragung in dem du den Bestätigungslink in der Mailadresse anklickst!");
+    echo "</strong>";
+    echo htmlentities(" (Dient zur Überprüfung, ob dies auch tatsächlich deine E-Mail Adresse ist.)");
+    echo "</p>";
+}
 ?>

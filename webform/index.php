@@ -259,14 +259,16 @@ footer {
       </fieldset>
       <fieldset  class="fieldset1">
         <div class="row">
+        <?php if (!(isset($_GET['id']) && isset($_GET['key']))): ?>
           <label>
         <input type="radio" id="new_entry2" name="entry_type" value="Neueintrag" required> Bitte neu eintragen
         </label>
+        <?php endif; ?>
         <label>
-          <input type="radio" id="update_entry2" name="entry_type" value="Eintrag aktualisieren"> Meinen Eintrag aktualisieren
+          <input type="radio" id="update_entry2" name="entry_type" value="Eintrag aktualisieren" required> Meinen Eintrag aktualisieren
         </label>
         <label>
-          <input type="radio" id="remove_entry2" name="entry_type" value="Eintragung l&ouml;schen"> Meinen Eintrag aus der Liste l&ouml;schen
+          <input type="radio" id="remove_entry2" name="entry_type" value="Eintragung l&ouml;schen" required> Meinen Eintrag aus der Liste l&ouml;schen
         </label>
         </div>
       </fieldset>
@@ -393,15 +395,17 @@ footer {
                 // Rename .temptxt file to .txt and send confirmation mail
                 if ($fileToRead === $temptxtFile) {
                     echo "alert(\"$website_alert_confirmation_text\");"; // JavaScript alert for confirmation
-                    $headers = "From: $from_email \r\n"; // Add the cc header
-                    mail($recipient, ($confirmation_mail_subject . " ID-" . $id), $confirmation_mail_text, $headers) or die("Fehler!"); // mail to collector
-                    rename($temptxtFile, $txtFile);
+                    $headers = "From: $from_email \r\n";
+                    $headers .= "Content-Type: text/plain; charset=UTF-8 \r\n";
+
+                    // send the email
+                    mail($recipient, ($confirmation_mail_subject . " ID-" . $id), $confirmation_mail_text, $headers);
+                    $renameResult = rename($temptxtFile, $txtFile);
+
                 }
             }
         }
     }
-
-
     ?>
 
     if (typeof formData !== 'undefined') {
@@ -423,12 +427,6 @@ footer {
         document.getElementById('tags').value = formData.tags;
         document.getElementById('message_to_collector').value = formData.message_to_collector;
 
-        var radioElements = document.getElementsByName('entry_type');
-        for (var i = 0; i < radioElements.length; i++) {
-            if (radioElements[i].value === formData.entry_type) {
-                radioElements[i].checked = true;
-            }
-        }
     }
 
 
