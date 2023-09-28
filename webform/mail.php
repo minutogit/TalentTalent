@@ -34,7 +34,24 @@ function CustomEncrypt($data, $key, $id) {
 function encryptData($name, $family_name, $street, $zip_code, $city, $country, $radius_of_activity, $company_profession, $phone, $website, $email, $other_contact, $interests_hobbies, $skills_offers, $requests, $tags, $message_to_collector, $entry_type, $key, $id) {
   // Implement encryption logic using AES or any other encryption algorithm
   // Concatenate form fields and separate them with a unique separator (e.g., '|')
-  $data = $name . '|' . $family_name . '|' . $street . '|' . $zip_code . '|' . $city . '|' . $country . '|' . $radius_of_activity . '|' . $company_profession . '|' . $phone . '|' . $website . '|' . $email . '|' . $other_contact . '|' . $interests_hobbies . '|' . $skills_offers . '|' . $requests . '|' . $tags . '|' . $message_to_collector . '|' . $entry_type;
+$data = urlencode($name) . '|' .
+        urlencode($family_name) . '|' .
+        urlencode($street) . '|' .
+        urlencode($zip_code) . '|' .
+        urlencode($city) . '|' .
+        urlencode($country) . '|' .
+        urlencode($radius_of_activity) . '|' .
+        urlencode($company_profession) . '|' .
+        urlencode($phone) . '|' .
+        urlencode($website) . '|' .
+        urlencode($email) . '|' .
+        urlencode($other_contact) . '|' .
+        urlencode($interests_hobbies) . '|' .
+        urlencode($skills_offers) . '|' .
+        urlencode($requests) . '|' .
+        urlencode($tags) . '|' .
+        urlencode($message_to_collector) . '|' .
+        urlencode($entry_type);
   $encryptedData = CustomEncrypt($data, $key, $id); // Implement AES encryption function
   return $encryptedData;
 }

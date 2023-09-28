@@ -359,14 +359,35 @@ footer {
                  // Extract the form fields from the decrypted data
                 list($name, $family_name, $street, $zip_code, $city, $country, $radius_of_activity, $company_profession, $phone, $website, $email, $other_contact, $interests_hobbies, $skills_offers, $requests, $tags, $message_to_collector, $entry_type) = explode('|', $decryptedData);
 
-                // Sanitize the variables before echoing them as JavaScript
+                // Decode the URL-encoded form fields
+                $name = urldecode($name);
+                $family_name = urldecode($family_name);
+                $street = urldecode($street);
+                $zip_code = urldecode($zip_code);
+                $city = urldecode($city);
+                $country = urldecode($country);
+                $radius_of_activity = urldecode($radius_of_activity);
+                $company_profession = urldecode($company_profession);
+                $phone = urldecode($phone);
+                $website = urldecode($website);
+                $email = urldecode($email);
+                $other_contact = urldecode($other_contact);
+                $interests_hobbies = urldecode($interests_hobbies);
+                $skills_offers = urldecode($skills_offers);
+                $requests = urldecode($requests);
+                $tags = urldecode($tags);
+                $message_to_collector = urldecode($message_to_collector);
+                $entry_type = urldecode($entry_type);
+
                 $variables = compact('name', 'family_name', 'street', 'zip_code', 'city', 'country', 'radius_of_activity', 'company_profession', 'phone', 'website', 'email', 'other_contact', 'interests_hobbies', 'skills_offers', 'requests', 'tags', 'message_to_collector', 'entry_type');
 
-                // Echo the sanitized variables as JavaScript
+                // Echo the variables as JavaScript
                 echo "var formData = " . json_encode($variables) . ";";
             }
         }
     }
+
+
     ?>
 
     if (typeof formData !== 'undefined') {
