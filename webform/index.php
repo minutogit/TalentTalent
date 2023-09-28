@@ -301,10 +301,105 @@ footer {
         <span id="success" style="color:green;"></span>
       </div>
       <button type="submit" >   Senden   </button>
+      <!-- Hidden fields for encryption -->
+      <input type="hidden" name="id" id="id">
+      <input type="hidden" name="key" id="key">
     </form>
   </div>
 
    <script type="text/javascript">
+   <?php
+    error_reporting(E_ALL);
+    ini_set('display_errors', 1);
+
+    function deriveIVfromID($id) {
+        // Hash the ID with SHA-256
+        $hashedID = hash('sha256', $id, true);
+
+        // Return the first 16 bytes of the hashed value as the IV
+        return substr($hashedID, 0, 16);
+    }
+
+    function CustomDecrypt($encryptedData, $key, $id) {
+        // Derive IV from ID
+        $iv = deriveIVfromID($id);
+
+        // Decode the encrypted data from base64
+        $decodedData = base64_decode($encryptedData);
+
+        // Decrypt the data using AES-256-CBC
+        $data = openssl_decrypt($decodedData, 'aes-256-cbc', $key, 0, $iv);
+
+        // Return the decrypted data
+        return $data;
+    }
+    function decryptData($encryptedData, $key, $id) {
+        // Implement decryption logic using AES or any other encryption algorithm
+        $decryptedData = CustomDecrypt($encryptedData, $key, $id); // Implement AES decryption function
+        return $decryptedData;
+    }
+
+    // Check if ID and key are provided in the query parameters
+    if (isset($_GET['id']) && isset($_GET['key'])) {
+        // Retrieve ID and key from query parameters
+        $id = $_GET['id'];
+        $key = $_GET['key'];
+
+        // Retrieve encrypted data from the file
+        $file = 'encrypted-form-data/' . $id . '.txt';
+        if(file_exists($file)) {
+            $encryptedData = file_get_contents($file);
+
+            // Decrypt the data
+            $decryptedData = decryptData($encryptedData, $key, $id);
+            //echo $decryptedData;
+
+            // Check if decryption is successful
+            if ($decryptedData !== false) {
+                // Extract the form fields from the decrypted data
+                list($name, $family_name, $street, $zip_code, $city, $country, $radius_of_activity, $company_profession, $phone, $website, $email, $other_contact, $interests_hobbies, $skills_offers, $requests, $tags, $message_to_collector, $entry_type) = explode('|', $decryptedData);
+
+                // Sanitize the variables before echoing them as JavaScript
+                $variables = compact('name', 'family_name', 'street', 'zip_code', 'city', 'country', 'radius_of_activity', 'company_profession', 'phone', 'website', 'email', 'other_contact', 'interests_hobbies', 'skills_offers', 'requests', 'tags', 'message_to_collector', 'entry_type');
+                foreach ($variables as $key => $value) {
+                    $variables[$key] = addslashes(htmlspecialchars($value, ENT_QUOTES, 'UTF-8'));
+                }
+
+                // Echo the sanitized variables as JavaScript
+                echo "var formData = " . json_encode($variables) . ";";
+            }
+        }
+    }
+    ?>
+
+    if (typeof formData !== 'undefined') {
+        document.getElementById('name').value = formData.name;
+        document.getElementById('family_name').value = formData.family_name;
+        document.getElementById('street').value = formData.street;
+        document.getElementById('zip_code').value = formData.zip_code;
+        document.getElementById('city').value = formData.city;
+        document.getElementById('country').value = formData.country;
+        document.getElementById('radius_of_activity').value = formData.radius_of_activity;
+        document.getElementById('company_profession').value = formData.company_profession;
+        document.getElementById('phone').value = formData.phone;
+        document.getElementById('website').value = formData.website;
+        document.getElementById('email').value = formData.email;
+        document.getElementById('other_contact').value = formData.other_contact;
+        document.getElementById('interests_hobbies').value = formData.interests_hobbies;
+        document.getElementById('skills_offers').value = formData.skills_offers;
+        document.getElementById('requests').value = formData.requests;
+        document.getElementById('tags').value = formData.tags;
+        document.getElementById('message_to_collector').value = formData.message_to_collector;
+
+        var radioElements = document.getElementsByName('entry_type');
+        for (var i = 0; i < radioElements.length; i++) {
+            if (radioElements[i].value === formData.entry_type) {
+                radioElements[i].checked = true;
+            }
+        }
+    }
+
+
       function generateCaptcha(event)
          {
              event.preventDefault();
@@ -346,7 +441,11 @@ footer {
         $(window).on('load', function () {
             generateCaptcha(event);
         });
+
+
    </script>
+
+
 
 
 </body>
