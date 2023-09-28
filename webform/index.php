@@ -403,7 +403,19 @@ footer {
                     $renameResult = rename($temptxtFile, $txtFile);
 
                 }
+            } else {
+              // if decryption fails go to index.php
+              echo "alert(\"Daten nicht gefunden.\");"; // JavaScript alert
+              echo 'window.location.href = "index.php";
+              </script></body></html>';
+              exit;
             }
+        } else {
+            // if file not exists go to index.php
+            echo "alert(\"Daten nicht gefunden.\");"; // JavaScript alert
+            echo 'window.location.href = "index.php";
+            </script></body></html>';
+            exit;
         }
     }
     ?>

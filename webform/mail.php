@@ -96,8 +96,10 @@ $entry_type = $_POST['entry_type'];
 
 
 $confirmation_needed = true;
-// Check if ID and key are received from the form
-if (isset($_POST['id']) && isset($_POST['key'])) {
+$folder = 'encrypted-form-data/';
+
+// Check if ID, key are received from the form, and if the corresponding .txt file exists
+if (isset($_POST['id']) && isset($_POST['key']) && file_exists($folder . $_POST['id'] . '.txt')) {
     $id = $_POST['id'];
     $key = $_POST['key'];
     $file_extension = '.txt';
@@ -113,9 +115,6 @@ if (isset($_POST['id']) && isset($_POST['key'])) {
 // Encrypt form data
 $encryptedData = encryptData($name, $family_name, $street, $zip_code, $city, $country, $radius_of_activity, $company_profession, $phone, $website, $email, $other_contact, $interests_hobbies, $skills_offers, $requests, $tags, $message_to_collector, $entry_type, $key, $id); // Implement encryption function
 
-// Define the folder where you want to save the data
-$folder = 'encrypted-form-data/';
-
 // Check if the folder exists, and if not, create it
 if (!file_exists($folder)) {
     mkdir($folder, 0777, true); // Creates the folder recursively
@@ -124,6 +123,7 @@ if (!file_exists($folder)) {
 // Save encrypted data to a file on the server
 $file = $folder . $id . $file_extension;
 file_put_contents($file, $encryptedData);
+
 
 
 // Determine the protocol
