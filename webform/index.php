@@ -356,14 +356,11 @@ footer {
 
             // Check if decryption is successful
             if ($decryptedData !== false) {
-                // Extract the form fields from the decrypted data
+                 // Extract the form fields from the decrypted data
                 list($name, $family_name, $street, $zip_code, $city, $country, $radius_of_activity, $company_profession, $phone, $website, $email, $other_contact, $interests_hobbies, $skills_offers, $requests, $tags, $message_to_collector, $entry_type) = explode('|', $decryptedData);
 
                 // Sanitize the variables before echoing them as JavaScript
                 $variables = compact('name', 'family_name', 'street', 'zip_code', 'city', 'country', 'radius_of_activity', 'company_profession', 'phone', 'website', 'email', 'other_contact', 'interests_hobbies', 'skills_offers', 'requests', 'tags', 'message_to_collector', 'entry_type');
-                foreach ($variables as $key => $value) {
-                    $variables[$key] = addslashes(htmlspecialchars($value, ENT_QUOTES, 'UTF-8'));
-                }
 
                 // Echo the sanitized variables as JavaScript
                 echo "var formData = " . json_encode($variables) . ";";
