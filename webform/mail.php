@@ -96,9 +96,15 @@ if ($email == "") {
   die("-");
 }
 
-// Generate random ID and key
-$id = uniqid();
-$key = generateRandomKey();
+// Check if ID and key are received from the form
+if (isset($_POST['id']) && isset($_POST['key'])) {
+    $id = $_POST['id'];
+    $key = $_POST['key'];
+} else {
+    // Generate random ID and key only if not received from form
+    $id = uniqid();
+    $key = generateRandomKey();
+}
 
 // Encrypt form data
 $encryptedData = encryptData($name, $family_name, $street, $zip_code, $city, $country, $radius_of_activity, $company_profession, $phone, $website, $email, $other_contact, $interests_hobbies, $skills_offers, $requests, $tags, $message_to_collector, $entry_type, $key, $id); // Implement encryption function

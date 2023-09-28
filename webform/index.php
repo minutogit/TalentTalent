@@ -301,13 +301,13 @@ footer {
         <span id="success" style="color:green;"></span>
       </div>
       <button type="submit" >   Senden   </button>
-      <!-- Hidden fields for encryption -->
-      <input type="hidden" name="id" id="id">
-      <input type="hidden" name="key" id="key">
+        <?php if (isset($_GET['id']) && isset($_GET['key'])): ?>
+            <input type="hidden" name="id" value="<?php echo htmlspecialchars($_GET['id'], ENT_QUOTES, 'UTF-8'); ?>">
+            <input type="hidden" name="key" value="<?php echo htmlspecialchars($_GET['key'], ENT_QUOTES, 'UTF-8'); ?>">
+        <?php endif; ?>
     </form>
   </div>
-
-   <script type="text/javascript">
+  <script type="text/javascript">
    <?php
     error_reporting(E_ALL);
     ini_set('display_errors', 1);
@@ -459,12 +459,7 @@ footer {
         $(window).on('load', function () {
             generateCaptcha(event);
         });
-
-
    </script>
-
-
-
 
 </body>
 <footer>
