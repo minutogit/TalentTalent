@@ -5,8 +5,6 @@ if (!isset($_POST['email']) || $_POST['email'] == "") {
 }
 
 include 'settings.php'; // Settings / Einstellungen
-$base_url = "webform.domain.com";  // url of the webform
-
 
 // check if settings are correct, if not exit script
 if ($from_email == "myemail@domain.com" || $from_email == "myemail@domain.com") {
@@ -31,7 +29,6 @@ function CustomEncrypt($data, $key, $id) {
     // Return the result as a base64-encoded string
     return base64_encode($encryptedData);
 }
-
 
 function encryptData($name, $family_name, $street, $zip_code, $city, $country, $radius_of_activity, $company_profession, $phone, $website, $email, $other_contact, $interests_hobbies, $skills_offers, $requests, $tags, $message_to_collector, $entry_type, $key, $id) {
   // Implement encryption logic using AES or any other encryption algorithm
@@ -93,8 +90,6 @@ $card_type = "<card_type>business_card<card_type>\n";  // placeholder for more p
 $message_to_collector = $_POST['message_to_collector'];
 $entry_type = $_POST['entry_type'];
 
-
-
 $confirmation_needed = true;
 $folder = 'encrypted-form-data/';
 
@@ -106,7 +101,7 @@ if (isset($_POST['id']) && isset($_POST['key']) && file_exists($folder . $_POST[
     $confirmation_needed = false;
 } else {
     // Generate random ID and key only if not received from form
-    $id = uniqid();
+    $id = substr(uniqid() . bin2hex(random_bytes(5)), 0, 20);
     $key = generateRandomKey();
     //temp file will be renamed to txt (for mail-verification / and temp files will be deleted earlier to save space when Spam)
     $file_extension = '.temptxt';
@@ -137,13 +132,11 @@ $base_url = $protocol . $domainName . $folder;
 // Add ID and key as query parameters in the email link
 $encryptedLink = $base_url . 'index.php?id=' . urlencode($id) . '&key=' . urlencode($key);
 
-
-
 $entrant_email = esc($_POST['email']);
 if ($confirmation_needed) {
-    $collector_info = "Hinweis: Den Inhalt dieser Mail unveraendert einfach kopieren und mit TalentTalent importieren.\nZur zusaetzlichen Sicherheit eventuell warten bis der Eintrag bestaetigt wurde.";
+    $collector_info = "Hinweis: Den Inhalt dieser Mail unverändert einfach kopieren und mit TalentTalent importieren.\nZur zusätzlichen Sicherheit eventuell warten bis der Eintrag bestätigt wurde.";
 } else {
-    $collector_info = "Hinweis: Den Inhalt dieser Mail unveraendert einfach kopieren und mit TalentTalent importieren.\n Wenn neu importiert wird muss alter Eintrag eventuell noch geloescht werden.";
+    $collector_info = "Hinweis: Den Inhalt dieser Mail unverändert einfach kopieren und mit TalentTalent importieren.\nWenn neu importiert wird, muss der alte Eintrag eventuell noch gelöscht werden.";
 }
 
 $mailcontent_collector = "<name>" . esc($name) . "<name>\n";
@@ -167,18 +160,15 @@ $mailcontent_collector .= "Eintrag von: " . esc($name . ' ' . $family_name) . " 
 $mailcontent_collector .= "Nachricht:" . esc($message_to_collector) . "\n\n\n";
 $mailcontent_collector .= $collector_info;
 
-
-
 if ($confirmation_needed) {
-    $entrant_info = "WICHTIG! Klicke den folgenden Link um die Eintragung zu bestaetigen! Bei Bedarf kannst du damit auch Aenderungen vornehmen.\n$encryptedLink\n\n";
-
+    $entrant_info = "WICHTIG! Klicke den folgenden Link, um die Eintragung zu bestätigen! Bei Bedarf kannst du damit auch Änderungen vornehmen.\n$encryptedLink\n\nArchiviere diese Mail. Nur mit dem Link kannst du den Eintrag bearbeiten. Daten sind sicher und nur du kannst sie entschlüsseln.\n\n";
 } else {
-    $entrant_info = "Hier mit dem Link kannst du Aenderungen vornehmen.\n$encryptedLink\n\n";
+    $entrant_info = "Hier mit dem Link kannst du Änderungen vornehmen.\n$encryptedLink\n\nArchiviere diese Mail. Nur mit dem Link kannst du den Eintrag bearbeiten. Daten sind sicher und nur du kannst sie entschlüsseln.\n\n";
 }
 
 $mailcontent_entrant = $entrant_info . "Name:\t$name\nFamilienname:\t$family_name\nStrasse:\t$street\nPLZ:\t$zip_code\nOrt:\t$city\nLand:\t$country\nAktivitaetsradius:\t$radius_of_activity\nUnternehmen/Beruf:\t$company_profession\nTelefon:\t$phone\nInternetseite:\t$website\nE-Mail:\t$email\nSonstiger Kontakt:\t$other_contact\nInteressen/Hobbies:\t$interests_hobbies\nAngebot/Faehigkeiten:\t$skills_offers\nGesuch:\t$requests\nStichwoerter:\t$tags\n\nEintragungstyp:\t $entry_type\n\nDeine Nachricht:\t$message_to_collector\n";
 $mailcontent_entrant = stripslashes($mailcontent_entrant);  //unescape the text and decode html-special-chars
-$headers = "From: $from_email \r\n"; // Add the cc header
+$headers = "From: $from_email \r\nContent-Type: text/plain; charset=UTF-8\r\n"; // Add the cc header
 
 if ($confirmation_needed) {
     mail($recipient, ($subject . " ID-" . $id), ($card_type . $mailcontent_collector), $headers) or die("Fehler!"); // mail to collector
@@ -186,7 +176,7 @@ if ($confirmation_needed) {
     mail($recipient, ($subject_confirmed . " ID-" . $id), ($card_type . $mailcontent_collector), $headers) or die("Fehler!"); // mail to collector
 }
 
-$headers_entrant = "From: $from_email \r\n"; // Add the cc header
+$headers_entrant = "From: $from_email \r\nContent-Type: text/plain; charset=UTF-8\r\n"; // Add the cc header
 mail($entrant_email, $subject, $mailcontent_entrant, $headers_entrant) or die("Fehler!"); // Mail to the entrant
 
 

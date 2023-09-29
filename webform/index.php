@@ -438,27 +438,21 @@ footer {
         document.getElementById('requests').value = formData.requests;
         document.getElementById('tags').value = formData.tags;
         document.getElementById('message_to_collector').value = formData.message_to_collector;
-
     }
 
-
-      function generateCaptcha(event)
-         {
-             event.preventDefault();
-             var alpha = new Array('0','1','2','3','4','5','6','7','8','9');
-             var i;
-             for (i=0;i<4;i++){
-               var a = alpha[Math.floor(Math.random() * alpha.length)];
-               var b = alpha[Math.floor(Math.random() * alpha.length)];
-               var c = alpha[Math.floor(Math.random() * alpha.length)];
-               var d = alpha[Math.floor(Math.random() * alpha.length)];
-              }
-            var code = a + '' + b + '' + '' + c + '' + d;
-            document.getElementById("mainCaptcha").value = code
-            var el = document.getElementById('mainCaptcha');
+        function generateCaptcha(event) {
+            event.preventDefault();
+            const alpha = '0123456789';
+            let code = '';
+            for (let i = 0; i < 4; i++) {
+                code += alpha[Math.floor(Math.random() * alpha.length)];
+            }
+            const el = document.getElementById("mainCaptcha");
+            el.value = code;
             el.style.fontFamily = 'Geneva, Verdana, sans-serif';
             el.style.fontSize = 'large';
-          }
+        }
+
 
        //validate the form
        function validateForm() {
