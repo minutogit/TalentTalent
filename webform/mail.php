@@ -133,51 +133,54 @@ $base_url = $protocol . $domainName . $folder;
 $encryptedLink = $base_url . 'index.php?id=' . urlencode($id) . '&key=' . urlencode($key);
 
 $entrant_email = esc($_POST['email']);
-if ($confirmation_needed) {
-    $collector_info = "Hinweis: Den Inhalt dieser Mail unverändert einfach kopieren und mit TalentTalent importieren.\nZur zusätzlichen Sicherheit eventuell warten bis der Eintrag bestätigt wurde.";
-} else {
-    $collector_info = "Hinweis: Den Inhalt dieser Mail unverändert einfach kopieren und mit TalentTalent importieren.\nWenn neu importiert wird, muss der alte Eintrag eventuell noch gelöscht werden.";
+
+$collector_info = "Hinweis: Den Inhalt dieser Mail unverändert einfach kopieren und mit TalentTalent importieren.\n";
+$collector_info .= $confirmation_needed ?
+    "Zur zusätzlichen Sicherheit eventuell warten bis der Eintrag bestätigt wurde." :
+    "Wenn neu importiert wird, muss der alte Eintrag eventuell noch gelöscht werden.";
+
+$fields = [
+    'name' => $name,
+    'family_name' => $family_name,
+    'street' => $street,
+    'zip_code' => $zip_code,
+    'city' => $city,
+    'country' => $country,
+    'radius_of_activity' => $radius_of_activity,
+    'company_profession' => $company_profession,
+    'phone' => $phone,
+    'website' => $website,
+    'email' => $email,
+    'other_contact' => $other_contact,
+    'interests_hobbies' => $interests_hobbies,
+    'skills_offers' => $skills_offers,
+    'requests' => $requests,
+    'tags' => $tags,
+];
+
+$mailcontent_collector = '';
+foreach ($fields as $key => $value) {
+    $mailcontent_collector .= "<{$key}>" . esc($value) . "<{$key}>\n";
 }
 
-$mailcontent_collector = "<name>" . esc($name) . "<name>\n";
-$mailcontent_collector .= "<family_name>" . esc($family_name) . "<family_name>\n";
-$mailcontent_collector .= "<street>" . esc($street) . "<street>\n";
-$mailcontent_collector .= "<zip_code>" . esc($zip_code) . "<zip_code>\n";
-$mailcontent_collector .= "<city>" . esc($city) . "<city>\n";
-$mailcontent_collector .= "<country>" . esc($country) . "<country>\n";
-$mailcontent_collector .= "<radius_of_activity>" . esc($radius_of_activity) . "<radius_of_activity>\n";
-$mailcontent_collector .= "<company_profession>" . esc($company_profession) . "<company_profession>\n";
-$mailcontent_collector .= "<phone>" . esc($phone) . "<phone>\n";
-$mailcontent_collector .= "<website>" . esc($website) . "<website>\n";
-$mailcontent_collector .= "<email>" . esc($email) . "<email>\n";
-$mailcontent_collector .= "<other_contact>" . esc($other_contact) . "<other_contact>\n";
-$mailcontent_collector .= "<interests_hobbies>" . esc($interests_hobbies) . "<interests_hobbies>\n";
-$mailcontent_collector .= "<skills_offers>" . esc($skills_offers) . "<skills_offers>\n";
-$mailcontent_collector .= "<requests>" . esc($requests) . "<requests>\n";
-$mailcontent_collector .= "<tags>" . esc($tags) . "<tags>\n\n";
-$mailcontent_collector .= "Eintragungstyp: " . esc($entry_type) . "\n\n";
-$mailcontent_collector .= "Eintrag von: " . esc($name . ' ' . $family_name) . "  (" . esc($street . ' ' . $zip_code . ' ' . $city . ' ' . $country) . ")\n";
+$mailcontent_collector .= "\nEintragungstyp: " . esc($entry_type) . "\n\n";
+$mailcontent_collector .= "Eintrag von: " . esc("{$name} {$family_name} ({$street} {$zip_code} {$city} {$country})") . "\n";
 $mailcontent_collector .= "Nachricht:" . esc($message_to_collector) . "\n\n\n";
 $mailcontent_collector .= $collector_info;
 
-if ($confirmation_needed) {
-    $entrant_info = "WICHTIG! Klicke den folgenden Link, um die Eintragung zu bestätigen! Bei Bedarf kannst du damit auch Änderungen vornehmen.\n$encryptedLink\n\nArchiviere diese Mail. Nur mit dem Link kannst du den Eintrag bearbeiten. Daten sind sicher und nur du kannst sie entschlüsseln.\n\n";
-} else {
-    $entrant_info = "Hier mit dem Link kannst du Änderungen vornehmen.\n$encryptedLink\n\nArchiviere diese Mail. Nur mit dem Link kannst du den Eintrag bearbeiten. Daten sind sicher und nur du kannst sie entschlüsseln.\n\n";
-}
+$entrant_info = $confirmation_needed ?
+    "WICHTIG! Klicke den folgenden Link, um die Eintragung zu bestätigen! Bei Bedarf kannst du damit auch Änderungen vornehmen.\n$encryptedLink\n\nArchiviere diese Mail. Nur mit dem Link kannst du den Eintrag bearbeiten. Daten sind sicher und nur du kannst sie entschlüsseln.\n\n" :
+    "Hier mit dem Link kannst du Änderungen vornehmen.\n$encryptedLink\n\nArchiviere diese Mail. Nur mit dem Link kannst du den Eintrag bearbeiten. Daten sind sicher und nur du kannst sie entschlüsseln.\n\n";
 
 $mailcontent_entrant = $entrant_info . "Name:\t$name\nFamilienname:\t$family_name\nStrasse:\t$street\nPLZ:\t$zip_code\nOrt:\t$city\nLand:\t$country\nAktivitaetsradius:\t$radius_of_activity\nUnternehmen/Beruf:\t$company_profession\nTelefon:\t$phone\nInternetseite:\t$website\nE-Mail:\t$email\nSonstiger Kontakt:\t$other_contact\nInteressen/Hobbies:\t$interests_hobbies\nAngebot/Faehigkeiten:\t$skills_offers\nGesuch:\t$requests\nStichwoerter:\t$tags\n\nEintragungstyp:\t $entry_type\n\nDeine Nachricht:\t$message_to_collector\n";
 $mailcontent_entrant = stripslashes($mailcontent_entrant);  //unescape the text and decode html-special-chars
-$headers = "From: $from_email \r\nContent-Type: text/plain; charset=UTF-8\r\n"; // Add the cc header
 
-if ($confirmation_needed) {
-    mail($recipient, ($subject . " ID-" . $id), ($card_type . $mailcontent_collector), $headers) or die("Fehler!"); // mail to collector
-} else {
-    mail($recipient, ($subject_confirmed . " ID-" . $id), ($card_type . $mailcontent_collector), $headers) or die("Fehler!"); // mail to collector
-}
+$headers = "From: $from_email \r\nContent-Type: text/plain; charset=UTF-8\r\n";
 
-$headers_entrant = "From: $from_email \r\nContent-Type: text/plain; charset=UTF-8\r\n"; // Add the cc header
-mail($entrant_email, $subject, $mailcontent_entrant, $headers_entrant) or die("Fehler!"); // Mail to the entrant
+$mail_subject = $confirmation_needed ? ($subject . " ID-" . $id) : ($subject_confirmed . " ID-" . $id);
+mail($recipient, $mail_subject, ($card_type . $mailcontent_collector), $headers) or die("Fehler!"); // mail to collector
+
+mail($entrant_email, $subject, $mailcontent_entrant, $headers) or die("Fehler!"); // Mail to the entrant
 
 
 echo '<!DOCTYPE html>
