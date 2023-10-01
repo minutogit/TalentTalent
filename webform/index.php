@@ -3,108 +3,127 @@
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-* {
-  box-sizing: border-box;
-}
-
-input[type=text], select, textarea {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  resize: vertical;
-}
-
-input[type=email], select, textarea {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  resize: vertical;
-}
-
-input[type=number], select, textarea {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  resize: vertical;
-}
-
-input[type=tel], select, textarea {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  resize: vertical;
-}
-
-label {
-  padding: 12px 12px 12px 0;
-  display: inline-block;
-}
-
-button[type=submit] {
-  background-color: #15AC5D;
-  color: white;
-  margin-top: 10px;
-  padding: 12px 20px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-input[type=submit]:hover {
-  background-color: #45a049;
-}
-
-.container {
-  border-radius: 5px;
-  background-color: #daf1d3;
-  padding: 20px;
-}
-
-.fieldset1 {
-  margin-top: 15px;
-}
-
-.captcha_style {
-  float: left;
-  width: 200px;
-  margin-top: 10px;
-}
-
-.col-left {
-  float: left;
-  width: 13%;
-  margin-top: 6px;
-}
-
-.col-right {
-  float: left;
-  width: 87%;
-  margin-top: 6px;
-}
-
-/* Clear floats after the columns */
-.row:after {
-  content: "";
-  display: table;
-  clear: both;
-}
-
-/* Responsive layout - when the screen is less than 600px wide, make the two columns stack on top of each other instead of next to each other */
-@media screen and (max-width: 800px) {
-  .col-left, .col-right, input[type=submit] {
-    width: 100%;
-    margin-top: 0;
+  /* Grundlegende Styling-Optionen */
+  * {
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
   }
+
+  body {
+    background-color: #E8F4E5;
+  }
+
+  .container {
+    background-color: #B2DFC8;
+    border-radius: 10px;
+    margin: 20px auto;
+    max-width: 1000px;
+    padding: 20px;
+    box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.2);
+  }
+
+  h1 {
+    text-align: center;
+    color: #045D45;
+  }
+
+  label, legend {
+    color: #045D45;
+    font-weight: bold;
+    margin-top: 5px;  /* 5px Platz oberhalb des Labels */
+  }
+
+  input[type=text], input[type=email], input[type=number], input[type=tel], select, textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #89C7A7;
+    border-radius: 8px;
+    background-color: #ffffff;
+    transition: background-color 0.3s;
+  }
+
+  input[type=text]:focus, input[type=email]:focus, input[type=number]:focus, input[type=tel]:focus, select:focus, textarea:focus {
+    background-color: #E1F9E8;
+  }
+
+  button[type=submit] {
+    background-color: #15AC5D;
+    color: white;
+    margin: 5px 0; /* 5px Platz ober- und unterhalb des Buttons */
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  button[type=submit]:hover {
+    background-color: #129448;
+  }
+
+  /* Styling für das Layout */
+  .col-left {
+    float: left;
+    width: 30%;
+    margin-top: 6px;
+  }
+
+  .col-right {
+    float: left;
+    width: 70%;
+    margin-top: 6px;
+  }
+
+  .row:after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+.refresh-btn {
+    background-color: #f4f4f4; /* Hintergrundfarbe des Buttons */
+    border: 1px solid #ccc; /* Rahmen des Buttons */
+    padding: 2px 10px; /* Innenabstand des Buttons */
+    cursor: pointer; /* Hand-Cursor beim Überfahren des Buttons */
+    font-size: 14px; /* Schriftgröße des Buttons */
+    transition: background-color 0.3s; /* sanfte Farbübergangsanimation */
+    margin: 5px 0; /* Abstand oben und unten um den Button herum */
 }
-footer {
-  text-align: center;
-  padding: 3px;
+
+.refresh-btn:hover {
+    background-color: #e6e6e6; /* Hintergrundfarbe des Buttons beim Überfahren */
 }
+
+.refresh-btn i {
+    margin-right: 5px; /* Abstand zwischen dem Icon und dem Text */
+}
+    @media screen and (max-width: 800px) {
+      .col-left, .col-right {
+        width: 100%;
+      }
+
+      .col-left {
+        margin-top: 10px;
+      }
+
+      button[type=submit] {
+        margin-top: 5px;
+        margin-bottom: 5px;
+      }
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 0px;
+      padding: 0px;
+    }
+
+    .captcha_style {
+      float: left;
+      width: 200px;
+      margin-top: 10px;
+    }
 </style>
+
 </head>
 <body onload="generateCaptcha(event);">
   <div class="container">
@@ -288,7 +307,7 @@ footer {
         <label>Code</label>
         <div>
           <input style="color:red;" type="text" name="maincaptcha" readonly id="mainCaptcha"/>
-          <button onclick="generateCaptcha(event);" id="refresh"><i style="font-size:17px">Code erneuern</button>
+          <button onclick="generateCaptcha(event);" id="refresh" class="refresh-btn"><i style="font-size:17px"></i>Code erneuern</button>
         </div>
       </div>
       </div>
