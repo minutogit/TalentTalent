@@ -30,7 +30,7 @@ from qt_gui.dialog_html_export import Ui_DialogHtmlExport
 from functions import dprint
 from meta_info import __version__, __title__
 import functions, cryptfunctions
-from utils import data_card_to_html, friend_data_to_html, html_export_head, data_card_html_export, key_to_text
+from utils import data_card_to_html, friend_data_to_html, html_export_head, data_card_html_export, html_export_searchfilter, key_to_text, html_export_script
 import utils
 
 
@@ -275,6 +275,7 @@ class Dialog_HTML_Export(QMainWindow, Ui_DialogHtmlExport):
         # generate html file
         html = html_export_head # insert html head
         html += utils.generate_html_export_infohead(infohead)
+        html += html_export_searchfilter
         for data_card in all_cards:
             # add friends_ids to datacard (to display friendsinfo)
             card_id = data_card['dc_head']['card_id']
@@ -294,6 +295,7 @@ class Dialog_HTML_Export(QMainWindow, Ui_DialogHtmlExport):
             html += data_card_html_export(data_card, type=opened_type, filter=True, filter_empty=True,
                                           grouping="business_card", own_filter_list=filter_out,
                                           compact_mode=compact_mode)
+        html += html_export_script
         html += "</body>\n</html>\n" # insert end of html
         html_file = open(export_filename, "w")
         html_file.write(html)

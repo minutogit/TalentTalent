@@ -81,18 +81,80 @@ html_export_head = """<!DOCTYPE html>
         <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
         <style>
         th, td {
-          padding: 2px;
-          border: 1px solid black;
-          border-radius: 8px;
+            padding: 2px;
+            border: 1px solid black;
+            border-radius: 8px;
         }
         table{
-           border: 1px solid black;
-           border-radius: 8px;
-           width: 100%;
+            border: 1px solid black;
+            border-radius: 8px;
+            width: 100%;
         }
+        @media print {
+			#filterGroup, #toggleFilter {
+				display: none;
+			}
+		}
         </style>\n 
     </head>
 <body>"""
+
+html_export_script = """
+<script>
+// Function to filter the table based on input
+function filterTabelle() {
+    const filter = document.getElementById('suchfilter').value.toLowerCase();
+    const subtexts = filter.split(" ");
+    const tables = document.querySelectorAll('table');
+
+    tables.forEach(table => {
+        const rows = table.querySelectorAll('tr');
+        let allRowsHidden = true;
+
+        rows.forEach(row => {
+            const rowText = row.innerText.toLowerCase();
+            if (subtexts.every(tt => rowText.includes(tt))) {
+                row.style.display = "";
+                allRowsHidden = false;
+            } else {
+                row.style.display = "none";
+            }
+        });
+
+        // If all rows in the table are hidden, hide the entire table
+        if (allRowsHidden) {
+            table.style.display = "none";
+        } else {
+            table.style.display = "";
+        }
+    });
+}
+
+// Event listener to trigger the function whenever something is typed into the input field
+document.getElementById('suchfilter').addEventListener('keyup', filterTabelle);
+
+// Event listener to toggle the visibility of the search field when the button is clicked
+document.getElementById('toggleFilter').addEventListener('click', function() {
+    const filterGroup = document.getElementById('filterGroup'); 
+    if (filterGroup.style.display === "none" || filterGroup.style.display === "") {
+        filterGroup.style.display = "block";
+    } else {
+        filterGroup.style.display = "none";
+    }
+});
+
+</script>
+"""
+
+html_export_searchfilter = """
+<div style="display: flex; align-items: center;">
+    <button id="toggleFilter">Suchfilter anzeigen/verbergen</button>
+    <div id="filterGroup" style="display: none; margin-left: 10px;">
+        <label for="suchfilter" style="margin-right: 3px;">Filter:</label>
+        <input type="text" id="suchfilter" placeholder="Suche...">
+    </div>
+</div>
+"""
 
 def filter_dict(input_dict) -> dict:
     """remove meta infos like DELETED_ or HOPS_ from dict with datacard meta info, and set delted marked values to '' """
