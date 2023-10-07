@@ -78,77 +78,130 @@ html_export_head = """<!DOCTYPE html>
 <html>
     <head>
         <title>-</title>
-        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta charset="UTF-8">
         <style>
-        th, td {
-            padding: 2px;
-            border: 1px solid black;
-            border-radius: 8px;
-        }
-        table{
-            border: 1px solid black;
-            border-radius: 8px;
-            width: 100%;
-        }
-        @media print {
-			#filterGroup, #toggleFilter {
-				display: none;
-			}
-		}
+            /* Allgemeine Stilverbesserungen */
+            .list-entry {
+                border: 1px solid black;
+                border-radius: 8px;
+                margin-bottom: 2px;
+                padding: 2px;
+            }
+    
+            .list-entry div {
+                padding: 1px 0;
+            }
+    
+            .list-entry div:first-child {
+                border-bottom: 1px solid #aaa;
+                padding-bottom: 2px;
+            }
+    
+            @media print {
+                #filterGroup,
+                #toggleFilter {
+                    display: none;
+                }
+            }
+    
+            input[type="text"] {
+                padding: 10px;
+                border: 1px solid #aaa;
+                border-radius: 4px;
+                width: 80%;
+            }
+    
+            button {
+                padding: 10px 15px;
+                border: none;
+                border-radius: 4px;
+                background-color: #007BFF;
+                color: white;
+                cursor: pointer;
+            }
+    
+            button:hover {
+                background-color: #0056b3;
+            }
+    
+            #filterGroup {
+                display: flex;
+                align-items: center;
+            }
+    
+            @media (max-width: 768px) {
+                #filterGroup {
+                    flex-direction: column;
+                }
+    
+                input[type="text"] {
+                    width: 100%;
+                    margin-bottom: 10px;
+                }
+            }
         </style>\n 
     </head>
 <body>"""
 
 html_export_script = """
 <script>
-// Function to filter the table based on input
-function filterTabelle() {
-    const filter = document.getElementById('suchfilter').value.toLowerCase();
-    const subtexts = filter.split(" ");
-    const tables = document.querySelectorAll('table');
+    const filterInput = document.getElementById('suchfilter');
+    const toggleButton = document.getElementById('toggleFilter');
+    const countSpan = toggleButton.querySelector('span');
+    const filterGroup = document.getElementById('filterGroup');
+    const entries = document.querySelectorAll('.list-entry');
 
-    tables.forEach(table => {
-        const rows = table.querySelectorAll('tr');
-        let allRowsHidden = true;
+    toggleButton.addEventListener('click', () => {
+        if (filterGroup.style.display === 'none') {
+            filterGroup.style.display = 'flex';
+            filterInput.focus();
+            updateButtonCount(entries.length);
+            filterEntries(); // Filter the entries based on the current search text
+        } else {
+            filterGroup.style.display = 'none';
+            toggleButton.firstElementChild.nodeValue = "Suche";
+            countSpan.innerText = "";
+        }
+    });
 
-        rows.forEach(row => {
-            const rowText = row.innerText.toLowerCase();
-            if (subtexts.every(tt => rowText.includes(tt))) {
-                row.style.display = "";
-                allRowsHidden = false;
+    filterInput.addEventListener('keyup', filterEntries); // Filter the entries on keyup
+
+    function filterEntries() {
+        const searchTerms = filterInput.value.toLowerCase().split(' ');
+        let visibleCount = 0;
+
+        entries.forEach(entry => {
+            const text = entry.innerText.toLowerCase();
+            let allTermsFound = true;
+
+            for (let term of searchTerms) {
+                if (!text.includes(term)) {
+                    allTermsFound = false;
+                    break;
+                }
+            }
+
+            if (allTermsFound) {
+                entry.style.display = 'block';
+                visibleCount++;
             } else {
-                row.style.display = "none";
+                entry.style.display = 'none';
             }
         });
 
-        // If all rows in the table are hidden, hide the entire table
-        if (allRowsHidden) {
-            table.style.display = "none";
-        } else {
-            table.style.display = "";
-        }
-    });
-}
-
-// Event listener to trigger the function whenever something is typed into the input field
-document.getElementById('suchfilter').addEventListener('keyup', filterTabelle);
-
-// Event listener to toggle the visibility of the search field when the button is clicked
-document.getElementById('toggleFilter').addEventListener('click', function() {
-    const filterGroup = document.getElementById('filterGroup'); 
-    if (filterGroup.style.display === "none" || filterGroup.style.display === "") {
-        filterGroup.style.display = "block";
-    } else {
-        filterGroup.style.display = "none";
+        updateButtonCount(visibleCount);
     }
-});
 
+    function updateButtonCount(visibleCount) {
+        countSpan.innerText = `(${visibleCount} von ${entries.length})`;
+    }
 </script>
 """
 
 html_export_searchfilter = """
 <div style="display: flex; align-items: center;">
-    <button id="toggleFilter">Suchfilter anzeigen/verbergen</button>
+    <button id="toggleFilter">Suche<br><span></span></button>
     <div id="filterGroup" style="display: none; margin-left: 10px;">
         <label for="suchfilter" style="margin-right: 3px;">Filter:</label>
         <input type="text" id="suchfilter" placeholder="Suche...">
@@ -303,12 +356,10 @@ def generate_html_export_table(input_dict, type = "", filter_empty = True, compa
             else:
                 column_right += val + " "
 
-    htmlcode += '<table>\n'
-    htmlcode += '<tr>\n'
-    htmlcode += f'  <td>{column_left}</td>\n'
-    htmlcode += f'  <td>{column_right}</td>\n'
-    htmlcode += '</tr>\n'
-    htmlcode += '</table>\n'
+    htmlcode += '<div class="list-entry">\n'
+    htmlcode += f'  <div class="entry-part1">{column_left}</div>\n'
+    htmlcode += f'  <div class="entry-part2">{column_right}</div>\n'
+    htmlcode += '</div>\n'
 
     return htmlcode
 
