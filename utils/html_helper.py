@@ -81,7 +81,9 @@ html_export_head = """<!DOCTYPE html>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta charset="UTF-8">
         <style>
-            /* Allgemeine Stilverbesserungen */
+            .highlight {
+				background-color: yellow;
+			}
             .list-entry {
                 border: 1px solid black;
                 border-radius: 8px;
@@ -99,11 +101,16 @@ html_export_head = """<!DOCTYPE html>
             }
     
             @media print {
+                #toggleFilter,
                 #filterGroup,
-                #toggleFilter {
+                #filterGroup label,
+                #suchfilter,
+                #markText,
+                label[for="markText"] {
                     display: none;
                 }
             }
+
     
             input[type="text"] {
                 padding: 10px;
@@ -119,6 +126,7 @@ html_export_head = """<!DOCTYPE html>
                 background-color: #007BFF;
                 color: white;
                 cursor: pointer;
+                margin-bottom: 2px;
             }
     
             button:hover {
@@ -151,6 +159,10 @@ html_export_script = """
     const countSpan = toggleButton.querySelector('span');
     const filterGroup = document.getElementById('filterGroup');
     const entries = document.querySelectorAll('.list-entry');
+    const markTextCheckbox = document.getElementById('markText');
+    markTextCheckbox.addEventListener('change', filterEntries);
+
+
 
     toggleButton.addEventListener('click', () => {
         if (filterGroup.style.display === 'none') {
@@ -160,25 +172,59 @@ html_export_script = """
             filterEntries(); // Filter the entries based on the current search text
         } else {
             filterGroup.style.display = 'none';
-            toggleButton.firstElementChild.nodeValue = "Suche";
+            toggleButton.firstElementChild.nodeValue = "Search";
             countSpan.innerText = "";
         }
     });
 
     filterInput.addEventListener('keyup', filterEntries); // Filter the entries on keyup
+    
+    function getTextNodes(element) {
+        let textNodes = [];
+        for (let node of element.childNodes) {
+            if (node.nodeType === 3) {
+                textNodes.push(node);
+            } else if (node.nodeName.toLowerCase() !== 'b') {  // <-- This skips <b> tags
+                textNodes = textNodes.concat(getTextNodes(node));
+            }
+        }
+        return textNodes;
+    }
 
     function filterEntries() {
         const searchTerms = filterInput.value.toLowerCase().split(' ');
         let visibleCount = 0;
 
+        if (searchTerms[0].length < 2) { // Only filter if the search term length is at least 2
+            entries.forEach(entry => {
+                entry.style.display = 'block';
+                clearHighlights(entry);  // <-- This removes the highlight
+            });
+            updateButtonCount(entries.length);
+            return;
+	    }
+
         entries.forEach(entry => {
-            const text = entry.innerText.toLowerCase();
+            clearHighlights(entry);
+            const part1Text = entry.querySelector('.entry-part1').innerText.toLowerCase();
+            const part2Div = entry.querySelector('.entry-part2');
+            let part2TextExcludingBTags = "";
+            Array.from(part2Div.childNodes).forEach(child => {
+                if (child.nodeType === 3) { // Text nodes only
+                    part2TextExcludingBTags += child.nodeValue.toLowerCase();
+                }
+            });
+
+            const combinedText = part1Text + " " + part2TextExcludingBTags;
             let allTermsFound = true;
 
             for (let term of searchTerms) {
-                if (!text.includes(term)) {
+                if (!combinedText.includes(term)) {
                     allTermsFound = false;
-                    break;
+                } else {
+                    if (markTextCheckbox.checked) {
+						highlightTerm(entry, term);
+					}
                 }
             }
 
@@ -193,8 +239,37 @@ html_export_script = """
         updateButtonCount(visibleCount);
     }
 
+    function highlightTerm(entry, term) {
+        const textNodes = getTextNodes(entry);
+
+        textNodes.forEach(node => {
+            const nodeValue = node.nodeValue;
+            const highlightedText = nodeValue.replace(new RegExp(`(${term})`, 'ig'), '<span class="highlight">$1</span>');
+            if (nodeValue !== highlightedText) {
+                const div = document.createElement('div');
+                div.innerHTML = highlightedText;
+                while (div.firstChild) {
+                    node.parentNode.insertBefore(div.firstChild, node);
+                }
+                node.parentNode.removeChild(node);
+            }
+        });
+    }
+
+    function clearHighlights(entry) {
+        ['entry-part1', 'entry-part2'].forEach(className => {
+            const div = entry.querySelector(`.${className}`);
+            let innerHTML = div.innerHTML;
+            // Execute the replacement until no highlights are left
+            while (innerHTML.includes('<span class="highlight">')) {
+                innerHTML = innerHTML.replace(/<span class="highlight">(.*?)<\/span>/g, '$1');
+            }
+            div.innerHTML = innerHTML;
+        });
+    }
+
     function updateButtonCount(visibleCount) {
-        countSpan.innerText = `(${visibleCount} von ${entries.length})`;
+        countSpan.innerText = `(${visibleCount} of ${entries.length})`;
     }
 </script>
 """
@@ -205,6 +280,8 @@ html_export_searchfilter = """
     <div id="filterGroup" style="display: none; margin-left: 10px;">
         <label for="suchfilter" style="margin-right: 3px;">Filter:</label>
         <input type="text" id="suchfilter" placeholder="Suche...">
+        <input type="checkbox" id="markText" checked>
+		<label for="markText">Markiere</label>
     </div>
 </div>
 """
