@@ -81,6 +81,10 @@ html_export_head = """<!DOCTYPE html>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta charset="UTF-8">
         <style>
+            body {
+				font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+			}
+
             .highlight {
 				background-color: yellow;
 			}
@@ -95,9 +99,9 @@ html_export_head = """<!DOCTYPE html>
                 padding: 1px 0;
             }
     
-            .list-entry div:first-child {
-                border-bottom: 1px solid #aaa;
-                padding-bottom: 2px;
+            .entry-part1 {
+                border-bottom: 1px solid #999;
+                margin-bottom: 5px;
             }
     
             @media print {
@@ -116,7 +120,7 @@ html_export_head = """<!DOCTYPE html>
                 padding: 10px;
                 border: 1px solid #aaa;
                 border-radius: 4px;
-                width: 80%;
+                width: 70%;
             }
     
             button {
@@ -127,6 +131,7 @@ html_export_head = """<!DOCTYPE html>
                 color: white;
                 cursor: pointer;
                 margin-bottom: 2px;
+                min-width: 120px;
             }
     
             button:hover {
@@ -137,17 +142,27 @@ html_export_head = """<!DOCTYPE html>
                 display: flex;
                 align-items: center;
             }
-    
-            @media (max-width: 768px) {
-                #filterGroup {
-                    flex-direction: column;
-                }
-    
-                input[type="text"] {
-                    width: 100%;
-                    margin-bottom: 10px;
-                }
+            
+            #markContainer {
+                display: flex;
+                align-items: center;
+                flex-direction: row;
             }
+            @media (max-width: 768px) {
+            #filterGroup {
+                flex-direction: column;
+                align-items: flex-start;
+                width: calc(100% - 85px);
+            }
+    
+            #suchfilter {
+                margin-right: 10px; 
+            }
+    
+            #markText {
+                margin-right: 5px;
+            }
+        }
         </style>\n 
     </head>
 <body>"""
@@ -161,8 +176,6 @@ html_export_script = """
     const entries = document.querySelectorAll('.list-entry');
     const markTextCheckbox = document.getElementById('markText');
     markTextCheckbox.addEventListener('change', filterEntries);
-
-
 
     toggleButton.addEventListener('click', () => {
         if (filterGroup.style.display === 'none') {
@@ -269,19 +282,24 @@ html_export_script = """
     }
 
     function updateButtonCount(visibleCount) {
-        countSpan.innerText = `(${visibleCount} of ${entries.length})`;
+        countSpan.innerText = `(${visibleCount} von ${entries.length})`;
     }
 </script>
 """
 
 html_export_searchfilter = """
 <div style="display: flex; align-items: center;">
-    <button id="toggleFilter">Suche<br><span></span></button>
+    <div>
+        <button id="toggleFilter">Suche<br><span></span></button>
+    </div>
     <div id="filterGroup" style="display: none; margin-left: 10px;">
-        <label for="suchfilter" style="margin-right: 3px;">Filter:</label>
-        <input type="text" id="suchfilter" placeholder="Suche...">
-        <input type="checkbox" id="markText" checked>
-		<label for="markText">Markiere</label>
+        <div>
+            <input type="text" id="suchfilter" placeholder="Suche...">
+        </div>
+        <div id="markContainer">
+            <div><input type="checkbox" id="markText" checked></div>
+            <div><label for="markText">Markiere</label></div>
+        </div>
     </div>
 </div>
 """
