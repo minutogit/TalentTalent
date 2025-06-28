@@ -3,7 +3,7 @@ name: Python PyInstaller Release (PySide6)
 
 on:
   push:
-    # --- GEÄNDERT: Löst nur noch bei neuen Tags aus, nicht bei jedem Branch-Push ---
+    # Löst nur noch bei neuen Tags aus, nicht bei jedem Branch-Push
     tags:
       - 'v*'
   workflow_dispatch:
@@ -70,17 +70,18 @@ jobs:
           pyinstaller talenttalent.app.spec --noconfirm
         shell: bash
 
-      # --- GEÄNDERT: Benennt die Datei jetzt mit Versionsnummer und Plattform um ---
-      - name: Rename artifact for release
+      # --- GEÄNDERT: Fügt das Ausführbar-Bit für Linux hinzu ---
+      - name: Rename artifact and set executable bit
         run: |
           if [ "${{ runner.os }}" == "Windows" ]; then
             mv dist/talenttalent.app dist/talenttalent-${{ env.VERSION }}-windows.exe
           else
             mv dist/talenttalent.app dist/talenttalent-${{ env.VERSION }}-linux
+            # Setzt das Ausführbar-Bit für die Linux-Datei
+            chmod +x dist/talenttalent-${{ env.VERSION }}-linux
           fi
         shell: bash
 
-      # --- GEÄNDERT: Bereitet den neuen Artefaktnamen vor ---
       - name: Prepare artifact name
         id: artifact_name
         run: |
@@ -114,7 +115,6 @@ jobs:
         with:
           path: artifacts
 
-      # --- GEÄNDERT: Vereinfachte Release-Erstellung, da nur noch für Tags ---
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
