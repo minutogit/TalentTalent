@@ -19,7 +19,6 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      # HINWEIS: Python-Version auf 3.10 erhöht, um Build-Probleme mit älteren Paketen zu beheben.
       - name: Set up Python 3.10
         uses: actions/setup-python@v5
         with:
@@ -30,6 +29,14 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libgl1-mesa-glx libegl1-mesa libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-render-util0 libxcb-xinerama0
+
+      # --- NEUER SCHRITT: Fehlerhaftes Paket entfernen ---
+      # Entfernt das veraltete 'html'-Paket aus der requirements.txt, da es nicht mehr installierbar ist.
+      - name: Remove problematic html package from requirements
+        run: |
+          # sed -i ist plattformabhängig, daher verwenden wir eine temporäre Datei
+          grep -v "html~=" requirements.txt > requirements.tmp && mv requirements.tmp requirements.txt
+        shell: bash
 
       - name: Install Python dependencies
         run: |
@@ -91,19 +98,18 @@ jobs:
       contents: write
 
     steps:
+      # Für manuelle Auslösungen müssen wir den Code hier separat auschecken
+      - name: Checkout for manual runs
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/checkout@v4
+
       - name: Get Version
         id: get_version
         run: |
           if [[ "${{ github.ref_type }}" == "tag" ]]; then
             echo "VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
           else
-            # Der 'uses'-Befehl ist in einem 'run'-Block nicht gültig, er muss ein eigener Step sein.
-            # Daher wird hier direkt der Code ausgecheckt, was aber im Build-Job schon passiert.
-            # Für manuelle Läufe sollte der Code bereits ausgecheckt sein.
-            # Wir nehmen an, der Code ist da, und lesen die Version.
-            # Dieser manuelle Pfad ist weniger robust als der Tag-getriggerte Pfad.
-            # Checkout wird hier für den manuellen Fall hinzugefügt.
-            uses: actions/checkout@v4
+            # Der Code wurde im vorherigen Schritt für manuelle Läufe ausgecheckt
             VERSION="v"$(python -c "import sys; sys.path.insert(0, 'meta_info'); from meta_info import __version__; print(__version__)")
             echo "VERSION=$VERSION" >> $GITHUB_ENV
           fi

@@ -10,7 +10,6 @@ ecdsa~=0.18.0
 executing~=1.2.0
 geographiclib~=1.52
 geopy~=2.2.0
-html~=1.13
 html2text~=2020.1.16
 idna~=3.3
 mnemonic~=0.20
