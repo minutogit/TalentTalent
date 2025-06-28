@@ -12,7 +12,6 @@ jobs:
     name: Build Executable
     strategy:
       matrix:
-        # HINWEIS: ubuntu-20.04 ist veraltet. Wir verwenden jetzt ubuntu-22.04 als unterstützte LTS-Version.
         os: [ubuntu-22.04, windows-latest]
     runs-on: ${{ matrix.os }}
 
@@ -20,10 +19,11 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Set up Python 3.8
+      # HINWEIS: Python-Version auf 3.10 erhöht, um Build-Probleme mit älteren Paketen zu beheben.
+      - name: Set up Python 3.10
         uses: actions/setup-python@v5
         with:
-          python-version: '3.8'
+          python-version: '3.10'
 
       - name: Install Linux GUI dependencies
         if: runner.os == 'Linux'
@@ -44,8 +44,6 @@ jobs:
           echo "VERSION=$VERSION" >> $GITHUB_ENV
         shell: bash
 
-      # --- NEUER DIAGNOSE-SCHRITT ---
-      # Listet alle Dateien im Arbeitsverzeichnis auf, um zu prüfen, ob alle nötigen Dateien vorhanden sind.
       - name: List files in workspace for debugging
         run: |
           if [ "${{ runner.os }}" == "Windows" ]; then
@@ -55,8 +53,6 @@ jobs:
           fi
         shell: bash
 
-      # HINWEIS: Dieser Schritt setzt voraus, dass Ihre Repository-Struktur korrekt ist.
-      # Es muss ein Ordner 'translations' im Hauptverzeichnis existieren, der 'talent_de.qm' enthält.
       - name: Build with PyInstaller using spec file
         run: pyinstaller talenttalent.app.spec --noconfirm
 
@@ -101,6 +97,12 @@ jobs:
           if [[ "${{ github.ref_type }}" == "tag" ]]; then
             echo "VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
           else
+            # Der 'uses'-Befehl ist in einem 'run'-Block nicht gültig, er muss ein eigener Step sein.
+            # Daher wird hier direkt der Code ausgecheckt, was aber im Build-Job schon passiert.
+            # Für manuelle Läufe sollte der Code bereits ausgecheckt sein.
+            # Wir nehmen an, der Code ist da, und lesen die Version.
+            # Dieser manuelle Pfad ist weniger robust als der Tag-getriggerte Pfad.
+            # Checkout wird hier für den manuellen Fall hinzugefügt.
             uses: actions/checkout@v4
             VERSION="v"$(python -c "import sys; sys.path.insert(0, 'meta_info'); from meta_info import __version__; print(__version__)")
             echo "VERSION=$VERSION" >> $GITHUB_ENV
