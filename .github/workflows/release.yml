@@ -57,16 +57,16 @@ jobs:
           fi
         shell: bash
 
-      # --- WICHTIGE ÄNDERUNG: Deaktiviere UPX für den Linux-Build ---
+      # --- FINALE LÖSUNG: Deaktiviere UPX direkt in der .spec-Datei für Linux ---
       - name: Build with PyInstaller using spec file
         run: |
           if [ "${{ runner.os }}" == "Linux" ]; then
-            # UPX wird für Linux deaktiviert, da es hier oft zu Problemen führt.
-            pyinstaller talenttalent.app.spec --noconfirm --noupx
-          else
-            # Für Windows wird UPX wie in der .spec-Datei definiert verwendet.
-            pyinstaller talenttalent.app.spec --noconfirm
+            # Deaktiviere UPX direkt in der .spec-Datei für den Linux-Build,
+            # da der --noupx-Parameter nicht mit einer .spec-Datei funktioniert.
+            sed -i 's/upx=True,/upx=False,/' talenttalent.app.spec
           fi
+          # Führe den Build für beide Plattformen aus. Linux verwendet die modifizierte .spec-Datei.
+          pyinstaller talenttalent.app.spec --noconfirm
         shell: bash
 
       - name: Rename artifact for release
