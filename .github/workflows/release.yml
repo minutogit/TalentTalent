@@ -24,27 +24,21 @@ jobs:
         with:
           python-version: '3.10'
 
-      # --- WICHTIGE ÄNDERUNG: Fehlende Systembibliothek hinzugefügt ---
       - name: Install Linux GUI dependencies
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
           sudo apt-get install -y libgl1-mesa-glx libegl1-mesa libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-render-util0 libxcb-xinerama0 libxcb-shape0
 
-      # --- WICHTIGE ÄNDERUNG: Entfernt jetzt auch PyInstaller aus der requirements.txt ---
       - name: Remove problematic packages from requirements
         run: |
-          # Entfernt veraltete/problematische Pakete, um sie später durch aktuelle Versionen zu ersetzen.
-          # Das -E Flag erlaubt erweiterte reguläre Ausdrücke (OR-Verknüpfung mit |).
-          grep -vE "html~=|pyinstaller~=" requirements.txt > requirements.tmp && mv requirements.tmp requirements.txt
+          grep -vE "html~=|pyinstaller" requirements.txt > requirements.tmp && mv requirements.tmp requirements.txt
         shell: bash
 
       - name: Install Python dependencies and latest PyInstaller
         run: |
           python -m pip install --upgrade pip
-          # Installiert die neuste PyInstaller-Version, um Kompatibilität sicherzustellen.
           pip install --upgrade pyinstaller
-          # Installiert die restlichen (jetzt bereinigten) Abhängigkeiten.
           pip install -r requirements.txt
 
       - name: Extract version from meta_info.py
@@ -63,8 +57,17 @@ jobs:
           fi
         shell: bash
 
+      # --- WICHTIGE ÄNDERUNG: Deaktiviere UPX für den Linux-Build ---
       - name: Build with PyInstaller using spec file
-        run: pyinstaller talenttalent.app.spec --noconfirm
+        run: |
+          if [ "${{ runner.os }}" == "Linux" ]; then
+            # UPX wird für Linux deaktiviert, da es hier oft zu Problemen führt.
+            pyinstaller talenttalent.app.spec --noconfirm --noupx
+          else
+            # Für Windows wird UPX wie in der .spec-Datei definiert verwendet.
+            pyinstaller talenttalent.app.spec --noconfirm
+          fi
+        shell: bash
 
       - name: Rename artifact for release
         run: |
