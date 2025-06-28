@@ -2,7 +2,7 @@
 name: Python PyInstaller Release (PySide6)
 
 on:
-  # --- NEU: Workflow startet jetzt auch bei Push auf den "tests"-Branch ---
+  # --- GEÄNDERT: Workflow startet jetzt bei Push auf den "workflowtests"-Branch ---
   push:
     branches:
       - workflowtests
@@ -34,7 +34,6 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libgl1-mesa-glx libegl1-mesa libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-render-util0 libxcb-xinerama0 libxcb-shape0
 
-      # --- WICHTIGE ÄNDERUNG: Entfernt jetzt auch docopt ---
       - name: Remove problematic packages from requirements
         run: |
           # Entfernt veraltete/problematische Pakete, um sie später durch aktuelle Versionen zu ersetzen.
@@ -100,7 +99,7 @@ jobs:
           name: ${{ env.ASSET_NAME }}
           path: ${{ env.ASSET_PATH }}
 
-  # Der Job 'create-release' wird nur bei Tags ausgeführt, nicht bei jedem Push auf 'tests'.
+  # Der Job 'create-release' wird nur bei Tags ausgeführt, nicht bei jedem Push auf 'workflowtests'.
   create-release:
     name: Create Release
     # Führe diesen Job nur aus, wenn der Trigger ein Tag war.
