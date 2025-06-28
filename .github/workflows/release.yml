@@ -1,72 +1,65 @@
 # Name des Workflows, der in der "Actions"-Übersicht auf GitHub angezeigt wird.
 name: Python PyInstaller Release (PySide6)
 
-# Trigger: Wann dieser Workflow ausgeführt werden soll.
 on:
-  # Ermöglicht den manuellen Start des Workflows über den "Actions"-Tab auf GitHub.
   workflow_dispatch:
-
-  # Startet den Workflow, wenn ein neuer Tag gepusht wird, der mit 'v' beginnt (z.B. v1.0, v2.3.4).
   push:
     tags:
       - 'v*'
 
 jobs:
-  # Dieser Job baut die ausführbaren Dateien für Windows und Linux.
   build:
-    # Name des Jobs, der in der UI angezeigt wird.
     name: Build Executable
-
-    # Matrix-Strategie, um den Job parallel auf verschiedenen Betriebssystemen auszuführen.
     strategy:
       matrix:
-        # Hier definieren wir die Zielsysteme. ubuntu-20.04 für hohe Kompatibilität.
-        os: [ubuntu-20.04, windows-latest]
-
-    # Definiert die Umgebung, in der der Job läuft.
+        # HINWEIS: ubuntu-20.04 ist veraltet. Wir verwenden jetzt ubuntu-22.04 als unterstützte LTS-Version.
+        os: [ubuntu-22.04, windows-latest]
     runs-on: ${{ matrix.os }}
 
     steps:
-      # Schritt 1: Code aus dem Repository auschecken.
       - name: Check out repository
         uses: actions/checkout@v4
 
-      # Schritt 2: Python 3.8 einrichten.
       - name: Set up Python 3.8
         uses: actions/setup-python@v5
         with:
           python-version: '3.8'
 
-      # Schritt 3: Systemabhängigkeiten für PySide6 unter Linux installieren.
-      # Dieser Schritt ist notwendig, damit die GUI-Bibliothek unter Ubuntu korrekt funktioniert.
       - name: Install Linux GUI dependencies
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
           sudo apt-get install -y libgl1-mesa-glx libegl1-mesa libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-render-util0 libxcb-xinerama0
 
-      # Schritt 4: Python-Abhängigkeiten aus der requirements.txt installieren.
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install pyinstaller
 
-      # Schritt 5: Versionsnummer aus der Python-Datei auslesen.
       - name: Extract version from meta_info.py
         id: version_step
         run: |
-          # Liest die __version__-Variable und speichert sie für spätere Schritte.
           VERSION=$(python -c "import sys; sys.path.insert(0, 'meta_info'); from meta_info import __version__; print(__version__)")
           echo "VERSION=$VERSION" >> $GITHUB_ENV
         shell: bash
 
-      # Schritt 6: Anwendung mit PyInstaller und der .spec-Datei bauen.
-      # Die .spec-Datei enthält wichtige Konfigurationen wie z.B. das Einbinden von Datenfiles.
+      # --- NEUER DIAGNOSE-SCHRITT ---
+      # Listet alle Dateien im Arbeitsverzeichnis auf, um zu prüfen, ob alle nötigen Dateien vorhanden sind.
+      - name: List files in workspace for debugging
+        run: |
+          if [ "${{ runner.os }}" == "Windows" ]; then
+            dir /s
+          else
+            ls -R
+          fi
+        shell: bash
+
+      # HINWEIS: Dieser Schritt setzt voraus, dass Ihre Repository-Struktur korrekt ist.
+      # Es muss ein Ordner 'translations' im Hauptverzeichnis existieren, der 'talent_de.qm' enthält.
       - name: Build with PyInstaller using spec file
         run: pyinstaller talenttalent.app.spec --noconfirm
 
-      # Schritt 7: Die gebaute Datei umbenennen für eine plattformspezifische Endung (.exe für Win, keine für Linux).
       - name: Rename artifact for release
         run: |
           if [ "${{ runner.os }}" == "Windows" ]; then
@@ -76,7 +69,6 @@ jobs:
           fi
         shell: bash
 
-      # Schritt 8: Pfad und Name für das Release-Asset vorbereiten.
       - name: Prepare artifact name
         id: artifact_name
         run: |
@@ -89,45 +81,37 @@ jobs:
           fi
         shell: bash
 
-      # Schritt 9: Gebaute Datei als Artefakt hochladen, damit sie im nächsten Job verfügbar ist.
       - name: Upload artifact for release
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.ASSET_NAME }}
           path: ${{ env.ASSET_PATH }}
 
-  # Dieser Job erstellt das GitHub-Release und hängt die gebauten Dateien an.
   create-release:
     name: Create Release
     needs: [build]
     runs-on: ubuntu-latest
     permissions:
-      contents: write # Erforderlich, um Releases zu erstellen und Assets hochzuladen.
+      contents: write
 
     steps:
-      # Schritt 1: Versionsnummer extrahieren.
-      # Verwendet den Git-Tag, falls vorhanden, ansonsten die Version aus der meta_info.py-Datei.
       - name: Get Version
         id: get_version
         run: |
-          # github.ref_name enthält den Tag (z.B. v1.2.3), wenn der Workflow durch einen Tag ausgelöst wird.
           if [[ "${{ github.ref_type }}" == "tag" ]]; then
             echo "VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
           else
-            # Für manuelle Ausführungen Code auschecken und Version aus Datei lesen.
-            git clone https://github.com/${{ github.repository }}.git .
+            uses: actions/checkout@v4
             VERSION="v"$(python -c "import sys; sys.path.insert(0, 'meta_info'); from meta_info import __version__; print(__version__)")
             echo "VERSION=$VERSION" >> $GITHUB_ENV
           fi
         shell: bash
 
-      # Schritt 2: Prüfen, ob bereits ein Release für diesen Tag existiert.
       - name: Check if Release Exists
         id: check_release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          # Der Befehl 'gh release view' gibt einen Exit-Code 0 zurück, wenn das Release existiert, und 1, wenn nicht.
           if gh release view ${{ env.VERSION }} >/dev/null 2>&1; then
             echo "Release ${{ env.VERSION }} existiert bereits. Erstellung wird übersprungen."
             echo "skip=true" >> $GITHUB_OUTPUT
@@ -136,16 +120,12 @@ jobs:
             echo "skip=false" >> $GITHUB_OUTPUT
           fi
 
-      # Schritt 3: Alle gebauten Artefakte (Linux & Windows) herunterladen.
-      # Dieser Schritt wird nur ausgeführt, wenn das Release noch nicht existiert.
       - name: Download all artifacts
         if: steps.check_release.outputs.skip == 'false'
         uses: actions/download-artifact@v4
         with:
           path: artifacts
 
-      # Schritt 4: GitHub Release erstellen und Artefakte anhängen.
-      # Dieser Schritt wird nur ausgeführt, wenn das Release noch nicht existiert.
       - name: Create GitHub Release
         if: steps.check_release.outputs.skip == 'false'
         uses: softprops/action-gh-release@v2
@@ -153,5 +133,4 @@ jobs:
           tag_name: ${{ env.VERSION }}
           name: Release ${{ env.VERSION }}
           generate_release_notes: true
-          # Hängt alle heruntergeladenen Artefakte an das Release an.
           files: artifacts/*/*
