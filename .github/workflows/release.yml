@@ -14,9 +14,8 @@ jobs:
     name: Build Executable
     strategy:
       matrix:
-        # --- VORÜBERGEHEND GEÄNDERT: Baut nur noch für Windows zum Debuggen ---
-        os: [windows-latest]
-        # os: [ubuntu-22.04, windows-latest]
+        # --- Linux-Build ist jetzt wieder aktiviert ---
+        os: [ubuntu-22.04, windows-latest]
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -28,7 +27,15 @@ jobs:
         with:
           python-version: '3.10'
 
-      # --- Dieser Schritt wird jetzt übersprungen, da nur Windows gebaut wird ---
+      # --- NEU: Caching der Python-Pakete zur Beschleunigung ---
+      - name: Cache pip dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
       - name: Install Linux GUI dependencies
         if: runner.os == 'Linux'
         run: |
@@ -54,7 +61,6 @@ jobs:
           echo "VERSION=$VERSION" >> $GITHUB_ENV
         shell: bash
 
-      # --- KORRIGIERTER SCHRITT: Verwendet plattformunabhängigen Befehl ---
       - name: List files in workspace for debugging
         run: ls -R
         shell: bash
@@ -94,43 +100,28 @@ jobs:
           name: ${{ env.ASSET_NAME }}
           path: ${{ env.ASSET_PATH }}
 
-  # Der Job 'create-release' wird nur bei Tags ausgeführt, nicht bei jedem Push auf 'workflowtests'.
+  # --- GEÄNDERT: Dieser Job läuft jetzt immer nach dem Build ---
   create-release:
-    name: Create Release
-    if: startsWith(github.ref, 'refs/tags/')
+    name: Create/Update Release
     needs: [build]
     runs-on: ubuntu-latest
     permissions:
       contents: write
 
     steps:
-      - name: Get Version from Tag
-        run: echo "VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
-
-      - name: Check if Release Exists
-        id: check_release
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          if gh release view ${{ env.VERSION }} >/dev/null 2>&1; then
-            echo "Release ${{ env.VERSION }} existiert bereits. Erstellung wird übersprungen."
-            echo "skip=true" >> $GITHUB_OUTPUT
-          else
-            echo "Release ${{ env.VERSION }} existiert nicht. Erstellung wird fortgesetzt."
-            echo "skip=false" >> $GITHUB_OUTPUT
-          fi
-
       - name: Download all artifacts
-        if: steps.check_release.outputs.skip == 'false'
         uses: actions/download-artifact@v4
         with:
           path: artifacts
 
-      - name: Create GitHub Release
-        if: steps.check_release.outputs.skip == 'false'
+      # Dieser Schritt erstellt/aktualisiert das Release.
+      - name: Create or Update Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ env.VERSION }}
-          name: Release ${{ env.VERSION }}
-          generate_release_notes: true
+          # Für 'workflowtests'-Branch: Erstellt/aktualisiert ein Pre-Release mit dem Tag "workflowtests-build".
+          # Für echte Git-Tags (z.B. v1.2.3): Erstellt ein stabiles Release mit dem Git-Tag.
+          tag_name: ${{ github.ref_type == 'tag' && github.ref_name || 'workflowtests-build' }}
+          name: ${{ github.ref_type == 'tag' && format('Release {0}', github.ref_name) || 'Development Build (workflowtests)' }}
+          body: ${{ github.ref_type == 'tag' && 'Stabiles Release.' || 'Dies ist ein Pre-Release aus dem `workflowtests`-Branch. Es kann instabil sein und wird beim nächsten Commit überschrieben.' }}
+          prerelease: ${{ github.ref_type != 'tag' }}
           files: artifacts/*/*
