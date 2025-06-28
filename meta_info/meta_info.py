@@ -2,7 +2,7 @@
 __title__ = 'TalentTalent'
 __description__ = 'Collect distributed / decentralized skills / offers / requests from people. '
 __url__ = 'https://github.com/minutogit/TalentTalent/'
-__version__ = '0.14.8.beta'
+__version__ = '0.14.9.beta'
 __author__ = 'Sebastian Galek'
 __author_email__ = 'sgalek@gmx.de'
 __license__ = 'MIT License'
