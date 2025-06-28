@@ -2,10 +2,14 @@
 name: Python PyInstaller Release (PySide6)
 
 on:
-  workflow_dispatch:
+  # --- NEU: Workflow startet jetzt auch bei Push auf den "tests"-Branch ---
   push:
+    branches:
+      - workflowtests
     tags:
       - 'v*'
+  # Ermöglicht weiterhin den manuellen Start.
+  workflow_dispatch:
 
 jobs:
   build:
@@ -30,15 +34,19 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libgl1-mesa-glx libegl1-mesa libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-render-util0 libxcb-xinerama0 libxcb-shape0
 
+      # --- WICHTIGE ÄNDERUNG: Entfernt jetzt auch docopt ---
       - name: Remove problematic packages from requirements
         run: |
-          grep -vE "html~=|pyinstaller" requirements.txt > requirements.tmp && mv requirements.tmp requirements.txt
+          # Entfernt veraltete/problematische Pakete, um sie später durch aktuelle Versionen zu ersetzen.
+          grep -vE "html~=|pyinstaller|docopt" requirements.txt > requirements.tmp && mv requirements.tmp requirements.txt
         shell: bash
 
       - name: Install Python dependencies and latest PyInstaller
         run: |
           python -m pip install --upgrade pip
           pip install --upgrade pyinstaller
+          # docopt wird hier explizit in der neuesten Version installiert, falls es doch benötigt wird.
+          pip install docopt
           pip install -r requirements.txt
 
       - name: Extract version from meta_info.py
@@ -57,15 +65,11 @@ jobs:
           fi
         shell: bash
 
-      # --- FINALE LÖSUNG: Deaktiviere UPX direkt in der .spec-Datei für Linux ---
       - name: Build with PyInstaller using spec file
         run: |
           if [ "${{ runner.os }}" == "Linux" ]; then
-            # Deaktiviere UPX direkt in der .spec-Datei für den Linux-Build,
-            # da der --noupx-Parameter nicht mit einer .spec-Datei funktioniert.
             sed -i 's/upx=True,/upx=False,/' talenttalent.app.spec
           fi
-          # Führe den Build für beide Plattformen aus. Linux verwendet die modifizierte .spec-Datei.
           pyinstaller talenttalent.app.spec --noconfirm
         shell: bash
 
@@ -96,28 +100,19 @@ jobs:
           name: ${{ env.ASSET_NAME }}
           path: ${{ env.ASSET_PATH }}
 
+  # Der Job 'create-release' wird nur bei Tags ausgeführt, nicht bei jedem Push auf 'tests'.
   create-release:
     name: Create Release
+    # Führe diesen Job nur aus, wenn der Trigger ein Tag war.
+    if: startsWith(github.ref, 'refs/tags/')
     needs: [build]
     runs-on: ubuntu-latest
     permissions:
       contents: write
 
     steps:
-      - name: Checkout for manual runs
-        if: github.event_name == 'workflow_dispatch'
-        uses: actions/checkout@v4
-
-      - name: Get Version
-        id: get_version
-        run: |
-          if [[ "${{ github.ref_type }}" == "tag" ]]; then
-            echo "VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
-          else
-            VERSION="v"$(python -c "import sys; sys.path.insert(0, 'meta_info'); from meta_info import __version__; print(__version__)")
-            echo "VERSION=$VERSION" >> $GITHUB_ENV
-          fi
-        shell: bash
+      - name: Get Version from Tag
+        run: echo "VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
 
       - name: Check if Release Exists
         id: check_release
