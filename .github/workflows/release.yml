@@ -35,7 +35,6 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libgl1-mesa-glx libegl1-mesa libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-render-util0 libxcb-xinerama0 libxcb-shape0
 
-      # --- WICHTIGE ÄNDERUNG: Entfernt jetzt auch pip aus den Anforderungen ---
       - name: Remove problematic packages from requirements
         run: |
           grep -vE "html~=|pyinstaller|docopt|pip~=" requirements.txt > requirements.tmp && mv requirements.tmp requirements.txt
@@ -55,13 +54,9 @@ jobs:
           echo "VERSION=$VERSION" >> $GITHUB_ENV
         shell: bash
 
+      # --- KORRIGIERTER SCHRITT: Verwendet plattformunabhängigen Befehl ---
       - name: List files in workspace for debugging
-        run: |
-          if [ "${{ runner.os }}" == "Windows" ]; then
-            dir /s
-          else
-            ls -R
-          fi
+        run: ls -R
         shell: bash
 
       - name: Build with PyInstaller using spec file
