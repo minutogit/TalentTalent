@@ -3,8 +3,6 @@ name: Python PyInstaller Release (PySide6)
 
 on:
   push:
-    branches:
-      - workflowtests
     tags:
       - 'v*'
   workflow_dispatch:
